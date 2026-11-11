@@ -34,7 +34,7 @@
     }
     if(source.kind==="minion"){
       const m=s.players[0].board.find(x=>x.uid===source.uid);
-      if(!m||!m.ready||m.attacked)return deny("Существо пока не готово атаковать.");
+      if(!m||!m.ready||m.attacked||m.timed?.some(t=>t.kind==="frozen"))return deny("Существо пока не готово атаковать.");
       if(target.owner!==1||!["minion","hero"].includes(target.kind))
         return deny("Существом можно атаковать только допустимые вражеские цели.");
       const targets=eng.eligibleAttackTargets(s,0);

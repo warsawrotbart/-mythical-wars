@@ -1,0 +1,114 @@
+/* MW v05.14 Stages 3–6 — opaque 2D hand, enlarged preview and legible feedback.
+ * All selectors are scoped to the battle UI and intentionally exclude 3D.
+ */
+#battleWorkspace:not(.mw3d-active) .battle-card.hand,
+#battleWorkspace:not(.mw3d-active) .battle-card.hand.disabled,
+#battleWorkspace:not(.mw3d-active) .battle-card.hand.mw-hybrid-ready {
+  opacity:1!important;
+  filter:none!important;
+  background-color:#212b30!important;
+  box-shadow:0 5px 15px #000e,inset 0 0 0 1px #ecd29d70;
+}
+#battleWorkspace:not(.mw3d-active) .battle-card.hand>.mw-template-face{
+  display:block!important;opacity:1!important;filter:none!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-card.hand:not(.mw14-can-play){
+  border-color:#9f8b68!important;box-shadow:0 3px 12px #000d,inset 0 0 0 1px #8c7c6155!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-card.hand.mw14-can-play{
+  border-color:#6def9e!important;
+  box-shadow:0 0 0 2px #4dec8aa8,0 0 13px 3px #37e68197,
+    inset 0 0 0 1px #c0ffe0b8,0 7px 18px #000e!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-card.hand.mw14-can-play:not(.selected):not(.battle-dragging){
+  animation:mw14PlayablePulse 2.8s ease-in-out infinite;
+}
+@keyframes mw14PlayablePulse{
+  0%,100%{filter:drop-shadow(0 0 1px #66ffa44f)}
+  50%{filter:drop-shadow(0 0 7px #72ffadd9)}
+}
+#battleWorkspace:not(.mw3d-active) .battle-card.hand .bc-inspect{
+  opacity:0;transition:opacity .15s;
+}
+#battleWorkspace:not(.mw3d-active) .battle-card.hand:is(:hover,:focus-within) .bc-inspect,
+#battleWorkspace:not(.mw3d-active) .battle-card.hand .bc-inspect:focus-visible{opacity:1;}
+#battleWorkspace:not(.mw3d-active) .battle-card.hand.mw14-hovered{
+  z-index:43!important;
+  box-shadow:0 12px 27px #000f,0 0 0 2px #ffe5a2c2!important;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .battle-player .battle-hand {
+  overflow:visible!important;
+  z-index:16!important;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .battle-card.hand:is(.mw14-hovered,:focus-within,.selected){
+  transform:translateY(-23px) rotate(0deg) scale(1.13)!important;
+  transition:transform .16s ease,box-shadow .16s ease!important;
+  transform-origin:50% 100%;
+}
+#battleWorkspace:not(.mw3d-active) .battle-card.hand.battle-dragging,
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .battle-card.hand.battle-dragging{
+  opacity:.52!important;filter:none!important;
+  animation:none!important;cursor:grabbing;
+}
+#battleWorkspace:not(.mw3d-active) .mw14-hand-preview {
+  position:absolute;z-index:95;pointer-events:none;
+  border:2px solid #f1c98d;border-radius:12px;
+  background:linear-gradient(170deg,#2a211b,#121b24);
+  box-shadow:0 18px 38px #000e,0 0 26px #c99b5070;
+  overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:4px;
+  animation:mw14PreviewIn .18s ease-out both;
+}
+#battleWorkspace:not(.mw3d-active) .mw14-hand-preview[hidden],
+#battleWorkspace.mw3d-active .mw14-hand-preview{display:none!important;}
+#battleWorkspace:not(.mw3d-active) .mw14-hand-preview img{
+  display:block;width:100%;height:100%;aspect-ratio:2/3;
+  object-fit:contain;background:#1f2528;opacity:1!important;
+}
+#battleWorkspace:not(.mw3d-active) .mw14-hand-preview img[hidden]{display:none!important;}
+#battleWorkspace:not(.mw3d-active) .mw14-hand-preview .mw14-preview-label{
+  position:absolute;bottom:4px;left:4px;right:4px;
+  padding:4px 5px;text-align:center;border-radius:5px;
+  color:#fff0cb;background:#122027f0;border:1px solid #8b7046;
+  font:700 11px/1.4 Georgia,serif;
+}
+@keyframes mw14PreviewIn{
+  from{opacity:0;transform:translateY(12px) scale(.93)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+#battleWorkspace:not(.mw3d-active).mw14-drag-active .battle-board.mw14-legal-drop,
+#battleWorkspace:not(.mw3d-active).mw14-drag-active .battle-card.mw14-legal-drop,
+#battleWorkspace:not(.mw3d-active).mw14-drag-active [data-hero-owner].mw14-legal-drop{
+  outline:3px solid #80ffa8!important;outline-offset:-3px;
+  box-shadow:0 0 0 3px #6ef49e76,0 0 22px 5px #3af18a9e!important;
+}
+#battleWorkspace:not(.mw3d-active).mw14-drag-active .battle-board.drag-over,
+#battleWorkspace:not(.mw3d-active).mw14-drag-active .battle-card.drag-over{
+  outline:4px solid #baffc4!important;
+  background-color:#20805e55!important;
+}
+#battleWorkspace:not(.mw3d-active).mw14-drag-active :is(.battle-board,.battle-card,[data-hero-owner]).drag-invalid{
+  outline:2px dashed #ed7175!important;outline-offset:-2px;
+}
+#battleWorkspace:not(.mw3d-active) .battle-card.minion.mw14-new-summon{
+  animation:mw14SummonIn .42s cubic-bezier(.2,.8,.3,1) both;
+}
+@keyframes mw14SummonIn{
+  0%{opacity:.25;transform:translateY(28px) scale(.52);filter:drop-shadow(0 0 18px #a0fbbe)}
+  65%{opacity:1;transform:translateY(-4px) scale(1.10)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+.mw14-drag-image{position:fixed!important;left:-3000px!important;top:-3000px!important;pointer-events:none!important;}
+@media (max-width:1199px){
+ #battleWorkspace:not(.mw3d-active) .battle-card.hand.mw14-hovered{
+  transform:translateY(-9px) scale(1.07)!important;
+ }
+}
+@media (prefers-reduced-motion:reduce){
+ #battleWorkspace:not(.mw3d-active) .battle-card.hand,
+ #battleWorkspace:not(.mw3d-active) .battle-card.hand.mw14-can-play,
+ #battleWorkspace:not(.mw3d-active) .battle-card.minion.mw14-new-summon,
+ #battleWorkspace:not(.mw3d-active) .mw14-hand-preview{
+   animation:none!important;transition:none!important;
+ }
+}

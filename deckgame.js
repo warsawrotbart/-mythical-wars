@@ -463,7 +463,8 @@ function battleCard(h,owner,kind){
    (h.cardId==="KNZ-002"?"assets/art_malady_druzhynnik.png":"");
  const icon=coin?"✦":type==="spell"?"✧":type==="weapon"?"⚔":"✥";
  const pick=kind==="minion"?owner+"|"+h.uid:h.uid;
- const dragEnabled=owner===0&&["hand","minion"].includes(kind)&&game.phase==="battle"&&game.turn===0;
+ const dragEnabled=owner===0&&game.phase==="battle"&&game.turn===0&&!gameRunningAI&&!pendingChoice&&
+  (kind==="hand"?status.ok:kind==="minion"&&h.ready&&!h.attacked&&!frozen);
  const burn=kind==="hand"&&h.burnTurnsLeft!=null;
  return `<div class="battle-card ${kind==="minion"?"minion":"hand"} ${notSupported?"disabled":""} ${active?"selected":""}
   ${ready?"ready":""} ${taunt?"mw14-taunt":""} ${frozen?"mw14-frozen":""} ${h.token?"mw14-token":""} theme-${theme} rarity-${rarityClass} cardtype-${type}${burn?" burning":""}${kind==="minion"?targetClass(owner,"minion",h.uid):""}"
@@ -780,6 +781,7 @@ function renderGame(){
  window.MW_ARENA_ART?.render(game);
  window.MW_ARENA_3D?.render(game);
  window.MW_BATTLE_CARD_RENDERER?.hydrate(game,$("battleWorkspace"));
+ window.MW14_HAND_UI?.live?.render(game,{busy:gameRunningAI,pendingChoice:!!pendingChoice,pending:!!pending});
  window.MW_HERO_HUD_V0511?.render2D(game);
  refreshDeveloperControls();
  updateReplayUI();
@@ -1075,9 +1077,27 @@ function readBattleDropTarget(node,source){
  if(board)return {kind:"board",owner:board.id==="myBoard"?0:1,node:board};
  return null;
 }
-function clearBattleDropDecoration(){
- $("battleWorkspace").querySelectorAll(".drag-over,.drag-invalid,.battle-dragging")
-   .forEach(n=>n.classList.remove("drag-over","drag-invalid","battle-dragging"));
+function clearBattleDropDecoration(finished=true){
+ const area=$("battleWorkspace");
+ area.querySelectorAll(".drag-over,.drag-invalid")
+   .forEach(n=>n.classList.remove("drag-over","drag-invalid"));
+ if(finished){
+   area.querySelectorAll(".battle-dragging,.mw14-legal-drop")
+     .forEach(n=>n.classList.remove("battle-dragging","mw14-legal-drop"));
+   area.classList.remove("mw14-drag-active");
+ }
+}
+function highlightBattleDropTargets(source){
+ const area=$("battleWorkspace"),rule=window.MW_BATTLE_DRAG_RULES;
+ if(!source||!rule||!game)return;
+ const h=source.kind==="hand"?game.players[0].hand.find(x=>x.uid===source.uid):null;
+ const action=h?eng.actionStatus(game,0,source.uid):null;
+ const selectors=source.kind==="hand"&&!action?.targetType?"#myBoard":
+   "#myBoard,#botBoard,[data-battle-minion],[data-hero-owner]";
+ area.querySelectorAll(selectors).forEach(node=>{
+   const target=readBattleDropTarget(node,source);
+   if(target&&rule.plan(game,source,target,eng).ok)node.classList.add("mw14-legal-drop");
+ });
 }
 function processBattleDrop(source,target){
  const plan=window.MW_BATTLE_DRAG_RULES?.plan(game,source,target,eng) || {ok:false,reason:"Модуль переноса не загрузился."};
@@ -1098,8 +1118,11 @@ function processBattleDrop(source,target){
 function wireBattleDragAndDrop(){
  const area=$("battleWorkspace");
  area.addEventListener("dragstart",e=>{
-   const card=e.target.closest(".battle-card[draggable=true]");
+   const card=e.target.closest?.(".battle-card[draggable=true]");
    if(!card||!game||game.turn!==0||game.phase!=="battle"||gameRunningAI||pendingChoice)return;
+   if(card.hasAttribute("data-battle-hand")&&!eng.actionStatus(game,0,card.dataset.battleHand).ok){
+     e.preventDefault();return;
+   }
    if(card.hasAttribute("data-battle-hand"))
      battleDragSession={kind:"hand",uid:card.dataset.battleHand};
    else if(card.hasAttribute("data-battle-minion")){
@@ -1113,18 +1136,20 @@ function wireBattleDragAndDrop(){
      e.dataTransfer.setData("text/plain","MYTHICAL_WARS_BATTLE_DRAG");
    }
    card.classList.add("battle-dragging");
+   area.classList.add("mw14-drag-active");
+   window.MW14_HAND_UI?.live?.dragStarted(card,e.dataTransfer);
+   highlightBattleDropTargets(battleDragSession);
  });
  area.addEventListener("dragover",e=>{
    if(!battleDragSession||!game)return;
-   clearBattleDropDecoration();
+   clearBattleDropDecoration(false);
    const target=readBattleDropTarget(e.target,battleDragSession);
    if(!target)return;
    const plan=window.MW_BATTLE_DRAG_RULES.plan(game,battleDragSession,target,eng);
-   if(plan.ok){
-      e.preventDefault();
-      if(e.dataTransfer)e.dataTransfer.dropEffect="move";
-      target.node.classList.add("drag-over");
-   }else target.node.classList.add("drag-invalid");
+   e.preventDefault();
+   if(e.dataTransfer)e.dataTransfer.dropEffect=plan.ok?"move":"none";
+   if(plan.ok)target.node.classList.add("drag-over");
+   else target.node.classList.add("drag-invalid");
  });
  area.addEventListener("drop",e=>{
    if(!battleDragSession)return;
@@ -1136,6 +1161,7 @@ function wireBattleDragAndDrop(){
  });
  area.addEventListener("dragend",()=>{
    battleDragSession=null;clearBattleDropDecoration();
+   window.MW14_HAND_UI?.live?.hide();
  });
 }
 

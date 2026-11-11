@@ -9,7 +9,7 @@ class FakeEl{
  constructor(id,cls='',tagName='DIV'){
   this.id=id;this.tagName=tagName;this.children=[];this.parentNode=null;this.listeners={};this.attrs={};
   this.classes=new Set(cls.split(' ').filter(Boolean));
-  this.classList={contains:x=>this.classes.has(x),toggle:(x,on)=>{if(on)this.classes.add(x);else this.classes.delete(x);}};
+  this.classList={contains:x=>this.classes.has(x),toggle:(x,on)=>{if(on)this.classes.add(x);else this.classes.delete(x);},add:x=>this.classes.add(x),remove:x=>this.classes.delete(x)};
   this.vars={};this.style={setProperty:(k,v)=>{this.vars[k]=v}};
   this.clientWidth=820;
  }
@@ -43,25 +43,19 @@ function setup(){
  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','arena-layout-v05S13.js'),'utf8'),win,{filename:'arena-layout-v05S13.js'});
  return {win,workspace,actions,player,enemy,stored,registry};
 }
-test('stage B initializes a reversible 2D layout button without editing battle objects',()=>{
+test('new 2D arena is always active and uses the same real cards',()=>{
  const {win,workspace,actions,player,enemy,stored,registry}=setup();
  const api=win.MW_ARENA_V05S13;
  assert.equal(api.getState().ready,true);
+ assert.equal(api.getState().enabled,true);
  assert.ok(workspace.classes.has('mw13-2d-layout'));
- const toggle=actions.children.find(el=>el.id==='battleLayoutToggle');
- assert.ok(toggle);
- assert.equal(toggle.attrs['aria-pressed'],'true');
+ assert.equal(actions.children.filter(el=>el.id==='battleLayoutToggle').length,0);
  assert.equal(player.children.length,5);
  assert.equal(player.children[0].vars['--mw13-fan-rot'],'-8.5deg');
  assert.equal(player.children.at(-1).vars['--mw13-fan-rot'],'8.5deg');
  assert.ok(enemy.children[0].vars['--mw13-fan-rot'].endsWith('deg'));
  assert.ok(registry.length>=2);
- toggle.listeners.click();
- assert.ok(!workspace.classes.has('mw13-2d-layout'));
- assert.equal(toggle.attrs['aria-pressed'],'false');
- assert.equal(stored[api.storageKey],'classic');
- toggle.listeners.click();
+ assert.equal(api.applyMode(false),true);
  assert.ok(workspace.classes.has('mw13-2d-layout'));
- assert.equal(stored[api.storageKey],'new');
- assert.equal(actions.children.filter(el=>el.id==='battleLayoutToggle').length,1);
+ assert.deepEqual(stored,{});
 });

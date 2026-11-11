@@ -693,7 +693,7 @@ function runDeveloperCommand(){
  if(!result.ok)message(result.reason);
  else{renderGame();message("Тестовая команда выполнена (помечена в журнале).");}
 }
-function renderGame(){
+function renderGame(options={}){
  const workspace=$("battleWorkspace"),hour=game?Number(game.time):12,
        phase=game?eng.phaseOfHour(hour):"День";
  workspace.dataset.phase=phase==="Утро"?"morning":phase==="День"?"day":phase==="Вечер"?"evening":"night";
@@ -706,6 +706,8 @@ function renderGame(){
   $("myBoard").innerHTML="";$("botBoard").innerHTML="";$("myHand").innerHTML="";$("botHand").innerHTML="";
   $("battleEndTurn").disabled=true;$("battleLog").innerHTML='<div>Сначала выберите колоду для игрока и для бота.</div>';
   $("myHero").textContent="30 ♥";$("botHero").textContent="30 ♥";
+  if($("battleManaValue"))$("battleManaValue").textContent="0/0";
+  if($("battleManaCounter"))$("battleManaCounter").setAttribute("aria-label","Мана 0 из 0");
   $("myHeroPower").disabled=true;$("botHeroPower").disabled=true;
   $("myHeroPower").textContent="Сила героя";
   $("botHeroPower").textContent="Сила героя";
@@ -749,6 +751,8 @@ function renderGame(){
  $("botHero").textContent=bot.health+" ♥"+(bot.armor?" · "+bot.armor+" ◈":"")+
     (bot.weapon?" · ⚔ "+bot.weapon.attack+"/"+bot.weapon.durability:"");
  $("myStats").textContent=me.mana+"/"+me.maxMana+" маны · "+me.deck.length+" в колоде";
+ if($("battleManaValue"))$("battleManaValue").textContent=me.mana+"/"+me.maxMana;
+ if($("battleManaCounter"))$("battleManaCounter").setAttribute("aria-label","Мана "+me.mana+" из "+me.maxMana);
  $("botStats").textContent=bot.deck.length+" карт в колоде · "+bot.hand.length+" в руке";
  $("myBoard").innerHTML=me.board.map(m=>battleCard(m,0,"minion")).join("")||
     '<span class="deck-small-muted">На поле нет существ</span>';
@@ -785,7 +789,7 @@ function renderGame(){
  window.MW_HERO_HUD_V0511?.render2D(game);
  refreshDeveloperControls();
  updateReplayUI();
- persistBattleSession();
+ if(options.save!==false)persistBattleSession();
 }
 /* v2.1J — actual card faces during the initial hand replacement.
    The underlying mulligan selection remains strictly UID-based and unchanged. */
@@ -1014,15 +1018,48 @@ function finishTurn(){
  if(!result.ok)message(result.reason);
  renderGame();maybeBot();
 }
-function maybeBot(){
+async function maybeBot(){
  if(!game||game.phase!=="battle"||game.turn!==1||gameRunningAI)return;
- gameRunningAI=true;const snapshot=game;renderGame();
- setTimeout(()=>{
-  if(game!==snapshot){gameRunningAI=false;return;}
-  try{if(game?.phase==="battle"&&game.turn===1)eng.runBotTurn(game);}
-  catch(e){console.error(e);message("Ошибка бота: "+e.message);}
-  finally{gameRunningAI=false;renderGame();}
- },380);
+ gameRunningAI=true;
+ const snapshot=game,caption=$("mw16BotAction");
+ const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ const show=text=>{
+  if(!caption)return;
+  caption.textContent=text;caption.hidden=false;
+  caption.classList.remove("is-visible");void caption.offsetWidth;
+  caption.classList.add("is-visible");
+ };
+ const describe=action=>{
+  if(action.type==="play")return "Бот разыгрывает: "+(snapshot.cards?.[action.cardId]?.name||action.cardId);
+  if(action.type==="attack")return "Бот атакует "+(action.target==="hero"?"героя":"существо");
+  if(action.type==="hero-power")return "Бот использует силу героя";
+  return "Ход соперника";
+ };
+ renderGame({save:false});
+ try{
+  show("Ход соперника");
+  await pause(800);
+  if(snapshot!==game)return;
+  const frames=eng.botTurnFrames?.(snapshot,1);
+  if(!frames){eng.runBotTurn(snapshot,1);return;}
+  // The stepwise iterator runs exactly the published AI policy, but presents each mutation separately.
+  while(snapshot===game){
+   const step=frames.next();
+   if(step.done)break;
+   show(describe(step.value));
+   renderGame({save:false});
+   await pause(1350);
+  }
+  if(snapshot===game&&snapshot.phase==="battle"&&snapshot.turn===1)
+   throw new Error("Бот не завершил ход.");
+ }catch(e){
+  console.error(e);message("Ошибка бота: "+e.message);
+ }finally{
+  if(snapshot===game){
+   if(caption){caption.hidden=true;caption.classList.remove("is-visible");}
+   gameRunningAI=false;renderGame();
+  }
+ }
 }
 async function handleHeroPortraitFile(file){
  if(!file||!/^image\/(png|jpeg|webp)$/.test(file.type))return message("Выберите PNG, JPEG или WEBP.");

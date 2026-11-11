@@ -1,0 +1,172 @@
+/* Mythical Wars v05.16 — new 2D arena only. Preserve independent WebGL view.
+ * The board, cards and HUD are live game objects; this changes presentation only.
+ */
+#battleWorkspace .battle-quick-actions{display:flex!important;gap:7px;flex-wrap:wrap;align-items:center;justify-content:flex-end;overflow:visible!important}
+#battleWorkspace .battle-quick-actions #battle3DToggle{
+  display:inline-flex!important;align-items:center;justify-content:center;
+  min-width:116px;border-color:#d5b476;color:#ffe5ac;font-weight:800;
+  background:linear-gradient(#283b45,#12222e);white-space:nowrap;order:1;
+}
+#battleWorkspace .battle-quick-actions #battle3DToggle[aria-pressed="true"]{
+  border-color:#96d8f2;background:#183e4a;color:#d8f5ff;
+}
+#battleWorkspace .battle-quick-actions #battle3DToggle:focus-visible{
+  outline:3px solid #ffe09a;outline-offset:3px;
+}
+/* No large opaque mulligan panel, and every starting card, including coin, sits in one centred row. */
+#battleWorkspace .battle-mulligan-panel{
+  display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+  width:min(1550px,98vw)!important;max-width:98vw!important;
+  max-height:97dvh!important;min-height:0!important;
+  padding:14px 22px 20px!important;margin:auto!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:transparent!important;overflow:visible!important;
+}
+#battleWorkspace .battle-mulligan-panel h2,
+#battleWorkspace .battle-mulligan-panel p{
+  text-align:center;text-shadow:0 2px 6px #000d;
+}
+#battleWorkspace .battle-mulligan-cards{
+  box-sizing:border-box;display:flex!important;flex-wrap:nowrap!important;
+  align-items:center!important;justify-content:center!important;
+  gap:clamp(9px,1.5vw,22px)!important;width:100%!important;
+  max-width:min(1450px,97vw)!important;min-height:0!important;
+  margin:18px auto 12px!important;padding:6px 8px 15px!important;
+  border:0!important;background:transparent!important;
+  overflow-x:auto!important;overflow-y:visible!important;
+  scrollbar-width:thin;scrollbar-color:#aa925a transparent;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card{
+  box-sizing:border-box;flex:0 0 clamp(145px,14.1vw,217px)!important;
+  width:clamp(145px,14.1vw,217px)!important;
+  height:auto!important;aspect-ratio:2/3!important;
+  padding:0!important;margin:0!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:transparent!important;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card .mulligan-face,
+#battleWorkspace .battle-mulligan-cards button.mulligan-card .mulligan-face img{
+  display:block;width:100%;height:100%;padding:0;border:0;box-shadow:none;
+  background:transparent!important;border-radius:0!important;object-fit:contain!important;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card[data-mulligan-card="__coin__"]{
+  display:flex;align-items:center;justify-content:center;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card[data-mulligan-card="__coin__"] .mulligan-face{
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:transparent!important;border:0!important;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card[data-mulligan-card="__coin__"] .mulligan-fallback{
+  display:grid;place-content:center;width:84px;height:84px;
+  border:3px solid #edcb7a!important;border-radius:50%;
+  background:radial-gradient(circle at 38% 29%,#f4d888,#bb872c 55%,#5c3b1a)!important;
+  color:#2b2113!important;box-shadow:0 7px 16px #0009;
+  font:800 16px/1.1 Georgia,serif;text-align:center;padding:3px;
+}
+#battleWorkspace .battle-mulligan-panel>#mulliganConfirm,
+#battleWorkspace .battle-mulligan-panel>#battleResumePrevious{margin:7px 4px 0}
+@media(max-width:820px){
+  #battleWorkspace .battle-mulligan-cards{justify-content:flex-start!important}
+  #battleWorkspace .battle-mulligan-cards button.mulligan-card{
+    flex-basis:clamp(125px,27vw,174px)!important;width:clamp(125px,27vw,174px)!important;
+  }
+}
+/* Remove the wooden hand graphic (hand_player.webp); show only unboxed cards. */
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active):not(.mw-art-off) .battle-player .battle-hand,
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .battle-player .battle-hand{
+  background:none!important;border:none!important;border-radius:0!important;
+  box-shadow:none!important;backdrop-filter:none!important;
+  width:min(100%,var(--mw13-board-width,1020px))!important;
+  min-height:158px!important;height:158px!important;
+  padding:12px 4px 6px!important;margin:0 auto!important;
+  align-items:flex-end!important;justify-content:center!important;
+  gap:clamp(2px,.7vw,10px)!important;overflow-x:auto!important;
+  overflow-y:hidden!important;scrollbar-width:thin;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) #myHand .battle-card.hand{
+  transform:translateY(0) rotate(0)!important;margin-left:0!important;
+  flex-shrink:0!important;transition:transform .18s ease,filter .18s ease;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) #myHand .battle-card.hand:is(:hover,:focus-within,.mw14-hovered){
+  transform:translateY(-12px) rotate(0) scale(1.09)!important;z-index:42!important;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) #myHand .battle-card.hand.battle-dragging{
+  transform:none!important;
+}
+/* Opponent cards remain hidden information, but no wood/card-back tray underneath them. */
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active):not(.mw-art-off) .battle-opponent .battle-bot-hand,
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .battle-opponent .battle-bot-hand{
+  background:none!important;box-shadow:none!important;border:0!important;
+}
+/* Opponent and player heads are centred within their own HUD cells. */
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw11-chassis .mw11-hero-core{
+  display:grid!important;grid-template-columns:82px minmax(0,1fr)!important;
+  align-items:center!important;justify-items:center!important;gap:6px!important;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw11-hero-core .hero-portrait-group{
+  justify-self:center!important;align-self:center!important;
+  width:72px!important;min-width:72px!important;height:73px!important;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw11-hero-core .hero-portrait{
+  display:grid;place-items:center;justify-self:center!important;
+  width:69px!important;height:70px!important;min-width:69px!important;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw11-hero-core .hero-identity{
+  justify-self:stretch;align-self:center;text-align:center;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw11-hero-core .hero-label{
+  display:none!important;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw11-chassis .mw11-ability-state,
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw11-chassis .mw11-weapon-caption{
+  display:none!important;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw11-chassis .hero-resources>span{
+  display:none!important; /* old verbose mana/deck text; same numbers remain live in dedicated counters */
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw11-chassis .hero-resources{
+  justify-content:center!important;
+}
+/* Moving the mana chip to the opposite (right) side of lower hero HUD. */
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw16-mana-counter{
+  position:absolute;z-index:23;right:clamp(-138px,-9vw,-92px);bottom:24px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  min-width:92px;height:60px;padding:4px 10px;
+  border:2px ridge #e2b76e;border-radius:18px;
+  background:linear-gradient(125deg,#132c44f5,#17384bdc 63%,#101c2afa);
+  box-shadow:0 7px 17px #000c,inset 0 1px 2px #c5eaff70;
+  color:#e6f3ff;font:800 26px/1 Georgia,serif;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+  pointer-events:none;
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw16-mana-counter .mw16-mana-gem{
+  font-size:22px;color:#55bfff;filter:drop-shadow(0 0 3px #8edaff);
+}
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw16-mana-counter strong{
+  font:inherit;color:inherit;
+}
+/* Separate, temporary opponent-action caption: no permanent clutter on the field. */
+#battleWorkspace .mw16-bot-action{
+  position:absolute;left:50%;top:14%;transform:translateX(-50%);
+  z-index:35;max-width:min(450px,80vw);
+  padding:10px 17px;border:1.5px solid #e6c180;border-radius:12px;
+  background:linear-gradient(115deg,#152938f7,#392a20f2);
+  box-shadow:0 9px 18px #000c;
+  color:#ffe3aa;text-align:center;font:800 18px/1.35 Georgia,serif;
+  text-shadow:0 1px 2px #000;
+  pointer-events:none;
+}
+#battleWorkspace .mw16-bot-action[hidden]{display:none!important}
+#battleWorkspace .mw16-bot-action.is-visible{animation:mw16BotAppear .33s ease-out both}
+@keyframes mw16BotAppear{
+  from{opacity:0;transform:translate(-50%,8px) scale(.95)}
+  to{opacity:1;transform:translate(-50%,0) scale(1)}
+}
+@media(max-width:950px){
+  #battleWorkspace.mw13-2d-layout:not(.mw3d-active) .mw16-mana-counter{
+    right:8px;bottom:161px;min-width:70px;height:43px;font-size:19px;z-index:30;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #battleWorkspace .mw16-bot-action{animation:none!important}
+}

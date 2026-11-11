@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Мифические войны v05.11 RC — игра и единый редактор v05</title>
+<title>Мифические войны v05.16 — новое поле</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="collection-ui-v2.1M1.css">
 
@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="battle-minion-v05S14.css?v=0514b">
 <link rel="stylesheet" href="battle-hand-v05S14.css?v=0514c">
 <link rel="stylesheet" href="card-readability-v05S15.css?v=0515">
+<link rel="stylesheet" href="arena-v05S16.css?v=0516">
 </head>
 <body>
 <div id="app">
@@ -437,6 +438,7 @@
     <div class="battle-quick-actions">
       <button class="btn btn-gold" type="button" id="battleQuickStart">▶ Начать бой</button>
       <button class="btn btn-outline" type="button" id="battleQuickResume">↻ Продолжить</button>
+       <button class="btn btn-outline" type="button" id="battle3DToggle" aria-pressed="false" title="Открыть трёхмерное представление текущей партии">◇ 3D-прототип</button>
       <button class="btn btn-outline" type="button" id="battleArtToggle" aria-pressed="true" title="Показать/скрыть графику поля, не меняя состояние партии">🎨 Арт: вкл</button>
       <button class="btn btn-outline" type="button" id="battleSideToggle" aria-expanded="false" aria-controls="battleSidePanel">☰ Журнал и тесты</button>
     </div>
@@ -448,6 +450,7 @@
   <div class="battle-layout">
     <div class="battle-main">
       <div id="battleSpellReveal" class="mw-spell-reveal" hidden aria-live="off"></div>
+       <div id="mw16BotAction" class="mw16-bot-action" hidden aria-live="polite" role="status"></div>
       <div class="mw-art-deck enemy" id="mwArtBotDeck" role="img" aria-label="Колода соперника: число карт">
         <strong id="mwArtBotDeckCount">—</strong><small>Колода</small></div>
       <div class="mw-art-deck player" id="mwArtMyDeck" role="img" aria-label="Моя колода: число карт">
@@ -513,7 +516,8 @@
             <span id="myStats">0 маны</span>
           </div>
         </div>
-        <div id="myHand" class="battle-hand" aria-label="Моя рука"></div>
+        <div id="battleManaCounter" class="mw16-mana-counter" role="status" aria-label="Мана игрока"><span class="mw16-mana-gem" aria-hidden="true">◆</span><strong id="battleManaValue">0/0</strong></div>
+         <div id="myHand" class="battle-hand" aria-label="Моя рука"></div>
       </div>
       <div class="battle-actions">
         <span id="battleActionHint">Наведите на карту, чтобы прочитать описание; зелёная рамка — можно разыграть. Перетащите на подсвеченную цель или нажмите карту.</span>
@@ -803,7 +807,7 @@
 <script src="app.js"></script>
 <script src="deck-model.js"></script>
 <script src="deck-sheet-import.js"></script>
-<script src="battle-engine.js"></script>
+<script src="battle-engine.js?v=0516"></script>
 <script src="battle-replay.js"></script>
 <script src="card-audit.js"></script>
 <script src="battle-lab.js"></script>
@@ -815,17 +819,18 @@
 <script src="v05-art-store.js"></script>
 <script src="battle-minion-portrait-v05S14.js?v=0514a"></script>
 <script src="battle-minion-status-v05S14.js?v=0514b"></script>
-<script src="battle-v05-card-bridge.js?v=0514a"></script>
+<script src="v05-card-visual-polish.js?v=0516"></script>
+<script src="battle-v05-card-bridge.js?v=0516"></script>
 <script src="battle-card-renderer-v2.1C.js?v=0515"></script>
 <script src="battle-hand-v05S14.js?v=0515"></script>
 <script src="arena-art-v2.1D.js"></script>
 <script src="arena-3d-math-v2.1H.js"></script>
-<script src="arena-3d-v2.1H.js?v=0510"></script>
+<script src="arena-3d-v2.1H.js?v=0516"></script>
 <script src="hero-hud-v05S11.js?v=0511"></script>
-<script src="deckgame.js?v=0515"></script>
+<script src="deckgame.js?v=0516"></script>
 <script src="deck-sheet-ui.js"></script>
 <script src="collection-ui-v2.1M1.js"></script>
 
-<script src="arena-layout-v05S13.js?v=0513b"></script>
+<script src="arena-layout-v05S13.js?v=0516"></script>
 </body>
 </html>

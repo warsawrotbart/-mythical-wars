@@ -4,7 +4,7 @@
  */
 (function(global){
   'use strict';
-  const KEY='mw-v0513-battle-layout';
+  // Only the new 2D battlefield remains available; WebGL 3D is separate.
   function fanPlan(count,stepCap=4.25){
     const n=Math.max(0,Math.min(128,Math.trunc(Number(count)||0)));
     const center=(n-1)/2;
@@ -23,15 +23,11 @@
     const wanted=n>7?-28:-17;
     return Math.max(-width+34,Math.min(wanted,(spaceWidth-width*n)/(n-1)-4));
   }
-  const api={fanPlan,overlapFor,storageKey:KEY};
+  const api={fanPlan,overlapFor};
   if(typeof module==='object'&&module.exports)module.exports=api;
   const doc=global.document;
   if(!doc||typeof doc.querySelector!=='function')return;
-  let workspace=null,button=null,enabled=true,observer=null,resizeObserver=null,queued=false;
-  function readPreference(){
-    try{return global.localStorage?.getItem(KEY)!=='classic';}catch(_){return true;}
-  }
-  function savePreference(){try{global.localStorage?.setItem(KEY,enabled?'new':'classic');}catch(_){/* transient storage, still usable */}}
+  let workspace=null,enabled=true,observer=null,resizeObserver=null,queued=false;
   function syncHand(){
     if(!workspace)return;
     const hand=doc.getElementById('myHand');
@@ -62,33 +58,16 @@
     const raf=global.requestAnimationFrame||((fn)=>fn());
     raf(()=>{queued=false;syncHand();});
   }
-  function applyMode(next,persist=true){
-    enabled=!!next;
-    workspace?.classList.toggle('mw13-2d-layout',enabled);
-    if(button){
-      button.setAttribute('aria-pressed',String(enabled));
-      button.textContent=enabled?'▣ Поле: новое':'▣ Поле: классика';
-      button.title='Переключить только оформление 2D-поля. Правила и текущая партия сохраняются.';
-    }
-    if(persist)savePreference();
+  function applyMode(){
+    enabled=true;
+    workspace?.classList.add('mw13-2d-layout');
     schedule();
-    return enabled;
+    return true;
   }
   function init(){
     if(workspace)return;
-    workspace=doc.getElementById('battleWorkspace');
-    const actions=workspace?.querySelector('.battle-quick-actions');
-    if(!workspace||!actions){workspace=null;return;}
-    button=doc.getElementById('battleLayoutToggle');
-    if(!button){
-      button=doc.createElement('button');
-      button.type='button';button.id='battleLayoutToggle';
-      button.className='btn btn-outline';
-      const art=doc.getElementById('battleArtToggle');
-      if(art?.parentNode===actions)art.insertAdjacentElement('afterend',button);
-      else actions.appendChild(button);
-    }
-    button.addEventListener('click',()=>applyMode(!enabled));
+    workspace=doc.getElementById('battleWorkspace');    if(!workspace)return;
+    doc.getElementById('battleLayoutToggle')?.remove?.();
     if(typeof global.MutationObserver==='function'){
       observer=new global.MutationObserver(()=>schedule());
       for(const id of ['myHand','botHand']){
@@ -101,7 +80,7 @@
       const hand=doc.getElementById('myHand');if(hand)resizeObserver.observe(hand);
     }
     global.addEventListener?.('resize',schedule,{passive:true});
-    applyMode(readPreference(),false);
+    applyMode();
   }
   Object.assign(api,{init,syncHand,applyMode,getState:()=>({enabled,ready:!!workspace})});
   global.MW_ARENA_V05S13=api;

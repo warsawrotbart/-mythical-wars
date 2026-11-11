@@ -53,9 +53,12 @@ stage.innerHTML=`
 const workspace=$("battleWorkspace"),layout=workspace?.querySelector(".battle-layout");
 if(!layout||!M)return;
 layout.prepend(stage);
-const toggle=document.createElement("button");toggle.id="battle3DToggle";toggle.type="button";
-toggle.className="btn btn-outline";toggle.textContent="◇ 3D-прототип";toggle.setAttribute("aria-pressed","false");
-workspace.querySelector(".battle-quick-actions")?.append(toggle);
+// A persistent, visible 3D action now lives next to Start/Resume.
+const toggle=$("battle3DToggle")||document.createElement("button");
+if(!toggle.id)toggle.id="battle3DToggle";
+toggle.type="button";toggle.classList.add("btn","btn-outline");
+toggle.textContent="◇ 3D-прототип";toggle.setAttribute("aria-pressed","false");
+if(!toggle.isConnected)workspace.querySelector(".battle-quick-actions")?.prepend(toggle);
 const canvas=$("mw3dCanvas"),labels=$("mw3dLabels"),B=()=>global.MW_BATTLE_VIEW_BRIDGE,E=()=>global.MW_GAME_ENGINE;
 const reduced=global.matchMedia?.("(prefers-reduced-motion: reduce)");
 let enabled=false,gl=null,program=null,geo=null,uniforms=null,attributes=null;

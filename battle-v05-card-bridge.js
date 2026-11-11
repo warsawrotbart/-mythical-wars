@@ -107,15 +107,21 @@ function fonts(){
  })();return fontPromise;
 }
 function inkCenteredNumber(ctx,text,bind,manifest){
- const [x,y]=bind.center;
- const px=read(text).length>1?bind.two_digit_font_px:bind.font_px;
+ const [baseX,baseY]=bind.center;
+ // Match attack, health, and weapon durability in one visual plane.
+ // The approved numeric values and source icon assets are unchanged.
+ const bottom=["attack","health","durability"].includes(bind.field);
+ const px=bottom?(read(text).length>1?88:102):(read(text).length>1?bind.two_digit_font_px:bind.font_px);
+ const y=bottom?1400:baseY;
  ctx.save();ctx.textAlign="center";ctx.textBaseline="alphabetic";
  ctx.font=`700 ${px}px "MWv05Text", "DejaVu Serif", Georgia, serif`;
  const metrics=ctx.measureText(text);
- // Position by the ink bounds rather than a font-dependent 'middle' baseline.
  const ascent=metrics.actualBoundingBoxAscent||px*.72;
  const descent=metrics.actualBoundingBoxDescent||px*.09;
  const baseline=y+(ascent-descent)/2;
+ const left=Number.isFinite(metrics.actualBoundingBoxLeft)?metrics.actualBoundingBoxLeft:metrics.width/2;
+ const right=Number.isFinite(metrics.actualBoundingBoxRight)?metrics.actualBoundingBoxRight:metrics.width/2;
+ const x=baseX+(left-right)/2;
  ctx.fillStyle=manifest.text_rules.numbers.fill;
  ctx.strokeStyle=manifest.text_rules.numbers.outline;
  ctx.lineWidth=manifest.text_rules.numbers.outline_px*2;
@@ -128,8 +134,14 @@ function inkCenteredTitle(ctx,card,model,m){
  ctx.fillStyle="#ffdf9c";ctx.strokeStyle="#351920";ctx.lineJoin="round";
  ctx.lineWidth=3.5;ctx.font=`700 ${model.title.px}px "MWv05Text", "DejaVu Serif", Georgia, serif`;
  const [x,y]=m.text_anchors.title;
- ctx.strokeText(card.name,x,y,m.text_regions.title[2]-m.text_regions.title[0]);
- ctx.fillText(card.name,x,y,m.text_regions.title[2]-m.text_regions.title[0]);ctx.restore();
+ const arc=root.MW_V05_CARD_POLISH;
+ if(arc?.drawCurvedTitle)
+   arc.drawCurvedTitle(ctx,card.name,[x,y],m.text_regions.title[2]-m.text_regions.title[0]);
+ else{
+   ctx.strokeText(card.name,x,y,m.text_regions.title[2]-m.text_regions.title[0]);
+   ctx.fillText(card.name,x,y,m.text_regions.title[2]-m.text_regions.title[0]);
+ }
+ ctx.restore();
 }
 function drawLabels(ctx,card,m,core){
  const model=core.analyzeText(card,m,ctx);

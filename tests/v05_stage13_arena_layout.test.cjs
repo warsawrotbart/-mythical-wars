@@ -7,11 +7,11 @@ const root=path.resolve(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const css=fs.readFileSync(path.join(root,'arena-layout-v05S13.css'),'utf8');
 const js=fs.readFileSync(path.join(root,'arena-layout-v05S13.js'),'utf8');
-const {fanPlan,overlapFor,storageKey}=require(path.join(root,'arena-layout-v05S13.js'));
+const {fanPlan,overlapFor}=require(path.join(root,'arena-layout-v05S13.js'));
 
 test('stage B is actually loaded by the real battle entrypoint after legacy HUD',()=>{
  assert.match(html,/<link[^>]+href="arena-layout-v05S13\.css\?v=0513b"/);
- assert.match(html,/<script[^>]+src="arena-layout-v05S13\.js\?v=0513b"/);
+ assert.match(html,/<script[^>]+src="arena-layout-v05S13\.js\?v=0516"/);
  assert.ok(html.indexOf('hero-hud-v05S11.css')<html.indexOf('arena-layout-v05S13.css'));
  assert.ok(html.indexOf('hero-hud-v05S11.js')<html.indexOf('arena-layout-v05S13.js'));
 });
@@ -20,12 +20,12 @@ test('live game objects and hooks remain on the battle page, exactly once',()=>{
  for(const id of ['battleWorkspace','botBoard','myBoard','botHand','myHand','botHeroPortrait','myHeroPortrait','botHeroPower','myHeroPower','botEquippedWeapon','myEquippedWeapon','battleClock','battleTurnInfo','mwArtBotDeckCount','mwArtMyDeckCount','battleEndTurn']){
   assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,id);
  }
- assert.match(html,/src="battle-engine\.js"/);
- assert.match(html,/src="battle-card-renderer-v2\.1C\.js\?v=(?:0510|0514a|0514b|0515)"/);
+ assert.match(html,/src="battle-engine\.js\?v=0516"/);
+ assert.match(html,/src="battle-card-renderer-v2\.1C\.js\?v=(?:0510|0514a|0514b|0515|0516)"/);
  assert.doesNotMatch(html,/v05-template-editor\.js/);
 });
 
-test('scope limits new styles to optional battle 2D, preserving 3D and classic mode',()=>{
+test('new 2D field is isolated from the independent 3D view',()=>{
  assert.match(css,/#battleWorkspace\.mw13-2d-layout:not\(\.mw3d-active\)/);
  assert.doesNotMatch(css,/(?:#mw3dStage|MW_GAME_ENGINE|\.mw11-stage-hud)/);
  assert.match(css,/grid-template-rows:minmax\(0,43fr\) 7px minmax\(0,57fr\)/);
@@ -44,11 +44,11 @@ test('fan positioning uses live DOM elements, never game state or HTML replaceme
  assert.equal(overlapFor(1,500,112),0);
  assert.ok(overlapFor(10,800,112)<-17);
  assert.ok(overlapFor(10,800,112)>-112);
- assert.equal(storageKey,'mw-v0513-battle-layout');
  assert.match(js,/MutationObserver/);
  assert.match(js,/childList:true/);
- assert.match(js,/aria-pressed/);
- assert.match(js,/localStorage/);
+ assert.match(js,/classList\.add\('mw13-2d-layout'\)/);
+ assert.doesNotMatch(js,/setItem\(/);
+ assert.doesNotMatch(js,/button\.addEventListener\('click'/);
  for(const pattern of [/\.innerHTML\s*=/,/\.onclick\s*=/,/MW_GAME_ENGINE\s*=/,/game\.players/])assert.doesNotMatch(js,pattern);
 });
 

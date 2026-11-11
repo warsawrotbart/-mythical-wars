@@ -1,10 +1,10 @@
 /* Mythical Wars v05.13 Stage B — gameplay 2D composition.
- * A presentation-only, reversible CSS layer above v05.11 Hero HUD + v05.12 editor.
+ * A presentation-only, permanent 2D CSS layer above v05.11 Hero HUD + v05.12 editor.
  * Existing DOM, IDs, engine, cards, artifacts, and handlers are unchanged.
  * Reference composition: side-mounted heroes, two seven-slot lines, bottom hand fan.
  * Original game art is reused. No third-party reference illustration is bundled.
  */
-@media (min-width:1200px) and (min-height:700px) {
+@media (min-width:900px) {
  #battleWorkspace.mw13-2d-layout:not(.mw3d-active) {
    --mw13-left:clamp(210px,17.5vw,240px);
    --mw13-right:clamp(154px,12.4vw,174px);

@@ -1320,7 +1320,7 @@ function botAttackScore(s,o,attacker,target,hero=false){
    (defender.taunt?2:0)+Math.min(trueDamage,defender.health)*.25-
    (dies?hero?12:6+effectiveAttack(s,attacker):0);
 }
-function runBotTurn(s,o=1){
+function* botTurnFrames(s,o=1){
  if(s.phase!=="battle"||s.turn!==o)return {ok:false,reason:"Не ход управляемого игрока."};
  const p=player(s,o),actions=[];
  // Если летальная атака уже доступна без провокации, не тратим ману прежде неё.
@@ -1333,11 +1333,11 @@ function runBotTurn(s,o=1){
    for(const m of lethalAttackers){
      if(s.phase!=="battle")break;
      const r=attack(s,o,m.uid,{kind:"hero",owner:other(o)});
-     if(r.ok)actions.push({type:"attack",target:"hero",lethal:true});
+     if(r.ok){actions.push({type:"attack",target:"hero",lethal:true});yield actions[actions.length-1];}
    }
    if(s.phase==="battle"&&p.weapon&&!p.heroAttacked){
      const r=attack(s,o,null,{kind:"hero",owner:other(o)},true);
-     if(r.ok)actions.push({type:"attack",target:"hero",lethal:true});
+     if(r.ok){actions.push({type:"attack",target:"hero",lethal:true});yield actions[actions.length-1];}
    }
    if(s.phase==="ended")return {ok:true,actions};
  }
@@ -1353,7 +1353,7 @@ function runBotTurn(s,o=1){
   for(const option of options){
    const decisions=option.status.choice?botChoices(option.status.choice):null;
    const result=playCard(s,o,option.h.uid,option.target,decisions);
-   if(result.ok){played=true;actions.push({type:"play",cardId:option.h.cardId});break;}
+   if(result.ok){played=true;actions.push({type:"play",cardId:option.h.cardId});yield actions[actions.length-1];break;}
   }
   if(!played)break;
  }
@@ -1364,7 +1364,7 @@ function runBotTurn(s,o=1){
    humans.sort((a,b)=>effectiveAttack(s,b)-effectiveAttack(s,a));
    const target=power.targeted&&humans.length?{kind:"minion",owner:o,uid:humans[0].uid}:null;
    const result=useHeroPower(s,o,target);
-   if(result.ok)actions.push({type:"hero-power",id:result.id});
+   if(result.ok){actions.push({type:"hero-power",id:result.id});yield actions[actions.length-1];}
   }
   const attackers=[...p.board.filter(m=>m.ready&&!m.attacked&&!m.timed.some(t=>t.kind==="frozen"))
     .map(m=>({uid:m.uid,hero:false}))];
@@ -1378,11 +1378,19 @@ function runBotTurn(s,o=1){
    opts.sort((x,y)=>botAttackScore(s,o,self,y,a.hero)-botAttackScore(s,o,self,x,a.hero));
    const goal=opts[0];
    const result=attack(s,o,a.uid,goal,a.hero);
-   if(result.ok)actions.push({type:"attack",target:goal.kind,uid:goal.uid||null});
+   if(result.ok){actions.push({type:"attack",target:goal.kind,uid:goal.uid||null});yield actions[actions.length-1];}
   }
  }
  if(s.phase==="battle")endTurn(s,o);
  return {ok:true,actions};
+}
+function runBotTurn(s,o=1){
+ // The published synchronous API drains the same strategic iterator.
+ // RNG calls, decisions, state mutations and the returned actions stay identical.
+ const steps=botTurnFrames(s,o);
+ let next=steps.next();
+ while(!next.done)next=steps.next();
+ return next.value;
 }
 // --- 2.0: safe, versioned battle snapshots and explicit developer-only tools ---
 const BATTLE_SAVE_FORMAT="mythical-wars-battle";
@@ -1492,7 +1500,7 @@ return {
  makeGame,confirmMulligan,startTurn,endTurn,draw,playCard,attack,actionStatus,
  exportBattle,importBattle,setDeveloperMode,debugAction,eventJournal,
  eligibleAttackTargets,effectiveAttack,incomingMultiplier,phaseOfHour,isBright,currentCost,
- spellTargetType,targetValid,chooseTargetForBot,runBotTurn,abilitySupport,
+ spellTargetType,targetValid,chooseTargetForBot,runBotTurn,botTurnFrames,abilitySupport,
  choiceSpec,validateChoices,botChoices,
  heroPowerStatus,heroPowerTargetValid,useHeroPower,graveyardView,graveyardSummary,localBright,
  SUPPORTED_SPELLS,SUPPORTED_CREATURES,SUPPORTED_WEAPONS,TOKEN_DATA,ZAV_IDS,igniteHands,cleanseKnownNegativeEffects

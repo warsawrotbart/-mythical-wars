@@ -1,0 +1,17 @@
+{
+  "checks": [
+    "2D hero HUD built for both players",
+    "3D hero HUD built for both players",
+    "health and armor show authoritative game values",
+    "weapon slot remains visible while empty",
+    "ability name and mana cost appear separately",
+    "hero portrait decodes from included art",
+    "ready, insufficient mana and already-used power states come from the engine",
+    "equipped weapon reflects attack and durability in 2D and 3D",
+    "all three 2D control groups fit at 1366x768",
+    "3D overlay hero/weapon/ability layout fits and renders portraits",
+    "no browser JavaScript exceptions"
+  ],
+  "errors": [],
+  "count": 11
+}

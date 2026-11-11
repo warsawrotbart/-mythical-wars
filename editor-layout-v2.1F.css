@@ -1,0 +1,54 @@
+/* v2.1F · editor-only UI. No gameplay selectors. */
+.right-sidebar .mw-editor-tabs{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:39px;
+ flex-shrink:0;gap:2px;padding:7px;background:#101b28;border-bottom:1px solid #37465b;
+}
+.right-sidebar .mw-editor-tabs .tab{
+ min-width:0;border:1px solid transparent;border-radius:6px;
+ padding:6px 2px;font-size:11px;line-height:1.1;font-weight:700;
+ color:#9eabb8;letter-spacing:0;white-space:normal;
+}
+.right-sidebar .mw-editor-tabs .tab:hover{background:#21354a;color:#f3dfbd}
+.right-sidebar .mw-editor-tabs .tab.active{
+ background:#33465c;border-color:#a88956;color:#ffe0a7;
+ box-shadow:inset 0 0 0 1px #5b472e
+}
+.right-sidebar .right-content{padding:18px 15px 28px}
+.right-sidebar .mw-editor-panel:not(.hidden){display:block}
+.right-sidebar .mw-editor-panel.hidden{display:none!important}
+.right-sidebar .mw-editor-panel .field select{
+ background:#192736;color:#e8edf2;border:1px solid #394c60;
+ border-radius:6px;min-height:37px;width:100%;padding:8px 10px;
+}
+.right-sidebar .mw-editor-panel .field input[type="range"]{width:100%;accent-color:#d9b075}
+.right-sidebar .mw-editor-panel .field input[type="number"]{min-width:0;width:100%;box-sizing:border-box}
+.right-sidebar .mw-editor-panel .field-grid{align-items:start}
+.right-sidebar .mw-editor-panel .field-grid.thirds{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.right-sidebar .mw-editor-panel .field-grid.thirds .field label{font-size:10px}
+.mw-theme-preview{
+ display:flex;gap:13px;align-items:center;background:#152433;
+ border:1px solid #394958;border-radius:10px;padding:11px;margin-bottom:14px
+}
+.mw-theme-preview img{
+ width:76px;aspect-ratio:2/3;object-fit:contain;flex-shrink:0;
+ border-radius:5px;background:repeating-conic-gradient(#34414c 0% 25%,#283441 0% 50%) 50% / 14px 14px
+}
+.mw-theme-preview p{font-size:11px;line-height:1.5;color:#c4d0d8;margin:0}
+.mw-hint-list{display:grid;gap:8px;margin:10px 0}
+.mw-hint-list span{display:block;padding:8px 10px;font-size:11px;
+ background:#172738;border-left:3px solid #ba905a;border-radius:3px;color:#d9e1e5}
+.mw-checkbox-label{
+ display:flex;align-items:center;gap:9px;margin:10px 0 14px;
+ color:#d3dfeb;font-size:11px;line-height:1.4;cursor:pointer
+}
+.mw-checkbox-label input{accent-color:#c7a36b}
+.mw-fixed-width-note{
+ padding:11px 12px;margin:12px 0 14px;
+ border:1px solid #506477;border-radius:7px;background:#172a3b;
+ color:#d0dee9;line-height:1.55;font-size:11px
+}
+.mw-decor-options{margin:14px 0;border-top:1px solid #405164;padding:8px 0}
+#titleFitStatus{margin:10px 0 16px;min-height:35px}
+#titleFitStatus.warn{color:#f6be85}
+#exportTab button{margin:14px 0}
+@media(max-width:1160px){.right-sidebar .mw-editor-tabs .tab{font-size:10px}}

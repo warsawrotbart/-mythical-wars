@@ -1,0 +1,13 @@
+{
+  "project": "MW Mythical Wars",
+  "build": "v2.1M.2 + v05.6 RC",
+  "target": "GitHub Pages (static)",
+  "based_on": "MW_Mythical_Wars_v2.1M.2_v05.6_STAGE6_RC_Windows.zip",
+  "created_on": "2026-11-10",
+  "main_entry": "index.html",
+  "editor_entry": "v05-dynamic.html",
+  "studio_entry": "v05-studio.html",
+  "google_sheets_backend_included": false,
+  "v05_manifest_sha256": "190371ce21046ba4530b9cb93b374292645218f4fcbe0a0f7e5ff0e529f5529f",
+  "status": "release candidate; live GitHub Pages smoke unverified"
+}

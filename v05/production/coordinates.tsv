@@ -1,0 +1,15 @@
+Элемент	X	Y	Ширина	Высота
+Mana	24	32	240	240
+Time	704	920	120	120
+Race	572	920	120	120
+Attack	32	1270	216	232
+Health_Durability	776	1270	216	232
+Armor	864	1112	112	128
+Rarity	456	830	112	140
+Class_Badge	200	920	120	120
+Subtype_Badge	332	920	120	120
+Rarity_Decor	320	868	384	64
+Description_Divider	292	1310	440	24
+Header_Divider_Creature	208	1050	608	32
+Header_Divider_Other	208	1018	608	32
+Attack_Creature	12	1248	272	272

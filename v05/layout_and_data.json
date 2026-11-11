@@ -1,0 +1,478 @@
+{
+  "version": "templates_v05",
+  "canvas": [
+    1024,
+    1536
+  ],
+  "source_sheet": "https://docs.google.com/spreadsheets/d/1R8VdNxiRgrvQLbToHcegzOGVNaUPEFxauaGS21ZZfFU/edit",
+  "status": "Послойная сборка утверждённой композиции v05. Примеры используют тестовые арты; интеграция в редактор — отдельный этап.",
+  "slots": {
+    "Mana": [
+      24,
+      32,
+      240,
+      240
+    ],
+    "Time": [
+      704,
+      920,
+      120,
+      120
+    ],
+    "Race": [
+      572,
+      920,
+      120,
+      120
+    ],
+    "Attack": [
+      32,
+      1270,
+      216,
+      232
+    ],
+    "Health_Durability": [
+      776,
+      1270,
+      216,
+      232
+    ],
+    "Armor": [
+      864,
+      1112,
+      112,
+      128
+    ],
+    "Rarity": [
+      456,
+      830,
+      112,
+      140
+    ],
+    "Class_Badge": [
+      200,
+      920,
+      120,
+      120
+    ],
+    "Subtype_Badge": [
+      332,
+      920,
+      120,
+      120
+    ],
+    "Rarity_Decor": [
+      320,
+      868,
+      384,
+      64
+    ],
+    "Description_Divider": [
+      292,
+      1310,
+      440,
+      24
+    ],
+    "Header_Divider_Creature": [
+      208,
+      1050,
+      608,
+      32
+    ],
+    "Header_Divider_Other": [
+      208,
+      1018,
+      608,
+      32
+    ],
+    "Attack_Creature": [
+      12,
+      1248,
+      272,
+      272
+    ]
+  },
+  "number_centers": {
+    "mana": [
+      144,
+      152
+    ],
+    "creature_attack": [
+      170,
+      1404
+    ],
+    "weapon_attack": [
+      140,
+      1410
+    ],
+    "health_durability": [
+      884,
+      1398
+    ],
+    "armor": [
+      920,
+      1178
+    ]
+  },
+  "text_regions": {
+    "title": [
+      174,
+      752,
+      850,
+      849
+    ],
+    "description": [
+      162,
+      1096,
+      862,
+      1296
+    ],
+    "flavor": [
+      284,
+      1338,
+      740,
+      1398
+    ],
+    "description_by_type": {
+      "Creature": [
+        162,
+        1096,
+        862,
+        1296
+      ],
+      "Weapon": [
+        162,
+        1064,
+        862,
+        1272
+      ],
+      "Spell": [
+        162,
+        1064,
+        862,
+        1272
+      ]
+    }
+  },
+  "type_rules": {
+    "Creature": {
+      "art": "oval",
+      "attack": "Attack_Creature",
+      "health": "Health",
+      "time": "from_data",
+      "race": "from_data",
+      "subtype": "icon_only_when_data_exists",
+      "armor": "only_if_explicit_value",
+      "attack_slot": "Attack_Creature",
+      "class_flag": false,
+      "class_badge": true
+    },
+    "Weapon": {
+      "art": "circle",
+      "attack": "Attack_Weapon",
+      "durability": "Durability",
+      "time": false,
+      "race": false,
+      "subtype": "icon_only_when_data_exists",
+      "armor": false,
+      "attack_slot": "Attack",
+      "class_flag": false,
+      "rarity_side_decor": true
+    },
+    "Spell": {
+      "art": "rounded_rectangle",
+      "attack": false,
+      "health": false,
+      "durability": false,
+      "time": false,
+      "race": false,
+      "school": "only_if_explicit_value",
+      "subtype": "icon_only_when_data_exists",
+      "class_flag": false,
+      "rarity_side_decor": true
+    }
+  },
+  "text_rules": {
+    "title": {
+      "font": "DejaVuSerif-Bold.ttf",
+      "max_px": 48,
+      "min_px": 30,
+      "lines": 1,
+      "overflow": "report_error"
+    },
+    "description": {
+      "font": "DejaVuSerif.ttf",
+      "max_px": 42,
+      "min_px": 32,
+      "line_spacing_ratio": 1.18,
+      "overflow": "report_error_no_truncation"
+    },
+    "numbers": {
+      "font": "DejaVuSerif-Bold.ttf",
+      "one_digit_px": 94,
+      "two_digits_px": 80,
+      "fill": "#fff3d7",
+      "outline": "#21180f",
+      "outline_px": 5,
+      "creature_attack_px": 108,
+      "mana_px": 108
+    }
+  },
+  "cards": [
+    {
+      "data": {
+        "id": "KNZ-019",
+        "name": "ФАКЕЛЬШЧЫК ДРУЖЫНЫ",
+        "type": "Creature",
+        "class": "Воин",
+        "cost": "4",
+        "resource": "Мана",
+        "attack": "3",
+        "health": "5",
+        "durability": null,
+        "armor": null,
+        "time": "Ноч",
+        "race": "Чалавек",
+        "subtype": "Дружына",
+        "rarity": "Редкая (синяя)",
+        "school": null,
+        "description": "Пакуль гэтая істота на полі бою, суседнія дружалюбныя істоты тыпу «Чалавек» дзейнічаюць так, нібы цяпер Дзень.",
+        "flavor_text": null,
+        "art_status": "тестовый вариант",
+        "art_source_drive_url": "https://drive.google.com/file/d/1oLbj65Zn0mHMG4D_A0AIa2IbuT5MiNx8/view?usp=drivesdk"
+      },
+      "metrics": {
+        "title_size_px": 40,
+        "description_size_px": 40,
+        "description_lines": [
+          "Пакуль гэтая істота на полі бою,",
+          "суседнія дружалюбныя істоты",
+          "тыпу «Чалавек» дзейнічаюць",
+          "так, нібы цяпер Дзень."
+        ],
+        "flavor_visible": false
+      },
+      "output": "KNZ-019/KNZ-019_card_v05.png",
+      "layers_bottom_to_top": [
+        "KNZ-019/layers/00_embossed_backing.png",
+        "KNZ-019/layers/01_art.png",
+        "KNZ-019/layers/02_fixed_base.png",
+        "KNZ-019/layers/03_mana_icon.png",
+        "KNZ-019/layers/06_time_art.png",
+        "KNZ-019/layers/07_time_frame.png",
+        "KNZ-019/layers/08_Race_Background.png",
+        "KNZ-019/layers/08_Race_Human_Symbol.png",
+        "KNZ-019/layers/08_Race_Frame.png",
+        "KNZ-019/layers/09_class_Badge_Dark_Background.png",
+        "KNZ-019/layers/09_class_Badge_Class_Warrior_Symbol.png",
+        "KNZ-019/layers/09_class_Badge_Common_Frame.png",
+        "KNZ-019/layers/10_subtype_Subtype_Druzhyna_Background.png",
+        "KNZ-019/layers/10_subtype_Subtype_Druzhyna_Symbol.png",
+        "KNZ-019/layers/10_subtype_Badge_Common_Frame.png",
+        "KNZ-019/layers/11_attack_icon.png",
+        "KNZ-019/layers/12_Health.png",
+        "KNZ-019/layers/13_Rarity_Blue.png",
+        "KNZ-019/layers/13_Rarity_Mount.png",
+        "KNZ-019/layers/14_header_divider.png",
+        "KNZ-019/layers/20_title_text.png",
+        "KNZ-019/layers/22_description_text.png",
+        "KNZ-019/layers/24_description_divider.png",
+        "KNZ-019/layers/25_optional_flavor_text.png",
+        "KNZ-019/layers/23_number_mana.png",
+        "KNZ-019/layers/23_number_attack.png",
+        "KNZ-019/layers/23_number_health.png"
+      ],
+      "art_mask": "KNZ-019/art_mask.png",
+      "base_sha256": "5b90d4a07443c80a215fe9af6fadbeed1c35592809b1b738fdb9d794a3320d67",
+      "checks": {
+        "size": [
+          1024,
+          1536
+        ],
+        "description_unabridged": true,
+        "no_invented_armor": true,
+        "no_invented_school": true,
+        "time_race_only_for_creature": true,
+        "base_source_unchanged": true
+      }
+    },
+    {
+      "data": {
+        "id": "KNZ-006",
+        "name": "КНЯЖАЦКІ МЕЧ",
+        "type": "Weapon",
+        "class": "Воин",
+        "cost": "4",
+        "resource": "Мана",
+        "attack": "4",
+        "health": null,
+        "durability": "2",
+        "armor": null,
+        "time": "—",
+        "race": "—",
+        "subtype": "—",
+        "rarity": "Редкая (синяя)",
+        "school": null,
+        "description": "Баявы кліч: усе вашы Дружыннікі атрымліваюць +2 да атакі.",
+        "flavor_text": null,
+        "art_status": "тестовый вариант",
+        "art_source_drive_url": "https://drive.google.com/file/d/1eqq9yQPVFkpplWxqFqmyGuaLwGDj6bYP/view?usp=drivesdk"
+      },
+      "metrics": {
+        "title_size_px": 48,
+        "description_size_px": 42,
+        "description_lines": [
+          "Баявы кліч: усе вашы",
+          "Дружыннікі атрымліваюць +2",
+          "да атакі."
+        ],
+        "flavor_visible": false
+      },
+      "output": "KNZ-006/KNZ-006_card_v05.png",
+      "layers_bottom_to_top": [
+        "KNZ-006/layers/00_embossed_backing.png",
+        "KNZ-006/layers/01_art.png",
+        "KNZ-006/layers/02_fixed_base.png",
+        "KNZ-006/layers/03_mana_icon.png",
+        "KNZ-006/layers/10_rarity_side_decor.png",
+        "KNZ-006/layers/11_attack_icon.png",
+        "KNZ-006/layers/12_Durability.png",
+        "KNZ-006/layers/13_Rarity_Blue.png",
+        "KNZ-006/layers/13_Rarity_Mount.png",
+        "KNZ-006/layers/14_header_divider.png",
+        "KNZ-006/layers/20_title_text.png",
+        "KNZ-006/layers/22_description_text.png",
+        "KNZ-006/layers/24_description_divider.png",
+        "KNZ-006/layers/25_optional_flavor_text.png",
+        "KNZ-006/layers/23_number_mana.png",
+        "KNZ-006/layers/23_number_attack.png",
+        "KNZ-006/layers/23_number_durability.png"
+      ],
+      "art_mask": "KNZ-006/art_mask.png",
+      "base_sha256": "e8209fd1938ee1edbaa2addd1594ebb8b0e353e7088cbbc89400f9c864d370d9",
+      "checks": {
+        "size": [
+          1024,
+          1536
+        ],
+        "description_unabridged": true,
+        "no_invented_armor": true,
+        "no_invented_school": true,
+        "time_race_only_for_creature": true,
+        "base_source_unchanged": true
+      }
+    },
+    {
+      "data": {
+        "id": "KNZ-014",
+        "name": "КНЯЖАЦКІ ПРЫСУД",
+        "type": "Spell",
+        "class": "Воин",
+        "cost": "3",
+        "resource": "Мана",
+        "attack": null,
+        "health": null,
+        "durability": null,
+        "armor": null,
+        "time": "—",
+        "race": "—",
+        "subtype": "—",
+        "rarity": "Редкая (синяя)",
+        "school": null,
+        "description": "Наносіць 3 уроны варожай істоце. Калі ваш герой узброены — наносіць 5.",
+        "flavor_text": null,
+        "art_status": "тестовый вариант",
+        "art_source_drive_url": "https://drive.google.com/file/d/1IcH3WXCfp8zLWeYAMKU2_RkiYmZzdNm_/view?usp=drivesdk"
+      },
+      "metrics": {
+        "title_size_px": 48,
+        "description_size_px": 42,
+        "description_lines": [
+          "Наносіць 3 уроны варожай",
+          "істоце. Калі ваш герой",
+          "узброены — наносіць 5."
+        ],
+        "flavor_visible": false
+      },
+      "output": "KNZ-014/KNZ-014_card_v05.png",
+      "layers_bottom_to_top": [
+        "KNZ-014/layers/00_embossed_backing.png",
+        "KNZ-014/layers/01_art.png",
+        "KNZ-014/layers/02_fixed_base.png",
+        "KNZ-014/layers/03_mana_icon.png",
+        "KNZ-014/layers/10_rarity_side_decor.png",
+        "KNZ-014/layers/13_Rarity_Blue.png",
+        "KNZ-014/layers/13_Rarity_Mount.png",
+        "KNZ-014/layers/14_header_divider.png",
+        "KNZ-014/layers/20_title_text.png",
+        "KNZ-014/layers/22_description_text.png",
+        "KNZ-014/layers/24_description_divider.png",
+        "KNZ-014/layers/25_optional_flavor_text.png",
+        "KNZ-014/layers/23_number_mana.png"
+      ],
+      "art_mask": "KNZ-014/art_mask.png",
+      "base_sha256": "5bbe85dda565b4d7177cc9dd22a253260a1171d69c881f4bde265600b3d9fa94",
+      "checks": {
+        "size": [
+          1024,
+          1536
+        ],
+        "description_unabridged": true,
+        "no_invented_armor": true,
+        "no_invented_school": true,
+        "time_race_only_for_creature": true,
+        "base_source_unchanged": true
+      }
+    }
+  ],
+  "reading_order": [
+    "name",
+    "raised_rarity",
+    "class_subtype_race_time_row_if_creature",
+    "header_divider",
+    "description",
+    "lower_divider",
+    "flavor_if_present"
+  ],
+  "flavor_text_rule": {
+    "optional": true,
+    "source": "explicit_card_data_only",
+    "font": "DejaVuSerif-Italic.ttf",
+    "size_px": 26,
+    "min_px": 24,
+    "max_lines": 2,
+    "overflow": "report_error_no_truncation"
+  },
+  "icon_row_note": "Редкость112×140 поднята над рядом значков. У существа ряд: класс, подтип, промежуток под редкостью, вид, время; четыре круга120×120. У оружия/заклинания рядом с поднятой редкостью декор. Перед описанием верхний разделитель.",
+  "class_flag_visible": false,
+  "base_variant_note": "v03: новая тиснёная подложка; удалены центральные украшения под названием и внизу для переноса единственного кристалла редкости; вышивка на ленте сдвинута к краям для крупного заголовка.",
+  "missing_subtypes": [
+    "KNZ-006",
+    "KNZ-014"
+  ],
+  "new_elements": {
+    "Badge_Common_Frame": "new_elements/Badge_Common_Frame.png",
+    "Badge_Dark_Background": "new_elements/Badge_Dark_Background.png",
+    "Subtype_Druzhyna_Background": "new_elements/Subtype_Druzhyna_Background.png",
+    "Subtype_Druzhyna_Symbol": "new_elements/Subtype_Druzhyna_Symbol.png",
+    "Badge_Class_Warrior_Symbol": "new_elements/Badge_Class_Warrior_Symbol.png",
+    "Badge_Class_Warrior_Preview": "new_elements/Badge_Class_Warrior_Preview.png",
+    "Badge_Class_Warlock_Symbol": "new_elements/Badge_Class_Warlock_Symbol.png",
+    "Badge_Class_Warlock_Preview": "new_elements/Badge_Class_Warlock_Preview.png",
+    "Badge_Class_Necromancer_Symbol": "new_elements/Badge_Class_Necromancer_Symbol.png",
+    "Badge_Class_Necromancer_Preview": "new_elements/Badge_Class_Necromancer_Preview.png",
+    "Badge_Class_Wizard_Symbol": "new_elements/Badge_Class_Wizard_Symbol.png",
+    "Badge_Class_Wizard_Preview": "new_elements/Badge_Class_Wizard_Preview.png",
+    "Badge_Class_Seer_Symbol": "new_elements/Badge_Class_Seer_Symbol.png",
+    "Badge_Class_Seer_Preview": "new_elements/Badge_Class_Seer_Preview.png",
+    "Badge_Class_Conjurer_Symbol": "new_elements/Badge_Class_Conjurer_Symbol.png",
+    "Badge_Class_Conjurer_Preview": "new_elements/Badge_Class_Conjurer_Preview.png",
+    "Badge_Class_Rogue_Symbol": "new_elements/Badge_Class_Rogue_Symbol.png",
+    "Badge_Class_Rogue_Preview": "new_elements/Badge_Class_Rogue_Preview.png",
+    "Badge_Subtype_Druzhyna_Preview": "new_elements/Badge_Subtype_Druzhyna_Preview.png",
+    "Description_Divider": "new_elements/Description_Divider.png",
+    "Header_Divider": "new_elements/Header_Divider.png",
+    "Rarity_Side_Decor": "new_elements/Rarity_Side_Decor.png"
+  },
+  "production_manifest": "production/editor_manifest.json"
+}

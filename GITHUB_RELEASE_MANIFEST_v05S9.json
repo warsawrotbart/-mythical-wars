@@ -1,0 +1,34 @@
+{
+  "version": "v2.1M.2 + v05.9 RC",
+  "type": "static-site-full-repository",
+  "sourceDriveFolder": "https://drive.google.com/drive/folders/1p-B44czFA1G82rFXPz1gcweWDrsl6I3u",
+  "runtimeRecords": 169,
+  "embeddedArt": 99,
+  "withoutArt": 70,
+  "tokenArtsAdded": [
+    "TKN-001",
+    "TKN-002",
+    "TKN-003",
+    "TKN-004",
+    "TKN-005",
+    "TKN-006",
+    "TKN-007"
+  ],
+  "reworksV02": [
+    "CHR-001",
+    "CHR-003",
+    "CHR-008",
+    "CHR-010",
+    "NEU-024",
+    "NEU-026",
+    "NEU-027"
+  ],
+  "warriorDuplicatesVerified": 41,
+  "v05ManifestSha256": "190371ce21046ba4530b9cb93b374292645218f4fcbe0a0f7e5ff0e529f5529f",
+  "artDataStatus": "test, not approved",
+  "writesToGoogleSheets": false,
+  "preexistingV02Validated": [
+    "CHR-015",
+    "CHR-023"
+  ]
+}

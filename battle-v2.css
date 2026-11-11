@@ -1,0 +1,54 @@
+
+/* Mythical Wars 2.0 — session / journal / developer panels; no external dependencies. */
+.battle-session-status{padding:9px 18px;margin:0 14px 8px;border:1px solid rgba(198,167,106,.28);border-radius:9px;background:rgba(38,46,50,.45);color:#dfd0ad;font-size:12px;}
+.battle-event-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 6px;}
+.battle-event-toolbar input,.battle-event-toolbar select,.battle-dev-panel select,.battle-dev-panel input[type=number]{
+ width:100%;min-width:0;padding:9px 8px;box-sizing:border-box;border:1px solid #605742;border-radius:6px;
+ color:#ebdfc8;background:#171d22;font:inherit;font-size:12px;
+}
+.battle-event-toolbar input{grid-column:1 / -1;}
+.battle-event-toolbar button{grid-column:1 / -1;font-size:12px;}
+.battle-side .battle-log{min-height:145px;max-height:310px;overflow:auto;overscroll-behavior:contain;}
+.battle-log .battle-event-entry{display:grid;grid-template-columns:63px minmax(0,1fr);column-gap:8px;
+ padding:8px 6px!important;border-bottom:1px solid rgba(191,155,93,.13);font-size:12px;line-height:1.4;}
+.battle-event-entry .event-meta{color:#ae9674;font-variant-numeric:tabular-nums;font-size:11px;}
+.battle-event-entry.event-damage .event-message{color:#ff9c8c;}
+.battle-event-entry.event-healing .event-message{color:#91d9ac;}
+.battle-event-entry.event-resource .event-message{color:#f0c56e;}
+.battle-event-entry.event-debug{background:rgba(220,169,61,.09);}
+.battle-dev-panel{margin:10px 6px;padding:12px;border:1px solid #6c5b3e;border-radius:8px;
+ background:rgba(16,25,29,.8);font-size:12px;}
+.battle-dev-panel summary{cursor:pointer;color:#e6c27c;font-weight:700;line-height:1.5;}
+.battle-dev-panel p{line-height:1.5;color:#c9baa5;}
+.battle-dev-panel label{display:block;line-height:1.45;margin-top:9px;color:#e8d7b6;}
+.battle-dev-panel .battle-dev-opt{display:flex;align-items:center;gap:8px;}
+.battle-dev-panel button{margin-top:12px;width:100%;}
+.battle-dev-panel [hidden]{display:none!important;}
+#battleDevNote{margin-top:7px;line-height:1.5;color:#dec38c;}
+.battle-notice{line-height:1.4;}
+@media(max-width:1100px){.battle-event-toolbar{grid-template-columns:1fr;}
+.battle-event-toolbar input,.battle-event-toolbar button{grid-column:auto;}}
+
+
+/* v2.1A: functional panels, intentionally isolated from art assets and editor. */
+.mw-quality-panel{border:1px solid rgba(205,170,99,.32);border-radius:10px;padding:12px;
+  margin-top:12px;background:rgba(19,29,40,.92);color:#eee1c8;}
+.mw-quality-panel summary{cursor:pointer;color:#f4d18e;font-weight:700;margin-bottom:10px;}
+.mw-quality-panel p{font-size:.85rem;line-height:1.5;opacity:.87;}
+.mw-quality-panel label{display:flex;flex-direction:column;gap:6px;margin:8px 0;}
+.mw-quality-panel input,.mw-quality-panel select{max-width:100%;min-width:0;padding:7px;
+  color:#eee3d5;background:#1d2838;border:1px solid #776345;border-radius:7px;}
+.mw-quality-panel input[type=range]{padding:0;width:100%;}
+.mw-quality-actions{display:flex;flex-wrap:wrap;gap:6px;}
+.mw-quality-report{white-space:pre-wrap;overflow:auto;max-height:330px;
+  padding:10px;line-height:1.45;font:12px/1.5 ui-monospace,Consolas,monospace;
+  color:#e4d9c5;background:#111e2b;border:1px solid #574e43;border-radius:7px;}
+#deckAuditPanel{max-width:100%;}
+#deckAuditResult{max-height:240px;}
+#battleLabRunBtn:disabled{opacity:.5;cursor:wait;}
+
+/* The import panel and audit control are full-width grid rows in the 242px sidebar. */
+.deck-sidebar-bottom .deck-import-feature,
+.deck-sidebar-bottom #deckAuditBtn,
+.deck-sidebar-bottom #deckAuditPanel{grid-column:1 / -1;min-width:0;}
+.deck-sidebar-bottom #deckAuditBtn{white-space:normal;overflow-wrap:anywhere;min-height:36px;}

@@ -1,0 +1,93 @@
+/* MW v2.1L — battlefield framing and clock alignment in 2D/3D.
+   Rendering and positions only. All game rules and saved user art remain unchanged. */
+
+/* 2D: play area fills the frame while reserving dedicated outside gutters
+   for the clock and end-turn control. The clock stays at the field divider. */
+#battleWorkspace:not(.mw3d-active) .battle-main{
+  padding-left:clamp(110px,11vw,174px);
+  padding-right:clamp(112px,11vw,174px);
+}
+#battleWorkspace:not(.mw3d-active) .battle-clock-bar{
+  overflow:visible!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-time-dial,
+#battleWorkspace:not(.mw3d-active):not(.mw-art-off) .battle-time-dial{
+  --mw2d-dial-size:clamp(104px,10.1vw,158px);
+  top:0!important;
+  left:calc(-1 * (var(--mw2d-dial-size) + 7px))!important;
+  width:var(--mw2d-dial-size)!important;
+  height:var(--mw2d-dial-size)!important;
+  box-sizing:border-box;
+  transform:translateY(-50%)!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-actions{
+  top:50%!important;right:clamp(3px,.8vw,13px)!important;
+  bottom:auto!important;transform:translateY(-50%)!important;
+}
+/* The game clock artwork already includes the sun and moon: keep them inside
+   the dial instead of adding a second disconnected celestial symbol. */
+#battleWorkspace:not(.mw-art-off) .mw-art-clock[data-phase="day"] .mw-art-clock-disc{
+  background-image:url("arena-art/clock_day_dial.webp")!important;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock[data-phase="night"] .mw-art-clock-disc{
+  background-image:url("arena-art/clock_night_dial.webp")!important;
+}
+#battleWorkspace:not(.mw-art-off) .battle-time-dial>div:not(.mw-art-clock){
+  position:absolute!important;
+  top:calc(100% + 4px)!important;left:50%!important;
+  transform:translateX(-50%)!important;
+  margin:0!important;min-width:94px;max-width:none!important;
+  width:calc(var(--mw2d-dial-size) - 6px);
+  padding:5px 7px;border:1px solid #c4a46b;
+  border-radius:8px;background:#111f2ee8;
+  display:flex!important;flex-direction:column-reverse!important;
+  align-items:center!important;gap:2px!important;
+  box-shadow:0 4px 10px #0008;pointer-events:none;
+}
+#battleWorkspace:not(.mw-art-off) .battle-time-dial #battleClock{
+  background:none!important;border:0!important;box-shadow:none!important;
+  font:800 clamp(14px,1.15vw,19px)/1.1 Georgia,serif!important;
+  color:#fff1ca!important;padding:0!important;
+}
+#battleWorkspace:not(.mw-art-off) .battle-time-dial .battle-clock-title{
+  display:block!important;font:700 clamp(11px,.82vw,14px)/1.15 Arial,sans-serif!important;
+  color:#e1c68c!important;letter-spacing:0!important;
+}
+/* Integrate day/night image without changing the underlying clock location. */
+#mw3dStage .mw3d-clock .mw3d-art-clock .mw-art-clock-disc{
+  inset:7.5%;background-image:url("arena-art/clock_day_dial.webp");
+}
+#mw3dStage[data-phase="night"] .mw3d-clock .mw3d-art-clock .mw-art-clock-disc{
+  background-image:url("arena-art/clock_night_dial.webp");
+}
+#mw3dStage .mw3d-turn #mw3dEnd{
+  text-align:center;white-space:normal;overflow:hidden;
+}
+#mw3dStage .mw3d-turn #mw3dEnd span{
+  display:block;max-width:86px;line-height:1.14;
+}
+/* Keep the 2D clock and button fully legible at laptop dimensions. */
+@media(max-width:1150px){
+  #battleWorkspace:not(.mw3d-active) .battle-main{
+    padding-left:clamp(92px,10vw,115px);
+    padding-right:clamp(92px,10vw,115px);
+  }
+  #battleWorkspace:not(.mw3d-active) .battle-time-dial,
+  #battleWorkspace:not(.mw3d-active):not(.mw-art-off) .battle-time-dial{
+    --mw2d-dial-size:clamp(82px,8.4vw,100px);
+  }
+}
+@media(max-width:800px){
+  #battleWorkspace:not(.mw3d-active) .battle-main{
+    padding-left:70px;padding-right:74px;
+  }
+  #battleWorkspace:not(.mw3d-active) .battle-time-dial,
+  #battleWorkspace:not(.mw3d-active):not(.mw-art-off) .battle-time-dial{
+    --mw2d-dial-size:62px;
+  }
+  #battleWorkspace:not(.mw-art-off) .battle-time-dial>div:not(.mw-art-clock){
+    min-width:60px;font-size:10px;padding:3px 4px;
+  }
+  #battleWorkspace:not(.mw-art-off) .battle-time-dial #battleClock{font-size:11px!important;}
+  #battleWorkspace:not(.mw-art-off) .battle-time-dial .battle-clock-title{font-size:10px!important;}
+}

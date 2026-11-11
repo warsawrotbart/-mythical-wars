@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Мифические войны — v05.11 RC · Встроенные арты и единый редактор</title>
+<link rel="stylesheet" href="v05-dynamic.css">
+<script src="v05-dynamic-manifest.js" defer></script>
+<script src="v05-dynamic-core.js" defer></script>
+<script src="deck-sheet-import.js" defer></script>
+<script src="v05-library-seed.js" defer></script>
+<script src="v05-library-core.js" defer></script>
+<script src="v05-art-store.js" defer></script>
+<script src="mw-test-art-catalog.js" defer></script>
+<script src="v05-dynamic.js?v=0510" defer></script>
+<script src="v05-library-ui.js" defer></script>
+<script src="v05-sync-ui.js" defer></script>
+</head>
+<body>
+<header class="bar">
+  <div class="wordmark"><div class="mark">✦</div><div><strong>МИФИЧЕСКИЕ ВОЙНЫ</strong><span>Редактор карт · утверждённый стандарт v05</span></div></div>
+  <nav aria-label="Навигация"><span class="stage">v05.11 RC · один редактор · встроенные арты</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><a href="index.html">← В игру</a></nav>
+</header>
+<section class="heading">
+  <div><span class="eyebrow">КОМПОЗИТОР ИЗ ИСХОДНЫХ СЛОЁВ</span>
+    <h1>Один шаблон. Любая карта.</h1>
+    <p>Единственный редактор карт v05. Доступные тестовые арты встроены в архив и автоматически привязываются к ID. Персональный арт и кадрирование сохраняются отдельно; данные боя и исходные слои не меняются.</p>
+  </div>
+  <aside class="spec"><strong>MW · v05.11 RC</strong><span>Холст 1024 × 1536 RGBA</span><span>Оригинальный манифест и исходные слои</span><span>Локальный запуск без интернета</span></aside>
+</section>
+<div class="workspace">
+  <aside class="panel left">
+    <div class="top"><span class="eyebrow">01 / ДАННЫЕ КАРТЫ</span><h2>Примеры v05</h2></div>
+    <p class="muted">Выбери карту из библиотеки ниже или контрольный пример. Тестовый арт по ID подставляется автоматически, если он доступен.</p>
+    <div id="sampleCards" class="samples"></div>
+    <div class="line"></div>
+    <label for="jsonUpload" class="field-label">Импорт JSON карты</label>
+    <input id="jsonUpload" type="file" accept=".json,application/json">
+    <p class="tip">Поля карты показываются справа только для чтения. Библиотека XLSX/CSV доступна ниже. Локальная библиотека работает без интернета; серверная синхронизация доступна отдельно после настройки сервера.</p>
+    <div class="line"></div>
+    <label class="field-label" for="libSearch">Открыть карту из локальной библиотеки (162 + 7)</label>
+    <input id="libSearch" type="search" placeholder="ID или название">
+    <label class="lib-art-filter"><input id="libOnlyWithArt" type="checkbox"> Только карты со встроенным артом</label>
+    <select id="libSelect" size="6" aria-label="Карты и токены локальной библиотеки"></select>
+    <p id="builtinCoverage" class="tip" aria-live="polite">Загрузка встроенной библиотеки артов…</p>
+    <p class="tip">Отсутствующий арт не заменяется случайным изображением. Токены отделены от карт. Неутверждённые значки и шаблоны блокируют экспорт PNG.</p>
+    <section class="mini-callout"><strong>Защита утверждённого шаблона</strong>
+      <p>Оригиналы v05 не меняются. При ошибке данных или переполнении финальный экспорт блокируется.</p>
+    </section>
+  </aside>
+  <main class="panel main">
+    <div class="preview-title">
+      <div><span class="eyebrow" id="selectedId">KNZ-019</span><h2 id="selectedName">Сборка карты</h2></div>
+      <button id="exportBtn" class="primary" type="button" disabled>↓ Экспорт PNG</button>
+    </div>
+    <div class="canvas-area">
+      <div class="canvas-holder"><canvas id="cardCanvas" width="1024" height="1536" aria-label="Динамически собранная карта"></canvas></div>
+      <div id="referenceWrap" class="reference">
+        <div class="reference-title">Эталон v05 <span>Для сверки</span></div>
+        <img id="referenceImg" alt="Утверждённая контрольная карта v05">
+        <p class="muted">Эталон собран из оригинальных слоёв. Динамический холст слева использует текст Canvas — небольшие отличия сглаживания допустимы.</p>
+      </div>
+    </div>
+    <div class="render-footer">
+      <span id="sizeBadge">1024 × 1536</span>
+      <span id="status" role="status" aria-live="polite">Загрузка...</span>
+    </div>
+    <section class="errors"><div class="errors-head"><h3>Проверка перед экспортом</h3><span>Без автоматического обрезания текста</span></div><div id="warnings"></div></section>
+    <div class="footline">v05: структура и геометрия из <code>production/editor_manifest.json</code>. PNG содержит только карту, без редакторского интерфейса.</div>
+  </main>
+  <aside class="panel right">
+    <div class="top"><span class="eyebrow">02 / ОФОРМЛЕНИЕ</span><h2>Арт и кадрирование</h2></div>
+    <div class="control">
+      <label class="field-label" for="artUpload">Заменить иллюстрацию</label>
+      <input id="artUpload" type="file" accept="image/png,image/jpeg,image/webp">
+      <p id="sampleStatus" class="tip" aria-live="polite">Тестовый арт контрольной карты.</p>
+    </div>
+    <div class="builtin-art-panel" id="builtinArtPanel">
+      <div class="builtin-art-heading"><strong>Встроенный тестовый арт</strong><span>По ID карты</span></div>
+      <div class="builtin-art-content">
+        <img id="builtinArtPreview" width="88" height="88" alt="Тестовый арт из комплекта игры" hidden>
+        <p id="builtinArtMeta" class="tip">Каталог загружается…</p>
+      </div>
+      <button id="restoreBuiltinArt" type="button" class="smallbtn" disabled>↺ Вернуть встроенный арт</button>
+      <p class="tip">Возврат отменяет пользовательскую замену для этой карты, не меняет её характеристики и не утверждает иллюстрацию. Настройки кадрирования остаются.</p>
+    </div>
+    <div class="control">
+      <label class="field-label" for="cropZoom">Масштаб <span id="cropZoomValue">1.00×</span></label>
+      <input id="cropZoom" type="range" min="100" max="350" value="100" step="5">
+    </div>
+    <div class="control">
+      <label class="field-label" for="cropX">Положение по горизонтали <span id="cropXValue">48%</span></label>
+      <input id="cropX" type="range" min="0" max="100" value="48" step="1">
+    </div>
+    <div class="control">
+      <label class="field-label" for="cropY">Положение по вертикали <span id="cropYValue">40%</span></label>
+      <input id="cropY" type="range" min="0" max="100" value="40" step="1">
+    </div>
+    <button id="resetCrop" type="button" class="smallbtn">↺ Сбросить кадрирование</button>
+    <div class="line"></div>
+    <div class="control">
+      <label for="palettePreview" class="field-label">Цвет класса — только предпросмотр</label>
+      <select id="palettePreview"></select>
+      <p id="paletteNotice" class="tip">Только цветовые слои; золото и иллюстрация не перекрашиваются.</p>
+    </div>
+    <div class="line"></div>
+    <div class="top"><span class="eyebrow">03 / КАТАЛОЖНЫЕ ПОЛЯ</span><h2>Данные карты</h2></div>
+    <div id="facts" class="facts"></div>
+  </aside>
+</div>
+<section class="library-workbench" id="libraryWorkbench" aria-labelledby="libTitle">
+  <div class="library-head">
+    <div><span class="eyebrow">ПОДЭТАП 3 · БЕЗ ИЗМЕНЕНИЯ БОЕВОЙ БИБЛИОТЕКИ</span><h2 id="libTitle">Импорт библиотеки и сравнение изменений</h2>
+    <p class="muted">XLSX: читаются только листы «Карты» и «Токены»; CSV: можно загрузить оба файла вместе. Строгие 162 + 7 ID, 21 поле. Никакой загрузки на сервер.</p></div>
+    <div class="library-chip">v05 · только локально</div>
+  </div>
+  <div class="library-grid">
+    <div class="library-controls">
+      <label class="field-label" for="libFiles">Выберите XLSX или CSV/TSV</label>
+      <input id="libFiles" type="file" accept=".xlsx,.csv,.tsv,.txt" multiple>
+      <p class="tip">Для CSV: экспортируйте листы с полным заголовком (21 столбец), кодировка UTF-8. Неполный набор ID нельзя применить.</p>
+      <p id="libStatus" class="lib-message" role="status" aria-live="polite">Готово к проверке.</p>
+      <div id="libStats" class="library-stats"></div>
+      <label class="lib-consent"><input id="libConfirm" type="checkbox" disabled> Я проверил(а) предварительное сравнение и подтверждаю изменение только локальной библиотеки v05.</label>
+      <button type="button" class="primary lib-button" id="libApply" disabled>Применить локально</button>
+      <button type="button" class="lib-button" id="libUndo" disabled>Откатить последний импорт</button>
+      <button type="button" class="lib-button" id="libDownload">Скачать текущую библиотеку JSON</button>
+      <button type="button" class="lib-button" id="libReport" disabled>Скачать отчёт diff / диагностики JSON</button>
+      <p class="tip">Арт, файлы изображений, маски, crop/pan/zoom и исходный манифест не импортируются. Данные игры, коллекции и колод не перезаписываются.</p>
+    </div>
+    <div class="library-results">
+      <div class="lib-toolbar"><strong id="libDiffSummary">Выберите файл для сравнения.</strong>
+        <select id="libFilter" aria-label="Фильтр сравнения"><option value="changed">Изменённые</option><option value="all">Все записи</option><option value="cards">Только карты</option><option value="tokens">Только токены</option></select></div>
+      <div id="libDiffList" class="lib-diff-list" aria-label="Карты, затронутые импортом"></div>
+      <div id="libFieldDiff" class="lib-detail">Выберите запись, чтобы увидеть старые и новые значения.</div>
+      <button type="button" id="libShowCard" class="lib-button" disabled>Предпросмотр выбранной карты до применения</button>
+      <details class="lib-issues" id="libIssueDetails"><summary id="libIssueSummary">Предупреждения и ошибки</summary><div id="libIssueList"></div></details>
+    </div>
+  </div>
+</section>
+<section class="sync-workbench" id="syncWorkbench" aria-labelledby="syncTitle">
+  <div class="library-head">
+    <div><span class="eyebrow">ПОДЭТАП 5 · GOOGLE SHEETS ЧЕРЕЗ ЗАЩИЩЁННЫЙ СЕРВЕР</span><h2 id="syncTitle">Серверная синхронизация библиотеки</h2>
+      <p class="muted">Сначала загрузка и сравнение; отправка на сервер только по отдельному подтверждению. Арт, маски, кадрирование, боевые колоды и production manifest никогда не синхронизируются.</p></div>
+    <div class="library-chip">v05 · по запросу</div>
+  </div>
+  <div class="sync-grid">
+    <div class="sync-controls">
+      <label for="syncBase" class="field-label">Адрес доверенного API-сервера</label>
+      <input id="syncBase" type="url" spellcheck="false" autocomplete="off" placeholder="http://127.0.0.1:8765" aria-label="Адрес сервера синхронизации">
+      <p class="tip">Для Windows откройте редактор через сервер на порту 8765. Для опубликованного сайта нужен собственный HTTPS backend; в GitHub Pages сервер не запускается.</p>
+      <label for="syncToken" class="field-label sync-label">Ключ доступа к серверу</label>
+      <input id="syncToken" type="password" autocomplete="off" spellcheck="false" placeholder="Не сохраняется в браузере">
+      <p class="tip">Ключ остаётся только в поле до закрытия вкладки, не включается в HTML/архив/отчёт.</p>
+      <button id="syncRead" class="lib-button" type="button">1. Прочитать Google Sheets и показать diff</button>
+      <button id="syncPlan" class="lib-button" type="button" disabled>2. Предпросмотр отправки локальной библиотеки</button>
+      <label class="lib-consent"><input id="syncConfirm" type="checkbox" disabled> Я проверил(а) серверный diff и подтверждаю запись на сервере либо откат последней операции.</label>
+      <button id="syncPush" class="lib-button primary" type="button" disabled>3. Записать изменения в Google Sheets</button>
+      <button id="syncRollback" class="lib-button" type="button" disabled>Отменить последнюю серверную запись</button>
+      <p id="syncStatus" class="lib-message" role="status" aria-live="polite">Ожидается подключение. Локальный редактор продолжает работать независимо.</p>
+    </div>
+    <div class="sync-results">
+      <strong>Удалённая версия и журнал</strong>
+      <div id="syncMeta" class="library-stats"></div>
+      <div id="syncPreview" class="sync-preview" aria-live="polite">Подключение не выполняется автоматически. После чтения сравнение поступающих данных появится выше, в панели импорта.</div>
+      <details class="lib-issues"><summary>Журнал последних записей</summary><div id="syncHistory" class="sync-history">Сервер пока не опрошен.</div></details>
+      <p class="tip">При конфликте версий сервер отклонит запись (HTTP 409): обновите Google Sheets, перепроверьте diff. Защита оптимистическая: одновременное изменение таблицы непосредственно в Google во время записи не является атомарно блокируемым.</p>
+    </div>
+  </div>
+</section>
+<footer>v05.11 RC · импорт в изолированную локальную библиотеку редактора · локальный импорт и опциональная защищённая синхронизация Google Sheets без изменений боевых правил · исходные арты: «Тестовая версия»</footer>
+</body>
+</html>

@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мифические войны v05.11 RC — игра и единый редактор v05</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="collection-ui-v2.1M1.css">
+<link rel="stylesheet" href="template-lab-ui-v2.1M2.css">
+<style>[hidden]{display:none!important}#editorWorkspace,.top-actions{display:none!important}.app-mode-nav .mw-v05-std-link{display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;padding:10px 14px;border-radius:8px;border:1px solid #ad8e57;color:#f1ddb1;background:#1b2a27;text-decoration:none}.app-mode-nav .mw-v05-std-link:hover{background:#32413b}</style>
+<link rel="stylesheet" href="editor-layout-v2.1F.css">
+<link rel="stylesheet" href="battle-visual-v1.8.css">
+<link rel="stylesheet" href="battle-visual-v1.9.css">
+<link rel="stylesheet" href="battle-v2.css">
+<link rel="stylesheet" href="battle-arena-blocks-v2.1B.css">
+<link rel="stylesheet" href="battle-card-hybrid-v2.1C.css">
+<link rel="stylesheet" href="battle-arena-art-v2.1D.css">
+<link rel="stylesheet" href="card-workflow-v2.1G.css">
+<link rel="stylesheet" href="arena-3d-v2.1H.css">
+<link rel="stylesheet" href="ui-refactor-v2.1J.css">
+<link rel="stylesheet" href="hero-hud-v2.1K.css">
+<link rel="stylesheet" href="arena-layout-v2.1L.css">
+<link rel="stylesheet" href="hero-hud-v05S11.css?v=0511">
+</head>
+<body>
+<div id="app">
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">✦</div>
+    <div><div class="brand-title">МИФИЧЕСКИЕ ВОЙНЫ <span class="brand-divider">/</span> <span class="brand-sub">ИГРА И КОЛЛЕКЦИЯ</span></div>
+      <div class="brand-caption">v2.1M.2 · v05.11 RC · единый редактор v05 · 2D/3D</div></div>
+  </div>
+  <div class="top-actions">
+    <span id="saveStatus" class="save-status"><span class="status-dot"></span> Загрузка…</span>
+    <button id="undoBtn" class="btn icon-btn" title="Отменить (Ctrl+Z)">↶</button>
+    <button id="redoBtn" class="btn icon-btn" title="Повторить (Ctrl+Y)">↷</button>
+    <span class="toolbar-separator"></span>
+    <button id="newCardTopBtn" class="btn btn-outline" type="button">＋ Новая карта</button>
+    <button id="saveCardBtn" class="btn btn-gold" type="button">▣ В библиотеку</button>
+    <button id="openProjectBtn" class="btn btn-ghost">↥ <span>Открыть проект</span></button>
+    <button id="saveProjectBtn" class="btn btn-ghost">⇩ <span>Проект JSON</span></button>
+    <button id="exportPngBtn" class="btn btn-gold"><span>↓</span> Экспорт PNG</button>
+  </div>
+</header>
+<nav class="app-mode-nav" aria-label="Разделы приложения">
+  <button type="button" id="mwCollectionNav">▦ Коллекция карт</button>
+  <button type="button" id="mwTemplatesNav">◈ Шаблоны карт</button>
+  <a href="v05-dynamic.html" class="mw-v05-std-link" title="Единственный редактор карт: библиотека, арт, экспорт PNG">✦ Редактор карт v05 · тестовые арты</a>
+  <button data-app-mode="decks" class="active">▤ Конструктор колод</button>
+  <button data-app-mode="battle">⚔ Тестовый бой</button>
+  <span class="mode-caption">Автономный режим · данные из библиотеки карт</span>
+</nav>
+<section id="mwCollectionWorkspace" hidden aria-label="Коллекция карт"><div id="mwCollectionApp"></div></section>
+<section id="mwTemplatesWorkspace" hidden aria-label="Шаблоны карт"><div id="mwTemplatesApp"></div></section>
+<div class="workspace" id="editorWorkspace" hidden aria-hidden="true">
+  <aside class="sidebar left-sidebar">
+    <div class="sidebar-heading"><span class="section-eyebrow">ТЕКУЩАЯ КАРТА</span>
+      <strong id="currentCardId">KNZ-002</strong><span class="subtle" id="currentCardName">Малады дружыннік</span></div>
+    <div class="left-tabs"><button data-left-tab="cards" class="tab active">Карты</button><button data-left-tab="layers" class="tab">Слои</button><button data-left-tab="assets" class="tab">Ассеты</button></div>
+    <div id="cardsTab" class="sidebar-scroll">
+      <div class="library-header">
+         <div class="section-eyebrow">ЛОКАЛЬНАЯ БИБЛИОТЕКА КАРТ</div>
+         <p>Создавайте карту, редактируйте её и сохраняйте здесь. У каждой карточки отдельные игровые данные, арт и слои.</p>
+         <button id="newCardBtn" type="button" class="btn btn-outline btn-block">＋ Новая карта</button>
+         <button id="saveLibraryCardBtn" type="button" class="btn btn-gold btn-block">▣ Сохранить текущую карту</button>
+         <div class="library-actions">
+           <button id="exportCardsBtn" type="button" title="JSON со всеми проектами и артами">Резервная копия JSON</button>
+           <button id="importCardsBtn" type="button" title="Восстановить карты из JSON">Импорт JSON</button>
+         </div>
+         <div class="workflow-panel" aria-label="Экспорт и утверждение карт">
+           <label for="cardStageSelect">Статус редактируемой карты</label>
+           <select id="cardStageSelect" class="library-select">
+             <option value="draft">Черновик</option>
+             <option value="review">На проверке</option>
+             <option value="approved">Утверждена</option>
+           </select>
+           <div class="library-actions">
+             <button id="selectAllCardsBtn" type="button">Выбрать все</button>
+             <button id="clearSelectedCardsBtn" type="button">Сбросить</button>
+           </div>
+           <button id="exportSelectedPngZipBtn" type="button" class="btn btn-gold btn-block">↓ PNG выбранных карт · ZIP</button>
+           <button id="exportCardsCsvBtn" type="button" class="btn btn-outline btn-block">↓ Таблица карт · CSV</button>
+           <button id="exportSheetsPackBtn" type="button" class="btn btn-outline btn-block">↓ Карты и колоды для Sheets · ZIP</button>
+           <div id="cardBatchStatus" class="workflow-message" role="status" aria-live="polite">Не выбраны карты — выгрузятся все сохранённые.</div>
+         </div>
+         <details class="sheets-bridge" id="cardsSheetsBridge">
+           <summary>⇅ Google Sheets · обмен данными</summary>
+           <p>Экспортируйте CSV, меняйте значения в таблице и вставляйте строки обратно. Изображения и локальные слои сохраняются. Это ручной обмен, без входа в Google.</p>
+           <textarea id="cardsCsvPaste" rows="4" placeholder="Вставьте CSV/TSV из листа «Карты» с заголовками cardId, name, cardType"></textarea>
+           <div class="library-actions">
+             <button type="button" id="pickCardsCsvFileBtn">Открыть CSV</button>
+             <button type="button" id="planCardsCsvBtn">Предпросмотр</button>
+           </div>
+           <div id="cardsCsvPreview" class="workflow-message" aria-live="polite">Пока нет данных для проверки.</div>
+           <button type="button" id="applyCardsCsvBtn" class="btn btn-outline btn-block" disabled>Применить безопасные изменения</button>
+           <p class="workflow-help">Строки с конфликтами пропускаются; канонические карты защищены. Перед импортом скачивается резервная копия.</p>
+                    <div class="workflow-panel" aria-label="Импорт колод из двух CSV">
+             <strong>Импорт колод из Google Sheets</strong>
+             <p>Скачайте два CSV с листов «Колоды» и «Состав_колод». Новые колоды добавляются, а изменённые проверяются по updatedAt.</p>
+             <label for="decksCsvInput">1. Колоды.csv</label>
+             <input id="decksCsvInput" type="file" accept=".csv,.tsv,text/csv,text/plain">
+             <label for="deckCardsCsvInput">2. Состав_колод.csv</label>
+             <input id="deckCardsCsvInput" type="file" accept=".csv,.tsv,text/csv,text/plain">
+             <button id="planDecksCsvBtn" type="button" class="btn btn-outline btn-block">Проверить состав колод</button>
+             <div id="decksCsvPreview" class="workflow-message" aria-live="polite">Ожидаются два CSV.</div>
+             <button id="applyDecksCsvBtn" type="button" class="btn btn-outline btn-block" disabled>Импортировать новые/обновлённые колоды</button>
+           </div>
+</details>
+      </div>
+      <div class="library-filter-panel">
+        <input id="cardSearch" type="search" placeholder="Найти карту по ID или названию…" autocomplete="off">
+        <div id="cardCategoryFilters" class="category-filters"></div>
+        <div id="cardLibraryCount" class="library-result-count"></div>
+      </div>
+      <div id="cardsGrid" class="cards-grid"></div>
+    </div>
+    <div id="layersTab" class="sidebar-scroll hidden">
+      <div class="tree-toolbar"><span>СЛОИ КАРТЫ <span class="layers-count" id="layerCount"></span></span>
+        <div class="tree-actions"><button id="newLayerBtn" class="small-add-btn" type="button" title="Создать новый графический слой">＋ Слой</button><button id="collapseAllBtn" title="Свернуть / развернуть">⇵</button></div></div>
+      <div id="layerTree" class="layer-tree"></div>
+      <div class="sidebar-note"><b>13 позиций</b> · Номера служебные и не попадают в PNG. Выберите слой: растягивайте углы или стороны рамки. Пропорции связаны; <b>Shift</b> временно переключает режим. <b>F1</b> — клавиши.</div>
+    </div>
+    <div id="assetsTab" class="sidebar-scroll hidden">
+      <div class="library-header">
+        <div class="section-eyebrow">ОБЩАЯ БИБЛИОТЕКА</div>
+        <p>Загрузите изображения один раз и используйте на разных картах. Библиотека хранится отдельно от проекта.</p>
+        <label for="uploadCategory">Категория новых файлов</label>
+        <select id="uploadCategory" class="library-select">
+          <option value="frames">Рамки</option>
+          <option value="icons">Иконки</option>
+          <option value="decor">Декор</option>
+          <option value="art" selected>Арты</option>
+          <option value="flags">Флаги</option>
+        </select>
+        <button type="button" id="importAssetsBtn" class="btn btn-gold btn-block">＋ Добавить ассеты</button>
+        <div id="assetDropzone" class="asset-dropzone" tabindex="0">Перетащите PNG, JPG или WEBP сюда<br><span>Можно выбрать несколько файлов</span></div>
+        <div class="library-actions">
+          <button id="exportLibraryBtn" type="button" title="Резервная копия всей пользовательской библиотеки">Экспорт библиотеки</button>
+          <button id="importLibraryBtn" type="button" title="Восстановить библиотеку из резервной копии">Импорт библиотеки</button>
+        </div>
+        <div id="libraryStorageState" class="library-storage-state" aria-live="polite"></div>
+      </div>
+      <div class="library-filter-panel">
+        <input id="assetSearch" type="search" placeholder="Поиск по названию…" aria-label="Поиск ассетов" autocomplete="off">
+        <div id="assetCategoryFilters" class="category-filters"></div>
+        <div id="assetResultCount" class="library-result-count"></div>
+      </div>
+      <div id="assetsGrid" class="assets-grid"></div>
+    </div>
+    <div class="side-bottom"><button id="resetBtn" class="btn btn-outline btn-block">↺ Открыть исходную KNZ-002</button></div>
+  </aside>
+
+  <main class="center">
+    <div class="canvas-tools">
+      <div class="tool-breadcrumb"><span id="canvasTypePill" class="pill-outline">СУЩЕСТВО</span> <span>Редактор композиции</span> <span class="muted-sep">/</span> <b id="canvasTemplateName">mw-creature-oval-01</b></div>
+      <button id="shortcutsBtn" class="shortcuts-trigger" type="button" title="Горячие клавиши (F1)">⌨ Клавиши <span>F1</span></button><div class="zoom-tools"><button id="zoomOutBtn" title="Уменьшить">−</button><span id="zoomDisplay">—%</span><button id="zoomInBtn" title="Увеличить">+</button><button id="fitBtn" class="fit-btn" title="Уместить в окне">Вписать</button></div>
+    </div>
+    <div id="canvasViewport" class="canvas-viewport">
+       <div id="cardStage" class="card-stage">
+         <div id="cardScaled" class="card-scaled">
+           <canvas id="cardCanvas" width="1024" height="1536"></canvas>
+           <canvas id="overlayCanvas" width="1024" height="1536"></canvas>
+         </div>
+       </div>
+    </div>
+    <div class="canvas-footer"><div><span class="tiny-dot"></span> Холст <b>1024 × 1536</b> <span class="sep">·</span> sRGB <span class="sep">·</span> 2:3</div><div><label class="inline-switch"><input id="guidesSwitch" type="checkbox" checked><span>Контуры выделения</span></label></div></div>
+  </main>
+
+  <aside class="sidebar right-sidebar" aria-label="Настройки редактора карты">
+    <div class="right-tabs mw-editor-tabs" role="tablist" aria-label="Разделы редактора">
+      <button class="tab active" data-right-tab="fields" type="button">Основа</button>
+      <button class="tab" data-right-tab="art" type="button">Арт</button>
+      <button class="tab" data-right-tab="title" type="button">Название</button>
+      <button class="tab" data-right-tab="stats" type="button">Параметры</button>
+      <button class="tab" data-right-tab="description" type="button">Описание</button>
+      <button class="tab" data-right-tab="icons" type="button">Символы</button>
+      <button class="tab" data-right-tab="properties" type="button">Слои</button>
+      <button class="tab" data-right-tab="export" type="button">Экспорт</button>
+    </div>
+    <div class="sidebar-scroll right-content">
+      <div id="fieldsTab" class="mw-editor-panel" role="tabpanel">
+        <div class="right-section-title"><div class="section-eyebrow">01 · ОСНОВА КАРТЫ</div>
+          <strong>Выбор готовой подложки</strong>
+          <div class="right-meta"><span id="cardIdentity">KNZ-002</span><span id="cardTypeIdentity">Существо</span></div></div>
+        <div class="field"><label for="cardIdField">ID карты <span class="field-hint">Не изменяет канон</span></label>
+          <input id="cardIdField" data-field="cardId" type="text" maxlength="80" spellcheck="false"></div>
+        <div class="field"><label for="frameThemeSelect">Набор подложек</label>
+          <select id="frameThemeSelect">
+            <option value="default">Основной · светлый (верхний ряд)</option>
+            <option value="alt">Альтернативный · серый (нижний ряд)</option>
+            <option value="legacy">Классический (старая карта)</option>
+          </select></div>
+        <div id="themePreview" class="mw-theme-preview" aria-live="polite">
+          <img id="themePreviewImage" src="assets/card-bases/creature_default.png" alt="Выбранная подложка" />
+          <p id="themeDescription">При создании новой карты подложка выбирается автоматически по типу.</p></div>
+        <div class="inspector-hint" id="editorPresetNotice">Изменения оформления не влияют на способности, стоимость и правила игры. Существующие карты не переделываются автоматически.</div>
+        <button type="button" class="btn btn-outline btn-block" id="openNewPresetBtn">＋ Создать карту по новому шаблону</button>
+        <div class="divider-small"></div>
+        <div class="right-section-title"><div class="section-eyebrow">СТРУКТУРА</div><strong>Какие области на карте?</strong></div>
+        <div class="mw-hint-list">
+          <span>Арт — внутри окна подложки</span>
+          <span>Название — по дуге на готовой плашке</span>
+          <span>Параметры — отдельные знаки стоимости и характеристик</span>
+          <span>Описание — редактируемое поле фиксированной ширины</span>
+        </div>
+      </div>
+      <div id="artTab" class="mw-editor-panel hidden" role="tabpanel">
+        <div class="right-section-title"><div class="section-eyebrow">02 · ИЛЛЮСТРАЦИЯ</div><strong>Арт и кадрирование · <span id="artMaskName">Овал</span></strong></div>
+        <button class="btn btn-outline btn-block" id="loadArtBtn">↑ Загрузить PNG / JPEG / WebP</button>
+        <div id="artQualityReport" class="art-quality-report" role="status" aria-live="polite">Оригинальный арт: PNG, JPG или WebP до 25 МБ. Требования по размеру появятся после загрузки.</div>
+        <div id="artName" class="asset-filename">Арт не загружен</div>
+        <div id="artSourceGuide" class="inspector-hint" style="margin:7px 0 12px">Размер окна арта</div>
+        <div class="field"><label for="cropZoom">Масштаб арта <span id="cropZoomValue">100%</span></label><input id="cropZoom" type="range" min="0.6" max="3.0" step="0.02"></div>
+        <div class="field-grid">
+          <div class="field"><label for="cropX">Сдвиг X</label><input id="cropX" type="number" step="1"></div>
+          <div class="field"><label for="cropY">Сдвиг Y</label><input id="cropY" type="number" step="1"></div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="resetCropBtn">Сбросить кадрирование</button>
+        <div class="inspector-hint">Изображение обрезается по форме окна: овал, прямоугольник либо круг. Подложка рисуется поверх арта.</div>
+      </div>
+      <div id="titleTab" class="mw-editor-panel hidden" role="tabpanel">
+        <div class="right-section-title"><div class="section-eyebrow">03 · НАЗВАНИЕ</div><strong>Текст по дуге на плашке</strong></div>
+        <div class="field"><label for="nameField">Название карты</label><input id="nameField" data-field="name" type="text" spellcheck="false"></div>
+        <div class="field"><label for="titleCurveEnabled">Расположение текста</label>
+          <select id="titleCurveEnabled" data-layout-control="curveEnabled">
+            <option value="true">По дуге · вписать автоматически</option>
+            <option value="false">Прямой строкой</option>
+          </select></div>
+        <div class="field"><label for="titleFontFamily">Читаемый шрифт</label>
+          <select id="titleFontFamily" data-layout-control="titleFontFamily">
+            <option value="Georgia, 'Times New Roman', serif">Georgia · классический</option>
+            <option value="'Times New Roman', Georgia, serif">Times New Roman · выразительный</option>
+            <option value="'Trebuchet MS', Verdana, Arial, sans-serif">Trebuchet · ясный</option>
+            <option value="Verdana, Arial, sans-serif">Verdana · компактный</option>
+          </select></div>
+        <div class="field-grid">
+          <div class="field"><label for="titleFontSize">Размер, px</label><input id="titleFontSize" type="number" min="16" max="100" data-layout-control="titleFontSize"></div>
+          <div class="field"><label for="titleLetterSpacing">Межбуквенный, px</label><input id="titleLetterSpacing" type="number" min="-4" max="10" step="0.5" data-layout-control="letterSpacing"></div>
+        </div>
+        <div class="field-grid">
+          <div class="field"><label for="titleCurveRadius">Радиус дуги</label><input id="titleCurveRadius" type="number" min="250" max="2200" step="20" data-layout-control="curveRadius"></div>
+          <div class="field"><label for="titleCurveLift">Сдвиг по Y</label><input id="titleCurveLift" type="number" min="-90" max="90" data-layout-control="curveLift"></div>
+        </div>
+        <label class="mw-checkbox-label"><input type="checkbox" id="titleAutoFit" data-layout-control="titleAutoFit" checked> Автоматически уменьшать длинное название</label>
+        <div id="titleFitStatus" class="inspector-hint" aria-live="polite">Длинные названия проверяются перед экспортом.</div>
+        <button id="selectTitleLayerBtn" type="button" class="btn btn-ghost btn-block">Выделить название на холсте</button>
+      </div>
+      <div id="statsTab" class="mw-editor-panel hidden" role="tabpanel">
+        <div class="right-section-title"><div class="section-eyebrow">04 · ПАРАМЕТРЫ</div><strong>Стоимость, атака, здоровье</strong></div>
+        <div class="field-grid thirds">
+          <div class="field"><label for="costField" id="costLabel">Мана</label><input id="costField" data-field="costValue" type="number" min="0" max="999" step="1"></div>
+          <div class="field" data-card-types="creature,weapon"><label for="attackField">Атака</label><input id="attackField" data-field="attack" type="number" min="0" max="999" step="1"></div>
+          <div class="field" data-card-types="creature,weapon"><label for="healthField" id="healthLabel">Здоровье</label><input id="healthField" data-field="health" type="number" min="0" max="999" step="1"></div>
+        </div>
+        <div class="field" data-card-types="spell"><label for="schoolField">Школа заклинания</label><input id="schoolField" data-field="schoolId" type="text" placeholder="Укажите по библиотеке карт"></div>
+        <div class="inspector-hint">Значки и числа — отдельные слои из библиотеки Figma. Параметры игры здесь не рассчитываются и не дополняются автоматически.</div>
+      </div>
+      <div id="descriptionTab" class="mw-editor-panel hidden" role="tabpanel">
+        <div class="right-section-title"><div class="section-eyebrow">05 · ОПИСАНИЕ</div><strong>Редактируемая зона текста</strong></div>
+        <div class="field"><label for="abilityField">Текст карты <span class="field-hint">Сохраняйте оригинальную формулировку</span></label>
+          <textarea id="abilityField" data-field="ability" rows="5" placeholder="Без способности"></textarea></div>
+        <div class="field"><label for="descHeight">Высота зоны · <span id="descHeightValue">190 px</span></label>
+          <input id="descHeight" type="range" min="100" max="480" step="5" data-layout-control="descriptionHeight"></div>
+        <div class="field-grid">
+          <div class="field"><label for="descY">Позиция Y, px</label><input id="descY" type="number" min="100" max="1550" step="1" data-layout-control="descriptionY"></div>
+          <div class="field"><label for="descFontSize">Шрифт, px</label><input id="descFontSize" type="number" min="16" max="72" step="1" data-layout-control="descriptionFontSize"></div>
+        </div>
+        <div class="field"><label for="descFontFamily">Шрифт описания</label>
+          <select id="descFontFamily" data-layout-control="descriptionFontFamily">
+            <option value="'Trebuchet MS', Verdana, Arial, sans-serif">Trebuchet · основной, читабельный</option>
+            <option value="Verdana, Arial, sans-serif">Verdana · без засечек</option>
+            <option value="Arial, sans-serif">Arial · простой</option>
+            <option value="Georgia, 'Times New Roman', serif">Georgia · книжный</option>
+          </select></div>
+        <div class="field"><label for="descLineHeight">Межстрочный интервал · <span id="descLineHeightValue">1.21</span></label>
+          <input id="descLineHeight" type="range" min="0.9" max="1.8" step="0.05" data-layout-control="descriptionLineHeight"></div>
+        <label class="mw-checkbox-label"><input type="checkbox" id="descAutoFit" data-layout-control="descriptionAutoFit" checked> Автоуменьшение текста при переполнении</label>
+        <div class="mw-fixed-width-note">Ширина текста зафиксирована: <b id="descWidthValue">680 px</b>. Изменение высоты не меняет ширину, в том числе при перетаскивании рамки.</div>
+        <button id="selectDescriptionLayerBtn" type="button" class="btn btn-ghost btn-block">Выделить область описания</button>
+        <div class="divider-small"></div>
+        <div class="field"><label for="flavorField">Литературный текст <span class="field-hint">Необязательно</span></label>
+          <textarea id="flavorField" data-field="flavor" rows="3" placeholder="Без литературного текста"></textarea></div>
+      </div>
+      <div id="iconsTab" class="mw-editor-panel hidden" role="tabpanel">
+        <div class="right-section-title"><div class="section-eyebrow">06 · СИМВОЛЫ И ДЕКОР</div><strong>Элементы из Figma</strong></div>
+        <div class="field"><label for="rarityField">Редкость</label><select id="rarityField" data-field="rarityId">
+          <option value="">— Не выбрана —</option><option value="common">Обычная</option><option value="standard">Стандартная</option>
+          <option value="rare">Редкая</option><option value="epic">Эпическая</option><option value="legendary">Легендарная</option>
+        </select></div>
+        <div class="field" data-card-types="creature"><label for="timeField">Время суток</label>
+          <select id="timeField" data-field="timeAffinityId"><option value="">— Не указано —</option>
+          <option value="Дзень">☀ Дзень</option><option value="Ноч">☾ Ноч</option></select></div>
+        <div class="field-grid" data-card-types="creature">
+          <div class="field"><label for="classField">Класс</label><input id="classField" data-field="classId" type="text"></div>
+          <div class="field"><label for="creatureTypeField">Вид существа</label><input id="creatureTypeField" data-field="creatureTypeId" type="text"></div>
+        </div>
+        <div class="field" data-card-types="creature"><label for="subtypeField">Подтип <span class="field-hint">Пусто = скрыт</span></label><input id="subtypeField" data-field="subtype" type="text"></div>
+        <div class="mw-decor-options">
+          <label class="mw-checkbox-label"><input type="checkbox" id="toggleOvalRim" data-decor-toggle="figma-oval-rim"> Дополнительная овальная оправа Figma</label>
+          <label class="mw-checkbox-label"><input type="checkbox" id="toggleFlavorDivider" data-decor-toggle="flavorDivider"> Разделитель литературного текста</label>
+        </div>
+        <p class="inspector-hint">Мана, атака, здоровье, медальон вида существа, стяг класса, подтип, редкость и название — отдельные редактируемые слои. Для неизвестного класса не подставляется вымышленный герб.</p>
+        <button id="openFigmaLayerTree" type="button" class="btn btn-outline btn-block">Открыть дерево всех Figma-слоёв</button>
+      </div>
+      <div id="propertiesTab" class="mw-editor-panel hidden" role="tabpanel">
+        <div class="right-section-title"><div class="section-eyebrow">07 · СЛОИ</div>
+          <strong id="selectedLayerName">Арт — кадрирование</strong>
+          <div id="selectedLayerId" class="mono-small">art</div></div>
+        <div id="layerInspector"></div>
+        <div class="inspector-hint">Слои редактируются отдельно. Ширина области описания заблокирована, высоту можно менять на холсте за нижний/верхний маркер или во вкладке «Описание».</div>
+      </div>
+      <div id="exportTab" class="mw-editor-panel hidden" role="tabpanel">
+        <div class="right-section-title"><div class="section-eyebrow">08 · ПРОВЕРКА / ЭКСПОРТ</div><strong>Готовность карты</strong></div>
+        <div id="warnings" class="warnings" aria-live="polite"></div>
+        <button type="button" id="exportPanelPng" class="btn btn-gold btn-block">⇩ Экспорт PNG 1024×1536</button>
+        <button type="button" id="exportPanelJson" class="btn btn-outline btn-block">⇩ Скачать проект JSON</button>
+        <p class="inspector-hint">В PNG входят готовая подложка, арт, все видимые Figma-элементы и живой текст. Экспорт блокируется при отсутствующем арте или переполнении текста.</p>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<section id="decksWorkspace" class="deck-workspace" hidden>
+  <aside class="deck-sidebar">
+    <div class="deck-section-header"><span class="section-eyebrow">БИБЛИОТЕКА КОЛОД</span><h2>Мои колоды</h2>
+      <p>Готовые примеры взяты из вашего Excel. Изменения сохраняются локально.</p></div>
+    <div class="deck-sidebar-actions">
+      <button type="button" id="deckNewBtn" class="btn btn-gold">＋ Новая колода</button>
+      <button type="button" id="deckCloneBtn" class="btn btn-outline">⧉ Копировать</button>
+    </div>
+    <div id="deckList" class="deck-list" aria-label="Сохранённые колоды"></div>
+    <div class="deck-sidebar-bottom">
+      <div class="deck-import-feature">
+        <span class="section-eyebrow">ИМПОРТ ИЗ GOOGLE SHEETS</span>
+        <p>Готовая колода в таблице? Сохраните Google Sheets как Excel (.xlsx) или CSV.</p>
+        <button id="deckSheetsBtn" type="button" class="btn btn-gold btn-block">↑ Из Excel / Google Sheets</button>
+        <small>Распознаём листы «Колода — …», столбцы <b>Кол-во</b> и <b>ID</b>.</small>
+      </div>
+      <button id="deckAuditBtn" class="btn btn-outline" type="button">✓ Проверить библиотеку и колоды</button>
+      <details class="mw-quality-panel" id="deckAuditPanel" hidden>
+        <summary>Результат проверки</summary>
+        <pre id="deckAuditResult" class="mw-quality-report" aria-live="polite"></pre>
+        <button id="deckAuditExportBtn" class="btn btn-outline" type="button">⇩ Отчёт TXT</button>
+      </details>
+      <button id="deckExportBtn" class="btn btn-outline" type="button">⇩ Резервная копия JSON</button>
+      <button id="deckImportBtn" class="btn btn-outline" type="button">↥ Восстановить JSON</button>
+      <input id="deckImportFile" type="file" hidden accept=".json,application/json">
+      <span id="deckPersistenceNote" class="deck-small-muted"></span>
+    </div>
+  </aside>
+  <section class="deck-collection">
+    <div class="deck-column-title"><div><span class="section-eyebrow">КАРТОТЕКА</span><h2>Добавить карту</h2></div><span id="collectionCount" class="deck-count"></span></div>
+    <div class="deck-collection-filters">
+      <input id="collectionSearch" type="search" placeholder="Поиск по названию или ID…" aria-label="Поиск карты">
+      <div class="deck-field-row">
+        <select id="collectionType" aria-label="Тип карты"><option value="all">Все типы</option><option value="creature">Существа</option><option value="spell">Заклинания</option><option value="weapon">Оружие</option></select>
+        <select id="collectionCost" aria-label="Стоимость"><option value="all">Любая стоимость</option><option value="0-2">0–2</option><option value="3-5">3–5</option><option value="6+">6+</option></select>
+      </div>
+      <label class="deck-toggle"><input id="collectionEligibleOnly" type="checkbox" checked> Только разрешённые для класса</label>
+    </div>
+    <div id="collectionCards" class="deck-cards-scroll" aria-live="polite"></div>
+    <p class="deck-footnote">Основной источник — лист «Карты». Локальные новые карты показаны отдельно. Токены и специальные карты с лимитом 0 не добавляются.</p>
+  </section>
+  <section class="deck-current">
+    <div class="deck-column-title"><div><span class="section-eyebrow">КОНСТРУКТОР</span><h2 id="activeDeckTitle">Выберите колоду</h2></div><div id="deckTotal" class="deck-total">0/30</div></div>
+    <div class="deck-settings">
+      <label>Название колоды <input type="text" maxlength="100" id="deckName" placeholder="Название"></label>
+      <label>Класс <select id="deckClass">
+        <option>Воин</option><option>Чернокнижник</option><option>Некромант</option>
+        <option>Чародей</option><option>Ведун</option><option>Заклинатель</option><option>Разбойник</option>
+      </select></label>
+    </div>
+    <div id="deckValidation" class="deck-validation"></div>
+    <div class="deck-actions">
+      <button id="deckSaveBtn" type="button" class="btn btn-gold">▣ Сохранить</button>
+      <button id="deckPlayBtn" type="button" class="btn btn-outline">⚔ Проверить в бою</button>
+      <button id="deckDeleteBtn" type="button" class="btn btn-ghost">Удалить</button>
+    </div>
+    <div id="deckContents" class="deck-contents" aria-label="Состав колоды"></div>
+    <p class="deck-footnote">Сортировка по стоимости. Кнопки ＋/− меняют количество. Карта добавляется по <b>cardId</b>, не по позиции в таблице.</p>
+  </section>
+</section>
+
+<section id="battleWorkspace" class="battle-workspace" hidden>
+  <div class="battle-topbar">
+    <div><span class="section-eyebrow">ОФЛАЙН · ТЕСТОВЫЙ РЕЖИМ</span><h2>Проверка колод в бою</h2></div>
+    <details class="battle-settings-drawer" id="battleSettingsDrawer">
+      <summary title="Параметры тестовой партии">⚙ Параметры боя <span aria-hidden="true">▾</span></summary>
+      <div class="battle-top-controls">
+      <label>Моя колода <select id="battleMyDeck"></select></label>
+      <label>Бот <select id="battleBotDeck"></select></label>
+      <label title="Спорные правила округления/удвоения не утверждены."><span>День / Ночь</span>
+        <select id="battleTimeMode"><option value="off">Часы без штрафов</option><option value="floor">Тест: округлять вниз</option><option value="ceil">Тест: округлять вверх</option></select>
+      </label>
+      <label class="battle-use-local" title="Использовать сохранённые игровые параметры из редактора для тестовой партии. Google Sheets не изменяется.">
+        <input type="checkbox" id="battleUseLocal"> Локальные правки
+      </label>
+      <label title="Не влияет на канонический прогресс кампании">
+        <span>Герой игрока · тест</span>
+        <select id="battleHeroProfile">
+          <option value="campaign">Силы закрыты (кампания)</option>
+          <option value="demo-unlocked">Открыты для теста</option>
+          <option value="ragvalod">Рагвалод · обучение</option>
+        </select>
+      </label>
+      <label title="Силы бота активируются только при совпадении класса и утверждённых параметров">
+        <span>Герой бота · тест</span>
+        <select id="battleBotHeroProfile">
+          <option value="campaign">Силы закрыты (кампания)</option>
+          <option value="demo-unlocked">Открыты для теста</option>
+          <option value="ragvalod">Рагвалод · обучение</option>
+        </select>
+      </label>
+      <label class="battle-zoom-control" title="Масштаб карт на столе и в руке">Размер карт
+        <select id="battleCardScale"><option value="1">Крупные</option><option value="1.15" selected>Очень крупные</option><option value="1.3">Максимум</option></select>
+      </label>
+      <label class="battle-zoom-control" title="Показывать всю иллюстрацию или заполнять овал">Арт
+        <select id="battleArtFit"><option value="contain" selected>Целиком</option><option value="cover">Заполнять окно</option></select>
+      </label>
+      <button id="battleResumeBtn" class="btn btn-outline" type="button" title="Продолжить локально сохранённую партию">↻ Продолжить</button>
+      <button id="battleSaveBtn" class="btn btn-outline" type="button" title="Сохранить текущую партию локально">▣ Сохранить бой</button>
+      <button id="battleExportSaveBtn" class="btn btn-outline" type="button">⇩ Бой JSON</button>
+      <button id="battleReplayExportBtn" class="btn btn-outline" type="button" title="Повтор содержит закрытые карты обоих игроков">⇩ Повтор боя</button>
+      <button id="battleReplayVerifyBtn" class="btn btn-outline" type="button">✓ Проверить повтор</button>
+      <button id="battleReplayImportBtn" class="btn btn-outline" type="button">↥ Открыть повтор</button>
+      <input id="battleReplayImportFile" type="file" accept=".json,application/json" hidden>
+
+      <button id="battleImportSaveBtn" class="btn btn-outline" type="button">↥ Загрузить бой</button>
+      <input id="battleImportSaveFile" type="file" accept=".json,application/json" hidden>
+      <button id="battleStartBtn" class="btn btn-gold" type="button">▶ Начать бой</button>
+      </div>
+    </details>
+    <div class="battle-quick-actions">
+      <button class="btn btn-gold" type="button" id="battleQuickStart">▶ Начать бой</button>
+      <button class="btn btn-outline" type="button" id="battleQuickResume">↻ Продолжить</button>
+      <button class="btn btn-outline" type="button" id="battleArtToggle" aria-pressed="true" title="Показать/скрыть графику поля, не меняя состояние партии">🎨 Арт: вкл</button>
+      <button class="btn btn-outline" type="button" id="battleSideToggle" aria-expanded="false" aria-controls="battleSidePanel">☰ Журнал и тесты</button>
+    </div>
+  </div>
+  <details class="battle-info-drawer" id="battleInfoDrawer">
+    <summary><span>ℹ Подсказки и сохранение</span><span id="battleSessionStatus" role="status">Сохранение партии: пока нет</span></summary>
+    <div class="battle-notice">Версия 2.1A: автосохранение, воспроизводимые повторы, автотесты колод, аудит библиотеки, журнал и тестовые инструменты. Добор v1.9.1: <b>карты берутся автоматически</b> — обычный добор с верха перемешанной колоды, добор определённого типа — случайная подходящая карта. Выбирать карту при доборе не нужно. <br>Игровые эффекты v1.9: урон, лечение, призыв, ауры, боевые кличи, предсмертные эффекты, простые ритуалы и стоимость в трупах. <b>Реализована только подтверждённая часть библиотеки</b>. Карты с неподдерживаемыми эффектами помечены, а неподдерживаемые заклинания заблокированы. Спорные правила не подменяются догадками. <span id="battleEffectCoverage" class="battle-effect-count"></span></div>
+  </details>
+  <div class="battle-layout">
+    <div class="battle-main">
+      <div id="battleSpellReveal" class="mw-spell-reveal" hidden aria-live="off"></div>
+      <div class="mw-art-deck enemy" id="mwArtBotDeck" role="img" aria-label="Колода соперника: число карт">
+        <strong id="mwArtBotDeckCount">—</strong><small>Колода</small></div>
+      <div class="mw-art-deck player" id="mwArtMyDeck" role="img" aria-label="Моя колода: число карт">
+        <strong id="mwArtMyDeckCount">—</strong><small>Колода</small></div>
+      <div class="battle-opponent">
+        <span class="battle-zone-title">ПОЛЕ ПРОТИВНИКА</span>
+        <div class="battle-playerbar hero-chassis" data-hero-owner="1">
+          <div class="hero-avatar-ability">
+           <div class="hero-portrait-group">
+            <button id="botHeroPortrait" class="hero-portrait" type="button" aria-label="Выбрать героя противника как цель">♜</button>
+            <button id="botHeroUpload" type="button" class="hero-portrait-upload" title="Загрузить свой портрет героя бота">＋</button>
+            <div class="mw-equipped-weapon" id="botEquippedWeapon" role="img" hidden aria-label="Оружие героя"></div>
+          </div>
+          <div class="hero-identity">
+            <span class="hero-label">БОТ · <span id="botClassLabel">—</span></span>
+            <b id="botHero" role="button" tabindex="0">30 ♥</b>
+            <small id="botHeroName">Герой противника</small>
+          </div>
+          <div class="hero-power-group">
+            <button id="botHeroPower" type="button" class="battle-hero-power" disabled>Сила героя</button>
+            <small id="botHeroAbilityHint">Доступность силы и её эффект</small>
+          </div>
+          </div>
+          <div class="hero-resources">
+            <button id="botGraveyardBtn" type="button" class="battle-grave-button">⚰ Кладбище (0)</button>
+            <span id="botStats">0 карт</span>
+          </div>
+        </div>
+        <div id="botHand" class="battle-bot-hand"></div>
+        <div id="botBoard" class="battle-board" aria-label="Поле бота"></div>
+      </div>
+      <div class="battle-clock-bar">
+        <div class="battle-time-dial">
+          <span class="battle-celestial" id="battleCelestial">☀</span>
+          <div><span class="battle-clock-title">ИГРОВЫЕ ЧАСЫ</span>
+          <strong id="battleClock">◷ —</strong></div>
+        </div>
+        <div class="battle-hour-pips" id="battleHourPips" aria-label="12 делений игрового циферблата"></div>
+        <span id="battleTurnInfo">Выберите колоды и начните тест</span>
+        <button id="battleCancelTarget" class="btn btn-ghost" hidden>Сбросить выбор</button>
+      </div>
+      <div class="battle-player">
+        <div id="myBoard" class="battle-board" aria-label="Моё поле"></div>
+        <div class="battle-playerbar hero-chassis" data-hero-owner="0">
+          <div class="hero-avatar-ability">
+           <div class="hero-portrait-group">
+            <button id="myHeroPortrait" class="hero-portrait" type="button" aria-label="Выбрать своего героя для атаки">⚔</button>
+            <button id="myHeroUpload" type="button" class="hero-portrait-upload" title="Загрузить свой портрет героя игрока">＋</button>
+            <div class="mw-equipped-weapon" id="myEquippedWeapon" role="img" hidden aria-label="Оружие героя"></div>
+          </div>
+          <div class="hero-identity">
+            <span class="hero-label">ИГРОК · <span id="myClassLabel">—</span></span>
+            <b id="myHero" role="button" tabindex="0">30 ♥</b>
+            <small id="myHeroName">Ваш герой</small>
+          </div>
+          <div class="hero-power-group">
+            <button id="myHeroPower" type="button" class="battle-hero-power" disabled>Сила героя</button>
+            <small id="myHeroAbilityHint">Доступность силы и её эффект</small>
+          </div>
+          </div>
+          <div class="hero-resources">
+            <button id="myGraveyardBtn" type="button" class="battle-grave-button">⚰ Кладбище (0)</button>
+            <span id="myStats">0 маны</span>
+          </div>
+        </div>
+        <div id="myHand" class="battle-hand" aria-label="Моя рука"></div>
+      </div>
+      <div class="battle-actions">
+        <span id="battleActionHint">Выберите карту в руке для розыгрыша или существо для атаки.</span>
+        <button id="battleEndTurn" type="button" class="btn btn-gold" disabled>Завершить ход</button>
+      </div>
+    </div>
+    <aside class="battle-side" id="battleSidePanel" hidden aria-hidden="true">
+      <div class="battle-log-header">Журнал партии · v2.1D</div>
+      <div class="battle-event-toolbar">
+        <select id="battleLogKind" aria-label="Тип события">
+          <option value="all">Все события</option><option value="turn">Ходы</option>
+          <option value="play">Розыгрыш</option><option value="summon">Призыв</option>
+          <option value="attack">Атаки</option><option value="damage">Урон</option>
+          <option value="healing">Лечение</option><option value="draw">Добор</option>
+          <option value="death">Гибель</option><option value="graveyard">Кладбище</option>
+          <option value="resource">Трупы и ресурсы</option><option value="hero-power">Силы героев</option>
+          <option value="debug">Тестовый режим</option>
+        </select>
+        <select id="battleLogOwner" aria-label="Кто совершил действие">
+          <option value="all">Оба игрока</option><option value="0">Игрок</option><option value="1">Бот</option>
+        </select>
+        <input id="battleLogSearch" type="search" placeholder="Поиск по событиям…" aria-label="Поиск в журнале">
+        <button id="battleExportLogBtn" type="button" class="btn btn-outline">⇩ Журнал CSV</button>
+      </div>
+      <div id="battleLog" class="battle-log" aria-live="polite"></div>
+      <details class="battle-dev-panel mw-quality-panel" id="battleReplayPanel">
+        <summary>↻ История партии · воспроизводимый повтор</summary>
+        <p>Пошагово проверяет реальные игровые решения и случайный добор. История содержит скрытые карты обеих сторон — не публикуйте её до конца матча.</p>
+        <label>Шаг повтора <input id="battleReplayStep" type="range" min="0" max="0" value="0"></label>
+        <button id="battleReplayInspectBtn" class="btn btn-outline" type="button">Просмотреть выбранный шаг</button>
+        <div id="battleReplayInfo" class="mw-quality-report" role="status">Начните бой или загрузите повтор.</div>
+      </details>
+      <details class="battle-dev-panel mw-quality-panel" id="battleLabPanel">
+        <summary>⚗ Автотесты полных матчей · v2.1A</summary>
+        <p>Настоящий движок, три исходные колоды, две стороны под управлением бота. Только локально, без изменения коллекции.</p>
+        <label>Матчей на пару <select id="battleLabGames">
+          <option value="2">2 (6 всего)</option>
+          <option value="4">4 (12 всего)</option>
+          <option value="8">8 (24 всего)</option>
+        </select></label>
+        <label>Seed <input id="battleLabSeed" type="number" value="20211108" step="1"></label>
+        <div class="mw-quality-actions">
+          <button id="battleLabRunBtn" type="button" class="btn btn-gold">▶ Проверить три колоды</button>
+          <button id="battleLabExportBtn" type="button" class="btn btn-outline" disabled>⇩ CSV</button>
+        </div>
+        <div id="battleLabResult" class="mw-quality-report" role="status">Тесты ещё не запускались.</div>
+      </details>
+      <details class="battle-dev-panel" id="battleDevPanel">
+        <summary>⚙ Режим разработчика · только тестовая партия</summary>
+        <label class="battle-dev-opt"><input id="battleDevToggle" type="checkbox"> Включить команды тестирования</label>
+        <div id="battleDevControls" hidden>
+          <p>Команды помечают партию как тестовую. Они не меняют библиотеку карт и не означают утверждение новых правил.</p>
+          <label>Чья сторона <select id="battleDevOwner"><option value="0">Игрок</option><option value="1">Бот</option></select></label>
+          <label>Действие <select id="battleDevAction">
+            <option value="hour">Установить час</option>
+            <option value="mana">Установить ману</option>
+            <option value="corpses">Установить количество трупов</option>
+            <option value="give">Выдать карту в руку</option>
+            <option value="summon">Призвать существо (без боевого клича)</option>
+            <option value="kill">Уничтожить существо на поле</option>
+          </select></label>
+          <label id="battleDevValueRow">Значение <input id="battleDevValue" type="number" min="0" value="12"></label>
+          <label id="battleDevCardRow" hidden>Карта <select id="battleDevCard"></select></label>
+          <label id="battleDevMinionRow" hidden>Существо <select id="battleDevMinion"></select></label>
+          <button id="battleDevApply" class="btn btn-gold" type="button">Выполнить тестовую команду</button>
+          <div id="battleDevNote" role="status"></div>
+        </div>
+      </details>
+      <div class="battle-side-foot">Правила v0.4 · 30 здоровья · 7 существ · максимум 10 маны · 10 карт в руке. Нерешённые правила не подменяются догадками.</div>
+    </aside>
+  </div>
+
+  <input type="file" accept="image/png,image/jpeg,image/webp" id="battleHeroPortraitFile" hidden>
+  <div id="battleCardInspect" class="battle-inspect-modal" hidden role="dialog" aria-modal="true" aria-labelledby="battleInspectName">
+    <div class="battle-inspect-panel">
+      <button id="battleInspectClose" class="battle-inspect-close" type="button">✕ Закрыть · Esc</button>
+      <div class="mw-inspect-template" id="battleInspectTemplate" aria-label="Полная карта с иллюстрацией"></div>
+      <div class="battle-inspect-description">
+        <span class="section-eyebrow">ПОЛНЫЙ ПРОСМОТР КАРТЫ</span>
+        <h2 id="battleInspectName">Карта</h2>
+        <p id="battleInspectMeta"></p>
+        <div class="battle-inspect-stats" id="battleInspectStats"></div>
+        <div class="battle-inspect-effect" id="battleInspectEffect"></div>
+        <p id="battleInspectSupport" class="battle-inspect-support"></p>
+      </div>
+    </div>
+  </div>
+  <div id="battleGraveyardDialog" class="battle-choice-modal" hidden role="dialog"
+       aria-modal="true" aria-labelledby="graveTitle">
+    <div class="battle-choice-panel grave-panel">
+      <div class="battle-choice-head">
+        <div><span class="section-eyebrow">ЛИЧНЫЕ КЛАДБИЩА · ТЕСТОВЫЙ БОЙ</span>
+          <h2 id="graveTitle">Кладбище</h2></div>
+        <button type="button" class="btn btn-ghost" id="graveCloseBtn">✕ Закрыть</button>
+      </div>
+      <div class="grave-tabs">
+        <button type="button" data-grave-owner="0">Игрок</button>
+        <button type="button" data-grave-owner="1">Бот</button>
+      </div>
+      <div id="battleGraveyardBody" class="grave-body"></div>
+    </div>
+  </div>
+  <div id="battleChoiceDialog" class="battle-choice-modal" hidden role="dialog" aria-modal="true"
+       aria-labelledby="battleChoiceTitle">
+    <div class="battle-choice-panel">
+      <div class="battle-choice-head">
+        <div><span class="section-eyebrow">ВЫБОР ИЗ КОЛОДЫ / КЛАДБИЩА / ПОЛЯ</span>
+          <h2 id="battleChoiceTitle">Выбор карты</h2></div>
+        <button type="button" class="btn btn-ghost" id="battleChoiceCancel" aria-label="Отменить выбор">✕</button>
+      </div>
+      <p class="battle-choice-explain">Выбор не расходует ману и не изменяет состояние партии до подтверждения.
+        Для каждой карты действуют ограничения, указанные в её тексте.</p>
+      <div id="battleChoiceSections" class="battle-choice-sections"></div>
+      <div class="battle-choice-actions">
+        <button type="button" id="battleChoiceCancelBottom" class="btn btn-ghost">Отмена (Esc)</button>
+        <button type="button" id="battleChoiceConfirm" class="btn btn-gold">Применить выбор</button>
+      </div>
+    </div>
+  </div>
+  <div id="battleMulligan" class="battle-mulligan" hidden>
+    <div class="battle-mulligan-panel">
+      <h2>Начальная замена карт</h2><p>Выберите стартовые карты, которые хотите заменить. Монетку заменить нельзя.</p>
+      <div id="mulliganCards" class="battle-mulligan-cards"></div>
+      <button id="mulliganConfirm" class="btn btn-gold">Подтвердить и начать</button>
+      <button id="battleResumePrevious" type="button" class="btn btn-outline" hidden>↻ Вернуться к предыдущей партии</button>
+    </div>
+  </div>
+</section>
+
+<div id="sheetDeckModal" class="deck-sheet-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="sheetDeckTitle">
+  <section class="deck-sheet-panel">
+    <header class="deck-sheet-header">
+      <div><span class="section-eyebrow">КОНСТРУКТОР КОЛОД · ПОНЯТНЫЙ ИМПОРТ</span>
+        <h2 id="sheetDeckTitle">Импорт готовой колоды</h2>
+        <p>С Google Sheets: <b>Файл → Скачать → Microsoft Excel (.xlsx)</b>. Можно также использовать CSV выбранного листа.</p>
+      </div>
+      <button type="button" id="sheetDeckClose" class="deck-sheet-close" aria-label="Закрыть импорт">×</button>
+    </header>
+    <div class="deck-sheet-guide">
+      <div class="deck-sheet-steps">
+        <span><b>1</b> Выберите файл</span><span><b>2</b> Проверьте столбцы</span><span><b>3</b> Сохраните колоду</span>
+      </div>
+      <div class="deck-sheet-example">
+        <div><strong>Нужные столбцы</strong><small>Порядок не важен. «Название» — необязательно.</small></div>
+        <table><thead><tr><th>Кол-во</th><th>ID</th><th>Название</th></tr></thead><tbody>
+          <tr><td>2</td><td>KNZ-002</td><td>МАЛАДЫ ДРУЖЫННІК</td></tr>
+          <tr><td>2</td><td>KNZ-039</td><td>ДЗЁННЫ ВАРТАВЫ</td></tr>
+        </tbody></table>
+        <button type="button" class="btn btn-outline" id="sheetDownloadTemplate">↓ Скачать пример CSV</button>
+      </div>
+    </div>
+    <div id="sheetDropZone" class="deck-sheet-dropzone" tabindex="0" role="button">
+      <span class="deck-sheet-drop-icon">⇧</span>
+      <div><b>Перетащите Excel или CSV сюда</b><small>Или нажмите, чтобы выбрать XLSX, CSV, TSV · до 12 МБ · всё обрабатывается на устройстве</small></div>
+      <button type="button" class="btn btn-gold" id="sheetPickButton">Выбрать файл</button>
+    </div>
+    <details class="deck-sheet-paste" id="sheetPasteDetails">
+      <summary>Или просто вставьте скопированные строки из Google Sheets <b>Ctrl+C → Ctrl+V</b></summary>
+      <div class="deck-sheet-paste-content">
+        <p>Выделите в таблице столбцы «Кол-во» и «ID» (можно вместе с названием), скопируйте и вставьте ниже. Заголовки необязательны.</p>
+        <textarea id="sheetPasteText" rows="4" spellcheck="false" placeholder="Кол-во&#9;ID&#9;Название&#10;2&#9;KNZ-002&#9;МАЛАДЫ ДРУЖЫННІК"></textarea>
+        <button id="sheetPasteCheck" type="button" class="btn btn-outline">✓ Проверить вставленные строки</button>
+      </div>
+    </details>
+    <input type="file" accept=".xlsx,.csv,.tsv,.txt" id="sheetDeckFile" hidden>
+    <div id="sheetImportBusy" class="deck-sheet-busy" hidden>Читаем таблицу…</div>
+    <div id="sheetImportError" class="deck-sheet-error" hidden role="alert"></div>
+    <div id="sheetImportDetails" hidden>
+      <div class="deck-sheet-fields">
+        <label>Лист / файл <select id="sheetDeckSheet"></select></label>
+        <label>Название новой колоды <input id="sheetDeckName" type="text" maxlength="100"></label>
+        <label>Класс <select id="sheetDeckClass">
+          <option>Воин</option><option>Чернокнижник</option><option>Некромант</option>
+          <option>Чародей</option><option>Ведун</option><option>Заклинатель</option><option>Разбойник</option>
+        </select></label>
+        <label>Строка заголовков <select id="sheetDeckHeader"></select></label>
+        <label>Столбец ID <select id="sheetDeckIdColumn"></select></label>
+        <label>Столбец количества <select id="sheetDeckQtyColumn"></select></label>
+        <label>Столбец названия <select id="sheetDeckNameColumn"></select></label>
+      </div>
+      <div id="sheetImportSummary" class="deck-sheet-summary" aria-live="polite"></div>
+      <div class="deck-sheet-table-wrap">
+        <table class="deck-sheet-preview"><thead><tr><th>Строка</th><th>Кол-во</th><th>ID</th><th>Карта из библиотеки</th><th>Статус</th></tr></thead><tbody id="sheetImportRows"></tbody></table>
+      </div>
+      <div id="sheetImportIssues" class="deck-sheet-issues"></div>
+    </div>
+    <footer class="deck-sheet-footer">
+      <span>Существующие колоды не перезаписываются. Обнаруженные ошибки необходимо исправить до импорта.</span>
+      <div><button type="button" class="btn btn-outline" id="sheetDeckCancel">Отмена</button>
+        <button type="button" class="btn btn-gold" id="sheetDeckConfirm" disabled>✓ Добавить колоду в библиотеку</button></div>
+    </footer>
+  </section>
+</div>
+
+<div id="toast" role="status"></div>
+<input id="artFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+<input id="projectFile" type="file" accept=".json,.mwcard,application/json" hidden>
+<input id="layerFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+<input id="assetImportFile" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+<input id="libraryImportFile" type="file" accept=".json,application/json" hidden>
+<input id="cardsImportFile" type="file" accept=".json,application/json" hidden>
+<input id="cardsCsvFile" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values,text/plain" hidden>
+<div id="newCardDialog" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="newCardDialogTitle">
+  <div class="modal-panel">
+    <div class="modal-heading"><div><div class="section-eyebrow">НОВАЯ КАРТА</div><h2 id="newCardDialogTitle">Создать по утверждённой основе</h2></div>
+      <button id="closeNewCardBtn" class="modal-close" type="button" aria-label="Закрыть">×</button></div>
+    <div class="field"><label for="newCardType">Тип карты</label><select id="newCardType" class="library-select">
+      <option value="creature">Существо · овальное окно арта</option>
+      <option value="spell">Заклинание · прямоугольное окно арта</option>
+      <option value="weapon">Оружие · круглое окно арта</option>
+    </select></div>
+    <div class="field" id="creatureVariantField"><label for="newCardVariant">Дизайн существа</label>
+      <select id="newCardVariant" class="library-select">
+        <option value="integrated" selected>Новый · подложка + элементы Figma</option>
+        <option value="classic">Классический v2.1D · без изменений</option>
+        <option value="figma">Прототип Figma v2.1E (для сравнения)</option>
+      </select>
+      <div class="inspector-hint">Новый редактор использует шесть присланных подложек и оригинальные Figma-элементы. Старые шаблоны остаются доступными.</div>
+    </div>
+    <div class="field"><label for="newCardTheme">Цвет подложки</label>
+      <select id="newCardTheme" class="library-select"><option value="default">Основной (верхний ряд)</option><option value="alt">Альтернативный (нижний ряд)</option></select></div>
+    <div class="field"><label for="newCardId">ID из основной библиотеки <span class="field-hint">необязательно для черновика</span></label>
+       <input id="newCardId" type="text" maxlength="80" spellcheck="false" placeholder="Например, утверждённый ID из Google Sheets"></div>
+    <div class="field"><label for="newCardName">Название карты (по-белорусски)</label>
+       <input id="newCardName" type="text" maxlength="150" spellcheck="false" placeholder="Можно заполнить позднее"></div>
+    <p class="modal-help">Пустой ID получит временную метку LOCAL-…. Это не ID из Google Sheets. Шаблоны не добавляют придуманных характеристик или эффектов.</p>
+    <div class="modal-actions"><button id="cancelNewCardBtn" class="btn btn-ghost" type="button">Отмена</button><button id="createNewCardBtn" class="btn btn-gold" type="button">Создать карту</button></div>
+  </div>
+</div>
+<div id="newLayerDialog" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="newLayerTitle">
+  <div class="modal-panel">
+    <div class="modal-heading"><div><div class="section-eyebrow">КОМПОЗИЦИЯ КАРТЫ</div><h2 id="newLayerTitle">Новый графический слой</h2></div>
+      <button id="closeNewLayerBtn" type="button" class="modal-close" aria-label="Закрыть">×</button></div>
+    <div class="field"><label for="newLayerCategory">Категория</label><select id="newLayerCategory" class="library-select">
+      <option value="all">Все категории</option><option value="frames">Рамки</option><option value="icons">Иконки</option><option value="decor">Декор</option><option value="art">Арты</option><option value="flags">Флаги</option>
+    </select></div>
+    <div class="field"><label for="newLayerAsset">Ассет для нового слоя</label><select id="newLayerAsset" class="library-select"></select></div>
+    <div class="new-layer-preview">
+      <img id="newLayerPreview" alt="Предпросмотр ассета">
+      <div><div id="newLayerAssetInfo" class="new-layer-meta">Выберите изображение из библиотеки.</div>
+      <button id="newLayerImportBtn" type="button" class="btn btn-outline">＋ Загрузить новый ассет</button></div>
+    </div>
+    <div class="field"><label for="newLayerName">Название слоя</label><input id="newLayerName" type="text" maxlength="120" placeholder="Название нового слоя"></div>
+    <div class="field"><label for="newLayerParent">Расположение в дереве слоёв</label><select id="newLayerParent" class="library-select"></select></div>
+    <p class="modal-help">Слой получит собственный ID, координаты, размер и ресурс. Существующие 13 позиций не изменяются.</p>
+    <div class="modal-actions"><button id="cancelNewLayerBtn" class="btn btn-ghost" type="button">Отмена</button><button id="createNewLayerBtn" class="btn btn-gold" type="button">Создать слой</button></div>
+  </div>
+</div>
+<div id="shortcutsDialog" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle">
+  <div class="modal-panel shortcut-panel">
+    <div class="modal-heading"><div><div class="section-eyebrow">УПРАВЛЕНИЕ РЕДАКТОРОМ</div><h2 id="shortcutsTitle">Горячие клавиши</h2></div>
+      <button id="closeShortcutsBtn" type="button" class="modal-close" aria-label="Закрыть">×</button></div>
+    <div class="shortcut-list">
+      <div><span>Отменить / повторить</span><span><kbd>Ctrl</kbd> + <kbd>Z</kbd> / <kbd>Y</kbd></span></div>
+      <div><span>Повторить (альтернатива)</span><span><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></span></div>
+      <div><span>Проект JSON / PNG</span><span><kbd>Ctrl</kbd> + <kbd>S</kbd> / <kbd>E</kbd></span></div>
+      <div><span>Открыть проект</span><span><kbd>Ctrl</kbd> + <kbd>O</kbd></span></div>
+      <div><span>Новый графический слой</span><span><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd></span></div>
+      <div><span>Копировать / вставить слой</span><span><kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd></span></div>
+      <div><span>Дублировать графический слой</span><span><kbd>Ctrl</kbd> + <kbd>D</kbd></span></div>
+      <div><span>Удалить свой слой</span><span><kbd>Delete</kbd></span></div>
+      <div><span>Сдвинуть на 1 / 10 пикселей</span><span><kbd>↑ ↓ ← →</kbd> / <kbd>Shift</kbd> + стрелки</span></div>
+      <div><span>Слой выше / ниже</span><span><kbd>Ctrl</kbd> + <kbd>]</kbd> / <kbd>[</kbd></span></div>
+      <div><span>Масштаб просмотра / вписать</span><span><kbd>+</kbd> <kbd>−</kbd> / <kbd>0</kbd></span></div>
+      <div><span>Снять выделение / закрыть окно</span><span><kbd>Esc</kbd></span></div>
+      <div><span>Справка по клавишам</span><span><kbd>F1</kbd> / <kbd>?</kbd></span></div>
+    </div>
+    <div class="shortcuts-tip"><b>Растягивание:</b> восемь маркеров вокруг выделенного объекта. Пропорции сохраняются по умолчанию. Удерживайте <kbd>Shift</kbd> во время перетаскивания, чтобы изменить режим. При выключенной связи Shift временно включает её.</div>
+    <div class="modal-actions"><button type="button" class="btn btn-gold" onclick="document.getElementById('closeShortcutsBtn').click()">Понятно</button></div>
+  </div>
+</div>
+<script src="assets-data.js"></script>
+<script src="battle-card-embedded-v2.1C.js"></script>
+<script src="starter-project.js"></script>
+<script src="card-templates.js"></script>
+<script src="figma-card-assets-v2.1E.js"></script>
+<script src="figma-card-template-v2.1E.js"></script>
+<script src="editor-default-assets-v2.1F.js"></script>
+<script src="editor-layout-v2.1F.js"></script>
+<script src="card-workflow-v2.1G.js"></script>
+<script src="card-catalog.js"></script>
+<script src="collection-core-v2.1M1.js"></script>
+<script src="template-lab-core-v2.1M2.js"></script>
+<script src="warlock-card-art-v2.1I.js"></script>
+<script src="mw-test-art-catalog.js"></script>
+<script src="hero-art-v2.1K.js"></script>
+<script src="app.js"></script>
+<script src="deck-model.js"></script>
+<script src="deck-sheet-import.js"></script>
+<script src="battle-engine.js"></script>
+<script src="battle-replay.js"></script>
+<script src="card-audit.js"></script>
+<script src="battle-lab.js"></script>
+<script src="battle-drag-rules-v2.1B.js"></script>
+<script src="v05-dynamic-manifest.js"></script>
+<script src="v05-dynamic-core.js"></script>
+<script src="v05-library-core.js"></script>
+<script src="v05-library-seed.js"></script>
+<script src="v05-art-store.js"></script>
+<script src="battle-v05-card-bridge.js?v=0510"></script>
+<script src="battle-card-renderer-v2.1C.js?v=0510"></script>
+<script src="arena-art-v2.1D.js"></script>
+<script src="arena-3d-math-v2.1H.js"></script>
+<script src="arena-3d-v2.1H.js?v=0510"></script>
+<script src="hero-hud-v05S11.js?v=0511"></script>
+<script src="deckgame.js"></script>
+<script src="deck-sheet-ui.js"></script>
+<script src="collection-ui-v2.1M1.js"></script>
+<script src="template-lab-ui-v2.1M2.js"></script>
+</body>
+</html>

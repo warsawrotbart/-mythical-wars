@@ -1,0 +1,389 @@
+/* Мифические войны v2.1B — блочное игровое поле. Нет внешней графики/сервисов.
+   Все старые ID, данные и обработчики редактора/колод остаются неизменными. */
+#battleWorkspace{
+  --arena-bronze:#d1a364;
+  --arena-shadow:#050b13;
+  --arena-stone:#283c46;
+  --arena-border:#9c7954;
+  overflow:hidden;
+  background:linear-gradient(155deg,#10202c,#162a35 65%,#0b141d);
+}
+#battleWorkspace[data-phase="night"]{
+ --arena-stone:#202c42;--arena-bronze:#a6b8df;--arena-border:#5f7697;
+ background:linear-gradient(155deg,#081526,#17273e 65%,#090f20);
+}
+#battleWorkspace[data-phase="morning"]{--arena-stone:#304654;--arena-bronze:#ecd1a1;}
+#battleWorkspace[data-phase="evening"]{--arena-stone:#363447;--arena-bronze:#d3a17f;}
+
+/* Основные команды доступны всегда. Остальные настройки и справка свёрнуты. */
+#battleWorkspace .battle-topbar{
+  position:relative;display:flex;flex:0 0 auto;align-items:center;gap:12px;
+  min-height:62px;padding:8px 17px;border-bottom:1px solid #836a4770;
+  background:#101d29;z-index:45;overflow:visible;
+}
+#battleWorkspace .battle-topbar h2{font-size:17px;line-height:1.1;margin:2px 0 0;}
+#battleWorkspace .battle-topbar .section-eyebrow{font-size:9px;}
+#battleWorkspace .battle-quick-actions{display:flex;align-items:center;gap:7px;margin-left:auto;flex-wrap:wrap;}
+#battleWorkspace .battle-quick-actions .btn{font-size:12px;padding:6px 11px;min-height:34px;white-space:nowrap;}
+#battleWorkspace .battle-settings-drawer{position:relative;flex:0 0 auto;z-index:55;}
+#battleWorkspace .battle-settings-drawer>summary{
+ cursor:pointer;list-style:none;border:1px solid #8a785d;border-radius:9px;
+ padding:9px 13px;color:#f0d5a9;background:#1c3040;font-weight:700;font-size:12px;
+ box-shadow:0 3px 8px #03081088;
+}
+#battleWorkspace .battle-settings-drawer>summary::-webkit-details-marker{display:none;}
+#battleWorkspace .battle-settings-drawer[open]>summary{background:#365069;}
+#battleWorkspace .battle-settings-drawer .battle-top-controls{
+ position:absolute;top:calc(100% + 8px);left:0;z-index:60;width:min(690px,calc(100vw - 28px));
+ max-height:min(72vh,620px);overflow-y:auto;min-width:0;display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px;
+ padding:14px;background:#122333f8;border:2px solid #ad8858;border-radius:12px;
+ box-shadow:0 20px 60px #000c;
+}
+#battleWorkspace .battle-settings-drawer .battle-top-controls>label{
+ display:flex!important;flex-direction:column;align-items:stretch;justify-content:center;min-width:0;gap:4px;
+}
+#battleWorkspace .battle-settings-drawer .battle-top-controls>label.battle-use-local{flex-direction:row;align-items:center;}
+#battleWorkspace .battle-settings-drawer .battle-top-controls>button{min-height:35px;}
+#battleWorkspace .battle-settings-drawer .battle-top-controls select{max-width:100%;min-width:0;}
+#battleWorkspace .battle-settings-drawer .battle-zoom-control select{max-width:100%;}
+#battleWorkspace .battle-settings-drawer .battle-top-controls input[type=file]{display:none!important;}
+#battleWorkspace .battle-info-drawer{
+ position:relative;flex:0 0 auto;background:#12202b;border-bottom:1px solid #364c5c;z-index:8;
+}
+#battleWorkspace .battle-info-drawer>summary{
+ cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;
+ padding:4px 16px;color:#d6c098;font-size:11px;line-height:1.3;min-height:25px;
+}
+#battleWorkspace .battle-info-drawer #battleSessionStatus{
+ display:block;max-width:min(65%,850px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+ text-align:right;color:#9eb8bf;font-size:10px;border:0;background:transparent;margin:0;padding:0;
+}
+#battleWorkspace .battle-info-drawer .battle-notice{padding:12px 20px;max-height:115px;overflow:auto;}
+
+/* Игровая доска занимает всю область. Выдвижной журнал не сжимает поле. */
+#battleWorkspace .battle-layout{position:relative;display:block!important;flex:1 1 auto;min-height:0;overflow:hidden;}
+#battleWorkspace .battle-main{
+ position:relative;isolation:isolate;display:flex;flex-direction:column;
+ justify-content:flex-start!important;align-items:stretch;
+ overflow-x:hidden;overflow-y:auto;height:100%;min-height:0;gap:0;
+ padding:7px clamp(116px,11.5vw,185px) 8px;
+ background:
+    linear-gradient(90deg,#5a47323f 0 2%,transparent 6% 94%,#5a47323f 98% 100%),
+    linear-gradient(180deg,#4b422b30 0 47%,#293f506b 48% 100%),
+    radial-gradient(ellipse at center,var(--arena-stone),#101f2b 80%);
+ box-shadow:inset 0 0 0 7px #b38e5042,inset 0 0 0 11px #20191288;
+ scrollbar-color:#857255 #1a2935;scrollbar-width:thin;
+}
+#battleWorkspace .battle-opponent,
+#battleWorkspace .battle-player{
+ display:flex!important;flex-direction:column;justify-content:space-between!important;
+ align-items:center;gap:2px;padding:0;position:relative;
+ min-height:0!important;
+}
+#battleWorkspace .battle-opponent{flex:1 1 44%!important;min-height:220px!important;}
+#battleWorkspace .battle-player{flex:1 1 56%!important;min-height:290px!important;}
+#battleWorkspace .battle-zone-title{
+ position:absolute;z-index:1;top:7px;left:4px;letter-spacing:1.7px;opacity:.55;
+ font-size:10px;color:#f0dcb5;pointer-events:none;
+}
+#battleWorkspace .battle-opponent .battle-zone-title{top:34px;}
+#battleWorkspace .battle-opponent .battle-bot-hand{order:0;flex:0 0 30px;
+ display:flex;justify-content:center;align-items:flex-start;width:100%;
+ min-height:28px;max-height:30px;overflow:hidden;margin:0 auto;z-index:2;}
+#battleWorkspace .battle-opponent .hero-chassis{order:1;}
+#battleWorkspace .battle-opponent .battle-board{order:2;margin-top:auto;margin-bottom:2px;}
+#battleWorkspace .battle-player .battle-board{order:0;margin-top:3px;margin-bottom:auto;}
+#battleWorkspace .battle-player .hero-chassis{order:1;}
+#battleWorkspace .battle-player .battle-hand{order:2;}
+
+/* Семь визуальных слотов на каждой стороне; сыгранные карты группируются по центру. */
+#battleWorkspace .battle-board,
+#battleWorkspace .battle-board.board-empty{
+ display:flex!important;position:relative;flex:0 0 auto!important;
+ align-items:center!important;justify-content:center!important;
+ width:100%;max-width:960px;margin-inline:auto;
+ padding:8px 8px;min-height:118px!important;height:auto!important;
+ gap:clamp(4px,.65vw,10px);overflow-x:auto;overflow-y:visible;
+ border:1px solid #baa57e4a;border-radius:13px;
+ background:
+  radial-gradient(ellipse 40% 37% at center,transparent 69%,#c6b59234 71%,transparent 77%)
+  center / calc(100% / 7) 78% repeat-x,
+  linear-gradient(180deg,#b4ac8d19,#8fa5a813);
+ box-shadow:inset 0 0 14px #09131b59;
+ scrollbar-width:thin;
+}
+#battleWorkspace .battle-board.board-empty{min-height:113px!important;}
+#battleWorkspace .battle-board .deck-small-muted{margin:auto;color:#e1d0ae7c;font-size:12px;}
+#battleWorkspace .battle-card.minion{
+ width:clamp(75px,calc(86px * var(--battle-scale)),136px);
+ min-width:clamp(75px,calc(86px * var(--battle-scale)),136px);
+ height:clamp(112px,calc(118px * var(--battle-scale)),185px);
+ flex-basis:clamp(75px,calc(86px * var(--battle-scale)),136px);
+ box-shadow:0 6px 12px #01061088;z-index:2;
+}
+#battleWorkspace .battle-card.minion .bc-art{min-height:32px;}
+
+/* Одна толстая линия между сторонами, часы и фаза — отдельные элементы UI, не занимают строку. */
+#battleWorkspace .battle-clock-bar{
+ position:relative;z-index:16;display:block;flex:0 0 0!important;
+ height:0!important;min-height:0!important;margin:0;
+ padding:0!important;border:0!important;border-top:6px ridge var(--arena-bronze)!important;
+ border-radius:0;background:transparent!important;box-shadow:0 2px 9px #000c;
+ overflow:visible;pointer-events:none;
+}
+#battleWorkspace .battle-time-dial{
+ position:absolute;z-index:22;left:calc(-1 * clamp(111px,11.3vw,180px));
+ top:0;transform:translateY(-50%);
+ width:clamp(90px,10.5vw,140px);height:clamp(85px,10.5vw,140px);
+ padding:8px!important;border:3px solid #d1a865;border-radius:50%;
+ background:radial-gradient(circle at 48% 35%,#4e8299,#163143 68%,#101d30);
+ box-shadow:inset 0 0 0 3px #233442,0 8px 14px #000a;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+ pointer-events:auto;
+}
+#battleWorkspace[data-phase="night"] .battle-time-dial{background:radial-gradient(circle at 48% 35%,#4d538b,#14213c 70%,#0c1526);}
+#battleWorkspace .battle-time-dial .battle-celestial{width:33px;height:33px;min-height:33px;font-size:19px;}
+#battleWorkspace .battle-time-dial .battle-clock-title{font-size:8px;letter-spacing:1px;}
+#battleWorkspace .battle-time-dial>div{display:flex;flex-direction:column;align-items:center;gap:3px;}
+#battleWorkspace .battle-time-dial #battleClock{font-size:15px;line-height:1.1;}
+#battleWorkspace .battle-hour-pips{display:none!important;}
+#battleWorkspace #battleTurnInfo{
+ position:absolute;z-index:22;top:0;left:50%;transform:translate(-50%,-50%);
+ flex:initial!important;min-width:132px;max-width:270px;padding:7px 18px;
+ border:2px solid var(--arena-bronze);border-radius:999px;
+ background:#213c45;box-shadow:0 2px 13px #050c17b9;
+ color:#ffe8b7;text-align:center;font-weight:900;font-size:13px;pointer-events:none;
+}
+#battleWorkspace #battleCancelTarget:not([hidden]){
+ position:absolute;z-index:23;right:6%;top:0;transform:translateY(-50%);
+ display:block;pointer-events:auto;background:#513f2f;
+}
+#battleWorkspace .battle-actions{
+ position:absolute!important;z-index:20;right:8px;top:44%;bottom:auto!important;
+ transform:translateY(-50%);display:flex;flex-direction:column;
+ align-items:center;justify-content:center;width:clamp(101px,10.7vw,155px);
+ min-height:0;max-height:120px;margin:0;padding:5px!important;
+ border:0!important;background:transparent!important;box-shadow:none!important;
+}
+#battleWorkspace .battle-actions #battleEndTurn{
+ border-radius:50%;width:clamp(100px,10vw,145px);height:clamp(88px,10vw,142px);
+ padding:13px!important;min-height:88px;
+ font:900 clamp(11px,1.2vw,17px)/1.4 Georgia,serif;
+ letter-spacing:.5px;text-align:center;white-space:normal;
+ border:4px ridge #c49a59;box-shadow:inset 0 0 16px #083821,0 6px 16px #0009;
+ background:radial-gradient(circle at 45% 35%,#188c53,#075735 64%,#123e33)!important;
+ color:#e8fbd9!important;text-shadow:0 2px 3px #022d12;
+ cursor:pointer;
+}
+#battleWorkspace .battle-actions #battleEndTurn:disabled{
+ background:radial-gradient(circle,#48535c,#202d37)!important;
+ color:#a9b4b2!important;border-color:#6c7980;cursor:not-allowed;
+}
+#battleWorkspace .battle-actions #battleActionHint{display:none!important;}
+
+/* Герой, аватар и сила героя связаны общей рамкой; ресурсы вынесены вправо. */
+#battleWorkspace .hero-chassis{
+ display:flex!important;position:relative;flex:0 0 auto!important;
+ align-items:center;justify-content:center!important;
+ width:100%;max-width:1050px;min-height:85px!important;
+ padding:4px 3px!important;margin:2px auto;
+ background:none!important;border:0!important;border-radius:0!important;
+ box-shadow:none!important;gap:0!important;
+}
+#battleWorkspace .hero-avatar-ability{
+ display:flex;align-items:center;justify-content:center;gap:12px;
+ border:2px solid #b49360;border-radius:50px;
+ background:linear-gradient(105deg,#2e3f50e9,#182836f5);
+ box-shadow:inset 0 0 0 2px #e3bb7140,0 3px 13px #050b1599;
+ padding:5px 14px;min-height:78px;max-width:min(100%,440px);
+}
+#battleWorkspace .battle-opponent .hero-avatar-ability{border-color:#987e78;}
+#battleWorkspace .hero-portrait-group{width:62px;height:69px;flex:0 0 62px;}
+#battleWorkspace .hero-portrait{width:58px;height:64px;font-size:29px;}
+#battleWorkspace .hero-identity{max-width:115px;min-width:70px;text-align:center;flex-shrink:0;}
+#battleWorkspace .hero-identity b{font-size:20px!important;}
+#battleWorkspace .hero-identity small{max-height:22px;overflow:hidden;text-overflow:ellipsis;}
+#battleWorkspace .hero-power-group{max-width:152px;min-width:112px;flex:0 1 150px;gap:3px;}
+#battleWorkspace .hero-power-group .battle-hero-power{font-size:11px;min-height:48px;padding:5px;line-height:1.25;}
+#battleWorkspace .hero-power-group small{display:none;}
+#battleWorkspace .hero-power-group:focus-within small,
+#battleWorkspace .hero-power-group:hover small{
+ position:absolute;top:100%;z-index:20;left:50%;transform:translateX(-50%);
+ display:block;max-height:none;width:min(330px,85vw);padding:10px;border:1px solid #c9a66f;
+ border-radius:7px;background:#101e2df5;color:#f4ddac;box-shadow:0 10px 20px #000c;
+}
+#battleWorkspace .hero-resources{
+ position:absolute;right:0;top:50%;transform:translateY(-50%);
+ width:clamp(120px,15vw,210px);min-width:0;display:flex!important;flex-direction:column!important;
+ align-items:flex-end!important;gap:5px;margin:0;padding:2px;
+}
+#battleWorkspace .hero-resources .battle-grave-button{font-size:10px!important;min-height:27px;max-width:100%;}
+#battleWorkspace .hero-resources>span{font-size:11px;line-height:1.4;color:#f4dba3;white-space:normal;}
+
+/* Веер карт расположен строго по центру и не растягивает игровую линию. */
+#battleWorkspace .battle-hand{
+ flex:0 0 auto!important;display:flex;align-items:flex-end;
+ justify-content:center!important;gap:0!important;
+ width:100%;max-width:1120px;height:auto;min-height:153px!important;
+ margin:0 auto;padding:6px 24px 5px!important;
+ border:0;border-top:1px solid #b7946f77;
+ background:linear-gradient(180deg,#372b2100,#141e28aa 65%,#12212de8);
+ overflow-x:auto!important;overflow-y:visible!important;
+ scrollbar-width:thin;scrollbar-color:#a98a59 #142333;
+}
+#battleWorkspace .battle-card.hand{
+ width:clamp(80px,calc(96px * var(--battle-scale)),145px);
+ min-width:clamp(80px,calc(96px * var(--battle-scale)),145px);
+ height:clamp(116px,calc(139px * var(--battle-scale)),194px);
+ flex-basis:clamp(80px,calc(96px * var(--battle-scale)),145px);
+ margin-left:-15px;transform:rotate(0);transform-origin:bottom center;
+ box-shadow:0 4px 15px #000a;
+}
+#battleWorkspace .battle-card.hand:first-child{margin-left:0;}
+#battleWorkspace .battle-card.hand:nth-child(6n+1){transform:rotate(-2.5deg)}
+#battleWorkspace .battle-card.hand:nth-child(6n+2){transform:rotate(-1.2deg)}
+#battleWorkspace .battle-card.hand:nth-child(6n+5){transform:rotate(1.2deg)}
+#battleWorkspace .battle-card.hand:nth-child(6n+0){transform:rotate(2.5deg)}
+#battleWorkspace .battle-card.hand:hover,
+#battleWorkspace .battle-card.hand:focus-visible{
+ transform:translateY(-13px) rotate(0) scale(1.04)!important;z-index:6;
+}
+#battleWorkspace .battle-card[draggable=true]{cursor:grab;}
+#battleWorkspace .battle-card.battle-dragging{opacity:.38!important;cursor:grabbing;}
+#battleWorkspace .battle-board.drag-over,
+#battleWorkspace .battle-card.drag-over,
+#battleWorkspace .hero-chassis.drag-over{
+ background-color:#3d78544a!important;
+ outline:3px solid #98f0ab!important;
+ outline-offset:2px;
+ box-shadow:inset 0 0 22px #45e09067,0 0 14px #45e09077!important;
+}
+#battleWorkspace .battle-board.drag-invalid,
+#battleWorkspace .battle-card.drag-invalid{outline:2px dashed #bb6d6d;outline-offset:1px;}
+#battleWorkspace .battle-side[hidden]{display:none!important;}
+#battleWorkspace .battle-side{
+ position:absolute!important;z-index:65;right:0;top:0;bottom:0;
+ width:min(420px,96vw);max-width:100%;height:100%;
+ display:flex!important;flex-direction:column;
+ border-left:2px ridge #ba9867!important;box-shadow:-12px 0 48px #000b;
+ background:#0f1c29f8!important;overflow-y:auto;
+}
+#battleWorkspace #battleSideToggle[aria-expanded="true"]{background:#455a65;border-color:#e0bd7d;}
+#battleWorkspace .battle-side .battle-log{flex:1;min-height:120px;max-height:330px;overflow-y:auto;}
+
+/* Адаптивность: функциональность важнее декора. */
+@media(max-width:1150px){
+ #battleWorkspace .battle-topbar{gap:7px;flex-wrap:wrap;}
+ #battleWorkspace .battle-quick-actions .btn{font-size:11px;min-height:30px;padding:5px 8px;}
+ #battleWorkspace .battle-main{padding:7px 112px 6px;}
+ #battleWorkspace .battle-time-dial{left:-111px;width:100px;height:100px;}
+ #battleWorkspace .battle-actions{right:1px;width:103px;}
+ #battleWorkspace .battle-actions #battleEndTurn{width:99px;height:95px;font-size:11px;}
+ #battleWorkspace .hero-avatar-ability{gap:5px;max-width:330px;padding:4px 8px;min-height:70px;}
+ #battleWorkspace .hero-identity{max-width:95px;min-width:65px;}
+ #battleWorkspace .hero-power-group{max-width:105px;min-width:95px;}
+ #battleWorkspace .hero-resources{width:135px;}
+ #battleWorkspace .battle-hand{padding:4px 3px!important;}
+ #battleWorkspace .battle-card.hand{margin-left:-24px;}
+}
+@media(max-height:780px){
+ #battleWorkspace .battle-topbar{min-height:48px;padding:4px 12px;}
+ #battleWorkspace .battle-info-drawer>summary{min-height:19px;padding:3px 12px;}
+ #battleWorkspace .battle-main{padding-top:3px;padding-bottom:3px;}
+ #battleWorkspace .battle-opponent{min-height:195px!important;}
+ #battleWorkspace .battle-player{min-height:245px!important;}
+ #battleWorkspace .battle-card.minion{
+   height:clamp(100px,calc(101px * var(--battle-scale)),132px);
+   width:clamp(72px,calc(80px * var(--battle-scale)),116px);
+   min-width:clamp(72px,calc(80px * var(--battle-scale)),116px);
+   flex-basis:clamp(72px,calc(80px * var(--battle-scale)),116px);
+ }
+ #battleWorkspace .battle-card.hand{
+   height:clamp(112px,calc(117px * var(--battle-scale)),149px);
+   width:clamp(75px,calc(86px * var(--battle-scale)),114px);
+   min-width:clamp(75px,calc(86px * var(--battle-scale)),114px);
+   flex-basis:clamp(75px,calc(86px * var(--battle-scale)),114px);
+ }
+ #battleWorkspace .battle-hand{min-height:121px!important;}
+ #battleWorkspace .battle-board,
+ #battleWorkspace .battle-board.board-empty{min-height:109px!important;}
+ #battleWorkspace .hero-chassis{min-height:75px!important;}
+ #battleWorkspace .hero-avatar-ability{min-height:70px;}
+ #battleWorkspace .hero-portrait-group{height:60px;}
+ #battleWorkspace .hero-portrait{height:56px;width:54px;}
+ #battleWorkspace .battle-opponent .battle-bot-hand{flex-basis:22px;min-height:20px;max-height:22px;}
+}
+@media(max-width:800px){
+ #battleWorkspace .battle-topbar h2{font-size:14px;}
+ #battleWorkspace .battle-topbar .section-eyebrow{display:none;}
+ #battleWorkspace .battle-main{padding:4px 70px 8px;}
+ #battleWorkspace .battle-actions{right:0;width:72px;}
+ #battleWorkspace .battle-actions #battleEndTurn{width:69px;height:74px;min-height:74px;font-size:10px;padding:5px!important;}
+ #battleWorkspace .battle-time-dial{left:-70px;width:68px;height:80px;padding:2px!important;}
+ #battleWorkspace .battle-time-dial .battle-celestial{height:24px;min-height:24px;width:24px;font-size:13px;}
+ #battleWorkspace .battle-time-dial .battle-clock-title{display:none;}
+ #battleWorkspace .battle-time-dial #battleClock{font-size:12px;}
+ #battleWorkspace #battleTurnInfo{font-size:10px;padding:5px 8px;min-width:76px;}
+ #battleWorkspace .hero-resources{right:0;width:105px;}
+ #battleWorkspace .hero-resources>span{font-size:9px;}
+ #battleWorkspace .hero-avatar-ability{max-width:270px;}
+ #battleWorkspace .hero-identity{min-width:50px;max-width:65px;}
+ #battleWorkspace .hero-identity b{font-size:16px!important;}
+ #battleWorkspace .hero-portrait-group{flex-basis:48px;width:48px;}
+ #battleWorkspace .hero-portrait{width:47px;height:52px;font-size:20px;}
+ #battleWorkspace .hero-power-group{min-width:75px;max-width:85px;}
+ #battleWorkspace .hero-power-group .battle-hero-power{font-size:9px;min-height:42px;}
+ #battleWorkspace .hero-identity small{display:none;}
+ #battleWorkspace .battle-card.hand{margin-left:-31px;}
+ #battleWorkspace .battle-settings-drawer .battle-top-controls{grid-template-columns:1fr;width:min(400px,calc(100vw - 12px));}
+}
+@media(prefers-reduced-motion:reduce){
+ #battleWorkspace .battle-card.hand:hover{transition:none;}
+}
+
+/* 720/768: место под целую руку важнее пустых полей.
+   При заполненных слотах остаётся внутренний скролл арены, без скрытия карт. */
+@media(max-height:780px){
+ #battleWorkspace .battle-opponent{min-height:175px!important;}
+ #battleWorkspace .battle-player{min-height:235px!important;}
+ #battleWorkspace .hero-chassis{
+   min-height:58px!important;max-height:60px!important;
+   padding:0!important;margin:1px auto!important;
+ }
+ #battleWorkspace .hero-avatar-ability{height:58px;min-height:58px!important;padding:2px 8px!important;}
+ #battleWorkspace .hero-portrait-group{width:47px;height:50px;flex-basis:47px;}
+ #battleWorkspace .hero-portrait{width:44px;height:47px;font-size:23px;}
+ #battleWorkspace .hero-portrait-upload{width:17px;height:17px;font-size:11px;}
+ #battleWorkspace .hero-identity b{font-size:16px!important;}
+ #battleWorkspace .hero-identity small{display:none;}
+ #battleWorkspace .hero-power-group .battle-hero-power{min-height:38px;font-size:10px;padding:3px;}
+ #battleWorkspace .battle-card.minion{
+   width:clamp(69px,calc(76px * var(--battle-scale)),115px);
+   min-width:clamp(69px,calc(76px * var(--battle-scale)),115px);
+   flex-basis:clamp(69px,calc(76px * var(--battle-scale)),115px);
+   height:clamp(92px,calc(87px * var(--battle-scale)),118px);
+ }
+ #battleWorkspace .battle-card.hand{
+   width:clamp(71px,calc(80px * var(--battle-scale)),108px);
+   min-width:clamp(71px,calc(80px * var(--battle-scale)),108px);
+   flex-basis:clamp(71px,calc(80px * var(--battle-scale)),108px);
+   height:clamp(94px,calc(96px * var(--battle-scale)),126px);
+ }
+ #battleWorkspace .battle-card .bc-art{min-height:27px;}
+ #battleWorkspace .battle-card .bc-name{max-height:25px;font-size:9px;line-height:1.15;}
+ #battleWorkspace .battle-card .bc-status{font-size:8px;}
+ #battleWorkspace .battle-hand{min-height:117px!important;height:auto;}
+ #battleWorkspace .battle-board,
+ #battleWorkspace .battle-board.board-empty{min-height:103px!important;}
+ #battleWorkspace .battle-board.board-empty{min-height:83px!important;}
+}
+
+@media(max-height:780px){
+ /* Даже при 7 существах на каждой стороне и 10 картах в руке помещаем нижний край. */
+ #battleWorkspace .battle-card.hand{
+   height:clamp(90px,calc(90px * var(--battle-scale)),120px);
+ }
+ #battleWorkspace .battle-hand{min-height:108px!important;padding-top:2px!important;padding-bottom:1px!important;}
+ #battleWorkspace .battle-opponent .battle-bot-hand{flex-basis:19px;min-height:19px;max-height:19px;}
+}

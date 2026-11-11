@@ -1,0 +1,33 @@
+{
+  "release": "v05.7 RC",
+  "passed": 24,
+  "checks": [
+    "all 162 cards plus 7 tokens selectable",
+    "test-art catalogue is visible to the editor",
+    "99 ID mappings valid",
+    "all original layer bytes injected",
+    "CHR-001: renders from actual test artwork and original layers: Предпросмотр готов · PNG можно экспортировать",
+    "CHR-001: correct test-art default label",
+    "CHR-001: browser loads correct ID-matched WebP",
+    "CHR-001: nonempty 1024x1536 canvas",
+    "KNZ-001: renders from actual test artwork and original layers: Предпросмотр готов · PNG можно экспортировать",
+    "KNZ-001: correct test-art default label",
+    "KNZ-001: browser loads correct ID-matched WebP",
+    "KNZ-001: nonempty 1024x1536 canvas",
+    "NEU-023: renders from actual test artwork and original layers: Предпросмотр готов · PNG можно экспортировать",
+    "NEU-023: correct test-art default label",
+    "NEU-023: browser loads correct ID-matched WebP",
+    "NEU-023: nonempty 1024x1536 canvas",
+    "control KNZ-019 retains approved reference source",
+    "control PNG export remains possible",
+    "real control PNG exported at 1024x1536",
+    "custom art retains priority over builtin art after card switch",
+    "custom crop retained after card switch",
+    "token uses its own built-in image",
+    "unapproved token PNG still blocked",
+    "zero uncaught script errors"
+  ],
+  "errors": [],
+  "assets": 105,
+  "limitations": "about:blank with localStorage shim, real PNG/WebP via Blob URLs. No live HTTP/Windows/IndexedDB persistence/Google API tests."
+}

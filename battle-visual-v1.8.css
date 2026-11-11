@@ -1,0 +1,270 @@
+/* MW 1.8 — прикладной импорт колод и атмосферный офлайн-бой.
+   Это оформление интерфейса; утверждённые карты и правила не изменяются. */
+.deck-import-feature{
+  padding:14px 12px 13px;margin-bottom:12px;border-radius:11px;
+  background:linear-gradient(155deg,rgba(116,77,33,.4),rgba(28,48,64,.85));
+  border:1px solid #8e6b3c;box-shadow:inset 0 1px 0 #ffe2aa33;
+}
+.deck-import-feature .section-eyebrow{color:#f8d790;letter-spacing:1.4px}
+.deck-import-feature p{font-size:11px;color:#ebddc5;line-height:1.55;margin:8px 0 12px}
+.deck-import-feature small{font-size:10px;color:#b4c1cc;line-height:1.5;display:block;margin-top:9px}
+.deck-import-feature button{white-space:normal;min-height:40px}
+/* In-app XLSX/CSV import wizard */
+.deck-sheet-overlay[hidden]{display:none!important}
+.deck-sheet-overlay{position:fixed;inset:0;z-index:110;background:rgba(4,9,16,.84);backdrop-filter:blur(7px);
+ display:flex;align-items:center;justify-content:center;padding:18px}
+.deck-sheet-panel{width:min(1040px,100%);max-height:94vh;display:flex;flex-direction:column;min-height:0;
+ border:1px solid #b08d54;border-radius:18px;overflow:hidden;color:#efe7da;
+ background:radial-gradient(ellipse at 100% 0,#354354 0,transparent 36%),linear-gradient(#182735,#0e1a27);
+ box-shadow:0 40px 150px #000c,0 0 0 5px #c2924024}
+.deck-sheet-header{display:flex;justify-content:space-between;align-items:start;padding:20px 24px 8px;gap:20px}
+.deck-sheet-header h2{font:600 27px Georgia,serif;color:#ffe0a0;margin:5px 0 7px}
+.deck-sheet-header p{margin:0;color:#aebdc9;font-size:12px;line-height:1.5}
+.deck-sheet-close{font-size:28px;background:#263747;border:1px solid #596376;color:#e4d8c2;border-radius:50%;width:34px;height:34px}
+.deck-sheet-guide{display:grid;gap:10px;padding:12px 24px}
+.deck-sheet-steps{display:flex;gap:10px;flex-wrap:wrap}
+.deck-sheet-steps span{display:flex;align-items:center;gap:7px;color:#dbc8a6;font-size:11px}
+.deck-sheet-steps b{display:inline-grid;place-items:center;border:1px solid #aa8255;border-radius:50%;width:23px;height:23px;background:#483625;color:#f9dba0}
+.deck-sheet-example{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border:1px solid #3a5360;
+ border-radius:11px;background:#14212cb8;padding:9px 12px}
+.deck-sheet-example>div{min-width:170px;flex:1}
+.deck-sheet-example strong{font-size:12px;color:#f5ddaa;display:block}
+.deck-sheet-example small{font-size:10px;color:#99b6c3}
+.deck-sheet-example table{border-collapse:collapse;font-size:10px;flex:1}
+.deck-sheet-example th,.deck-sheet-example td{border-bottom:1px solid #38505e;padding:4px 9px;text-align:left}
+.deck-sheet-example th{color:#eac381}
+.deck-sheet-example button{font-size:10px}
+.deck-sheet-dropzone{margin:2px 24px 11px;display:flex;align-items:center;gap:16px;
+ border:2px dashed #7f996f;border-radius:12px;padding:15px 17px;min-height:77px;
+ background:linear-gradient(130deg,#243d3d,#1c3040);cursor:pointer}
+.deck-sheet-dropzone.over,.deck-sheet-dropzone:focus-visible{background:#3d5343;outline:2px solid #ecda9a}
+.deck-sheet-drop-icon{font-size:28px;color:#cbe4a6}
+.deck-sheet-dropzone>div{flex:1}
+.deck-sheet-dropzone b{display:block;color:#f1e1bc;font-size:13px}
+.deck-sheet-dropzone small{display:block;color:#a8c4c0;font-size:11px;margin-top:4px;line-height:1.35}
+.deck-sheet-busy,.deck-sheet-error{padding:11px 24px;font-size:12px;color:#f7d99c}
+.deck-sheet-error{color:#ffb1a7;background:#5a282c66}
+#sheetImportDetails{overflow:auto;flex:1;min-height:0;padding:0 24px 12px}
+.deck-sheet-fields{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px;padding:10px 0}
+.deck-sheet-fields label{display:flex;flex-direction:column;gap:6px;color:#aebfca;font-size:10px;font-weight:700}
+.deck-sheet-fields input,.deck-sheet-fields select{color:#e7f0f3;background:#1c2f3c;border:1px solid #526578;
+ padding:9px 10px;border-radius:7px;max-width:100%;font-size:12px}
+.deck-sheet-summary{padding:10px 0;display:flex;align-items:center;gap:13px;flex-wrap:wrap;color:#9ab2ba;font-size:11px}
+.deck-sheet-summary strong{font-size:18px;color:#f5e1ad}
+.sheet-good{color:#8ce0b3;font-weight:700}.sheet-bad{color:#ffad9e;font-weight:700}
+.deck-sheet-table-wrap{overflow:auto;border:1px solid #354d5a;border-radius:9px;max-height:245px}
+.deck-sheet-preview{width:100%;border-collapse:collapse;font-size:11px;text-align:left}
+.deck-sheet-preview th{position:sticky;top:0;background:#2c4150;color:#f3daa2;padding:9px;border-bottom:1px solid #6a665b}
+.deck-sheet-preview td{padding:8px 9px;color:#d5dfe5;border-top:1px solid #324351}
+.deck-sheet-preview tr:nth-child(2n){background:#26374555}
+.deck-sheet-preview .sheet-unmatched{background:#512b3180}
+.deck-sheet-preview code{color:#f1daaf;font-size:11px}
+.deck-sheet-issues{margin:8px 0 0;max-height:93px;overflow:auto;display:grid;gap:4px}
+.deck-sheet-issues>div{font-size:11px;line-height:1.45;padding:7px 10px;border-radius:5px}
+.sheet-issue-error{background:#6b30364d;color:#ffc2b6}
+.sheet-issue-warning{background:#75633140;color:#ead18e}
+.deck-sheet-footer{padding:12px 24px 17px;display:flex;justify-content:space-between;align-items:center;
+ gap:18px;border-top:1px solid #314a56;background:#132330}
+.deck-sheet-footer>span{flex:1;max-width:470px;line-height:1.5;font-size:11px;color:#b3bec9}
+.deck-sheet-footer>div{display:flex;gap:8px}
+.deck-sheet-footer button{font-size:11px}
+
+/* ----- Игровая арена: визуальная обложка над существующими игровыми правилами ----- */
+#battleWorkspace {
+ --arena-gold:#e4b46c;--arena-blue:#8bd8e9;--arena-ink:#102332;
+ --arena-light:#d5a767;
+ background:radial-gradient(ellipse at 50% 14%,#463c3b 0,transparent 48%),#111d28;
+}
+#battleWorkspace[data-phase="morning"]{--arena-light:#f8c980;--arena-blue:#a8edf4}
+#battleWorkspace[data-phase="day"]{--arena-light:#ffc874;--arena-blue:#85dbf4}
+#battleWorkspace[data-phase="evening"]{--arena-light:#b8839f;--arena-blue:#a5b0f4}
+#battleWorkspace[data-phase="night"]{--arena-light:#80b5f1;--arena-blue:#b1b6ff}
+.battle-topbar{background:linear-gradient(105deg,#1b2b38,#253646 45%,#302c30);
+ border-bottom:1px solid #b78b4b;padding:12px 21px;box-shadow:0 4px 12px #060b10a8}
+.battle-topbar h2{font-family:Georgia,serif;font-size:22px;color:#f3d8a4;text-shadow:0 2px 3px #000}
+.battle-notice{background:linear-gradient(95deg,#352f26,#29323b);color:#e1c69e;line-height:1.45;
+ border-bottom:1px solid #896d44;box-shadow:inset 0 1px #ffe3a20f}
+.battle-layout{grid-template-columns:minmax(530px,1fr) minmax(225px,255px);background:#0a1621}
+.battle-main{position:relative;isolation:isolate;overflow:auto;padding:12px 22px 17px;gap:8px;
+ border-right:5px ridge #8f6b45;
+ background:
+ radial-gradient(ellipse 85% 60% at 50% -8%,rgba(234,178,93,.23) 0%,transparent 100%),
+ radial-gradient(ellipse 55% 50% at 49% 44%,rgba(207,150,81,.11),transparent 85%),
+ repeating-linear-gradient(90deg,#fff3 0 1px,transparent 1px 46px),
+ linear-gradient(155deg,#2f332b,#242b29 50%,#1a2c32);}
+#battleWorkspace[data-phase="night"] .battle-main{background:
+ radial-gradient(ellipse 70% 60% at 70% -2%,rgba(87,115,227,.22),transparent 80%),
+ radial-gradient(ellipse at 47% 45%,rgba(65,64,116,.25),transparent 65%),
+ repeating-linear-gradient(90deg,#fff2 0 1px,transparent 1px 46px),
+ linear-gradient(155deg,#202d44,#18263e 53%,#182f43)}
+#battleWorkspace[data-phase="evening"] .battle-main{background:
+ radial-gradient(ellipse 72% 55% at 70% 0%,rgba(230,104,95,.28),transparent 78%),
+ radial-gradient(ellipse at 55% 46%,rgba(109,78,140,.2),transparent 65%),
+ linear-gradient(145deg,#3c3442,#222942 65%,#243342)}
+#battleWorkspace[data-phase="morning"] .battle-main{background:
+ radial-gradient(ellipse 68% 55% at 26% -3%,rgba(255,207,120,.34),transparent 78%),
+ linear-gradient(160deg,#4d4637,#343a36 56%,#26353b)}
+.battle-main:before{content:"";position:absolute;inset:11px;pointer-events:none;z-index:-1;
+ border:1px solid #d9af654a;border-radius:22px;box-shadow:inset 0 0 0 3px #04080a45,inset 0 0 65px #05060a92}
+.battle-opponent,.battle-player{position:relative;justify-content:space-between;
+ border-radius:19px;padding:7px 10px 5px;gap:6px;
+ background:linear-gradient(180deg,#090e1629,#fff1 52%,#050a112b);
+ border:1px solid rgba(225,176,99,.24);
+ box-shadow:inset 0 2px 10px #080f1c44;flex:1}
+.battle-opponent{border-color:#e18f6b40}
+.battle-player{border-color:#91c0a04b}
+.battle-zone-title{position:absolute;top:0;left:50%;transform:translate(-50%,-50%);
+ font-size:9px;font-weight:800;color:#ead2a4;letter-spacing:2px;padding:3px 12px;
+ background:#25323b;border:1px solid #987448;border-radius:20px;white-space:nowrap;z-index:1}
+.battle-playerbar{background:linear-gradient(115deg,#1a2939,#34485b 48%,#273b43);
+ border:1px solid #c19b62;box-shadow:0 4px 13px #02060961,inset 0 1px #e6cd9c34;
+ border-radius:32px;min-height:45px;padding:6px 13px 6px 8px;color:#ebd5ae}
+.battle-opponent .battle-playerbar{border-color:#ab7d73}
+.battle-playerbar:before{content:"✦";width:30px;height:30px;flex-shrink:0;display:grid;place-items:center;
+ border:2px solid #bd9764;border-radius:50%;
+ background:radial-gradient(circle at 35% 25%,#8c6d43,#283b4a 70%);color:#f9d796;font-size:19px;
+ box-shadow:0 0 11px #f0c27745}
+.battle-opponent .battle-playerbar:before{background:radial-gradient(circle at 35% 20%,#a96b65,#242b44 80%);color:#f7bcb2}
+.battle-playerbar>span:first-of-type{font-weight:700;letter-spacing:.6px}
+.battle-playerbar b[id$="Hero"]{font-size:18px;color:#ffe0a6;text-shadow:0 1px 12px #f2ac687a}
+.battle-board{min-height:137px;flex:1;gap:8px;padding:7px 9px;
+ background:linear-gradient(105deg,#0a10192f,#fff1 43%,#0a10192f);
+ border:1px solid #dcac6059;box-shadow:inset 0 0 22px #11151a77;border-radius:12px}
+.battle-bot-hand{height:28px;min-height:28px}
+.battle-bot-hand>span{width:23px;height:30px;position:relative;border:2px solid #af8a53;border-radius:6px;
+ background:radial-gradient(circle at 55% 35%,#7474b0,#273857 70%);
+ box-shadow:0 2px 9px #0008;transform:rotate(-4deg)}
+.battle-bot-hand>span:before{content:"✥";position:absolute;inset:0;display:grid;place-items:center;color:#e7c891;font-size:17px}
+.battle-clock-bar{position:relative;justify-content:center;min-height:57px;flex-shrink:0;gap:12px;
+ border:2px solid #c39a5c;border-radius:15px;color:#fbe6b8;
+ background:linear-gradient(100deg,#242b3c,#333b3f 50%,#242b3c);
+ box-shadow:0 2px 18px #080d18a1,inset 0 0 18px #ecd18a1a}
+.battle-time-dial{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.battle-celestial{height:39px;width:39px;border-radius:50%;border:2px solid #d3ad68;background:#423f38;
+ display:grid;place-items:center;font-size:27px;line-height:1;color:#ffd56e;
+ box-shadow:0 0 22px #ffc4646b}
+#battleWorkspace[data-phase="evening"] .battle-celestial,#battleWorkspace[data-phase="night"] .battle-celestial{background:#243b61;color:#d0daff;box-shadow:0 0 22px #8da3fb73}
+.battle-clock-title{display:block;letter-spacing:1.8px;color:#c0b290;font-size:8px;font-weight:850}
+.battle-clock-bar #battleClock{font-size:15px;color:#f4deb1}
+.battle-hour-pips{display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:nowrap}
+.battle-hour-pips>span{display:block;width:8px;height:8px;border:1px solid #826c52;background:#223541;border-radius:50%;box-shadow:inset 0 1px 3px #0008}
+.battle-hour-pips>span.lit{background:#ffd577;border-color:#ffedaf;box-shadow:0 0 8px #ffc86f}
+#battleWorkspace:is([data-phase="night"],[data-phase="evening"]) .battle-hour-pips>span.lit{background:#8bd6fc;border-color:#d7f5ff;box-shadow:0 0 8px #75baff}
+.battle-clock-bar #battleTurnInfo{text-align:right;font-size:12px;font-weight:700;color:#e2d5b5}
+.battle-hand{padding:6px 2px 3px;min-height:153px;gap:5px;align-items:flex-end;overflow-x:auto;flex-shrink:0}
+.battle-card{position:relative;flex-shrink:0;overflow:hidden;gap:2px;
+ display:flex;flex-direction:column;justify-content:space-between;
+ background:linear-gradient(155deg,#77684e 0,#313b41 16%,#15212e 82%,#68523b);
+ border:2px solid #9f8456;border-radius:12px;padding:6px;
+ color:#fff2ce;cursor:pointer;
+ box-shadow:0 4px 10px #0007,inset 0 0 0 2px #161f29,inset 0 0 8px #f2c9882a;
+ transition:transform .13s ease,box-shadow .13s,border-color .13s}
+.battle-card.hand{height:149px;width:107px;flex:0 0 107px;min-width:96px}
+.battle-card.minion{height:135px;width:112px;min-width:90px;flex:0 1 112px}
+.battle-card:before{content:"";position:absolute;inset:2px;pointer-events:none;border:1px solid #eac99152;border-radius:9px}
+.battle-card.theme-sun{background:linear-gradient(150deg,#755839 0,#313b44 24%,#192735 84%,#715432)}
+.battle-card.theme-moon{background:linear-gradient(145deg,#54436f 0,#243852 23%,#161e37 85%,#4c416d)}
+.battle-card.rarity-standard{border-color:#549d72}.battle-card.rarity-rare{border-color:#4caee8}
+.battle-card.rarity-epic{border-color:#aa65de}.battle-card.rarity-legendary{border-color:#e0b64c}
+.battle-card.cardtype-spell .bc-fallback{color:#c0a3ff}
+.battle-card.cardtype-weapon .bc-fallback{color:#ffc878}
+.battle-card .bc-top{position:relative;z-index:2;display:flex;justify-content:space-between;
+ font-size:9px;color:#eacb8e;align-items:center;min-height:21px;gap:2px}
+.battle-card .bc-top b{height:25px;min-width:25px;border-radius:50%;background:radial-gradient(#528fb3,#163c6b);
+ border:1px solid #b7dffc;color:#fff;display:grid;place-items:center;font-size:14px;text-shadow:0 1px #000}
+.battle-card.cardtype-coin .bc-top b{background:radial-gradient(#eed16f,#967125)}
+.battle-card .bc-art{position:relative;display:grid;place-items:center;flex:1;overflow:hidden;
+ border-radius:48% 48% 25% 25%/36% 36% 13% 13%;
+ background:radial-gradient(circle at 45% 20%,#658093,#1a263b 69%);
+ border:1px solid #d9bd855a;min-height:35px}
+.battle-card .bc-art img{display:block;position:absolute;width:100%;height:100%;object-fit:cover;object-position:center 32%;filter:saturate(1.07)}
+.battle-card .bc-fallback{font-size:34px;color:#d8c59b;text-shadow:0 2px 6px #0008}
+.battle-card.minion .bc-fallback{font-size:28px}
+.battle-card .bc-name{font:750 10px/1.15 Georgia,serif;text-align:center;color:#fff1d0;
+ background:#121d2aca;border-radius:3px;padding:3px 2px;max-height:30px;min-height:17px;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+ text-shadow:0 1px 2px #000}
+.battle-card .bc-stats{display:flex;justify-content:space-between;align-items:center;gap:1px;
+ font-size:12px;font-weight:850;color:#fbe6b7;min-height:18px}
+.battle-card .bc-stats span{padding:1px 4px;border:1px solid #a18a63;border-radius:12px;background:#542921de}
+.battle-card .bc-stats .bc-health{background:#6b2e2bde}
+.battle-card .bc-status{font-size:8px;letter-spacing:.1px;line-height:1;min-height:8px;color:#c9d0c4;
+ text-align:center;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.battle-card:hover:not(.disabled){transform:translateY(-9px) scale(1.025);border-color:#ffe29b;
+ box-shadow:0 12px 17px #000b,0 0 0 2px #ffd58475}
+.battle-card.ready{box-shadow:0 0 0 2px #78cfa3,0 0 17px #9be9b873}
+.battle-card.selected{border-color:#ffda7a;box-shadow:0 0 0 3px #f7ca71,0 0 26px #fbd17c91}
+.battle-card.disabled{opacity:.48;filter:grayscale(.38)}
+.battle-card.disabled:hover{transform:none}
+.battle-actions{min-height:44px;padding:2px 9px 0;gap:14px}
+.battle-actions #battleActionHint{color:#e7d1ab;font-size:11px}
+.battle-actions #battleEndTurn:not(:disabled){background:linear-gradient(#ffe1a0,#bc7a2c);border-color:#ebc277;
+ box-shadow:0 2px 12px #f7bd4c59;color:#231e1c;font-weight:850}
+.battle-hero-power:not(:disabled){border-color:#ffd38b;background:#61503d;color:#fff0ba}
+.battle-grave-button{background:#2e3848;border-color:#69758f}
+.battle-side{background:linear-gradient(180deg,#1e2d3c,#0c1a28);border-left:1px solid #b58c54}
+.battle-log-header{background:linear-gradient(#453b31,#1f2e3a);font:700 15px Georgia,serif;color:#f5d696}
+.battle-log>div{border-left-color:#b99763;background:#203246a6;font-size:11px;color:#d5dce4}
+.battle-log>div.alert{border-left-color:#fae59e;background:#463d318c;color:#fff2d3}
+.battle-side-foot{color:#a7b5be}
+.battle-workspace .battle-use-local input{accent-color:#eabf7e}
+@media(max-width:1400px){
+ .battle-main{padding:10px 15px 11px}.battle-card.hand{width:95px;flex-basis:95px;height:133px}
+ .battle-card.minion{width:98px;flex-basis:98px;height:123px}
+ .battle-board{min-height:118px}.battle-hand{min-height:135px}
+ .battle-topbar{gap:10px}.battle-hour-pips>span{width:7px;height:7px}
+ .battle-layout{grid-template-columns:minmax(460px,1fr) 214px}
+}
+@media(max-height:850px){
+ .battle-main{gap:5px;padding-top:8px;padding-bottom:8px}
+ .battle-opponent,.battle-player{padding-top:5px;padding-bottom:4px;gap:4px}
+ .battle-card.minion{height:112px}.battle-card.hand{height:122px}
+ .battle-board{min-height:108px}
+ .battle-hand{min-height:119px}
+}
+@media(max-width:900px){
+ .battle-layout{grid-template-columns:1fr}
+ .battle-side{display:none}
+ .battle-hour-pips{display:none}
+ .deck-sheet-fields{grid-template-columns:repeat(2,minmax(130px,1fr))}
+ .deck-sheet-header h2{font-size:22px}
+ .deck-sheet-panel{max-height:100vh}
+ .deck-sheet-footer{flex-wrap:wrap}
+}
+@media(max-width:600px){
+ .deck-sheet-fields{grid-template-columns:1fr}
+ .deck-sheet-example table{min-width:100%}
+ .deck-sheet-example button{width:100%}
+ .deck-sheet-header,.deck-sheet-guide{padding-left:12px;padding-right:12px}
+ .deck-sheet-dropzone{margin-left:12px;margin-right:12px;padding:10px}
+ .deck-sheet-footer{padding:10px 12px}
+ .deck-sheet-footer>div{width:100%}
+ .deck-sheet-footer button{flex:1}
+ .battle-clock-bar{gap:6px;padding:8px}
+ .battle-card.minion{min-width:70px}
+ .battle-topbar{padding:9px}
+}
+@media(prefers-reduced-motion:reduce){.battle-card{transition:none}}
+
+
+/* The player's zone must reserve room for the full hand instead of clipping it. */
+.battle-opponent{flex:0.78 1 0;min-height:205px}
+.battle-player{flex:1.25 1 0;min-height:335px}
+.battle-player .battle-board{min-height:120px}
+.battle-player .battle-hand{min-height:153px}
+@media(max-height:850px){
+ .battle-opponent{min-height:188px}
+ .battle-player{min-height:305px}
+ .battle-player .battle-hand{min-height:123px}
+}
+
+
+.deck-sheet-paste{margin:0 24px 9px;border:1px solid #455967;border-radius:9px;
+ background:#1a2c39;flex-shrink:0}
+.deck-sheet-paste summary{padding:9px 13px;color:#c5d8dc;font-size:11px;cursor:pointer}
+.deck-sheet-paste summary b{color:#f0ce91}
+.deck-sheet-paste-content{padding:0 12px 12px}
+.deck-sheet-paste-content p{margin:0 0 7px;color:#a7b9c2;font-size:11px;line-height:1.4}
+.deck-sheet-paste textarea{width:100%;color:#e8e1d0;font:12px/1.5 monospace;background:#101f2a;
+ border:1px solid #516c76;border-radius:6px;resize:vertical;padding:8px 10px;min-height:60px;max-height:140px}
+.deck-sheet-paste button{margin-top:6px;font-size:11px}

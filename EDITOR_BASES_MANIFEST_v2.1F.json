@@ -1,0 +1,119 @@
+{
+  "version": "v2.1F",
+  "date": "2026-11-08",
+  "canvas": [
+    1024,
+    1536
+  ],
+  "source_bundle": "reference_docs/MW_User_Bases_6up_2026-11-08.png",
+  "source_sha256": "b09034012d2157632a30437a4334ee9c9eda24c9b11a575f7458afcaf6d5b8bd",
+  "title_banner_source": "reference_docs/MW_User_Title_Banner_2026-11-08.png",
+  "title_banner_sha256": "d93fd205bad275310da55e4fc99280935615e90fa9461df64966a8689f641599",
+  "art_masks": {
+    "creature": [
+      132,
+      106,
+      752,
+      964
+    ],
+    "spell": [
+      120,
+      176,
+      784,
+      672
+    ],
+    "weapon": [
+      117,
+      114,
+      784,
+      790
+    ]
+  },
+  "bases": {
+    "editorBaseCreatureDefault": {
+      "file": "assets/card-bases/creature_default.png",
+      "bbox_source": [
+        24,
+        66,
+        643,
+        996
+      ],
+      "size": [
+        1024,
+        1536
+      ],
+      "sha256": "85c557d6b6912b13416193b3538172d0ca7a249948d2af1afb1571eac5b6a55f"
+    },
+    "editorBaseSpellDefault": {
+      "file": "assets/card-bases/spell_default.png",
+      "bbox_source": [
+        718,
+        62,
+        1342,
+        1000
+      ],
+      "size": [
+        1024,
+        1536
+      ],
+      "sha256": "44d221e3e798ac2cb30384262c0334bf216e57afaa8ac92252623f1bc1fe5d89"
+    },
+    "editorBaseWeaponDefault": {
+      "file": "assets/card-bases/weapon_default.png",
+      "bbox_source": [
+        1384,
+        34,
+        2024,
+        994
+      ],
+      "size": [
+        1024,
+        1536
+      ],
+      "sha256": "722c4c9335d712691654f05116b14a258b5a2307863d48fa1ef0b4c26eb409e9"
+    },
+    "editorBaseCreatureAlt": {
+      "file": "assets/card-bases/creature_alt.png",
+      "bbox_source": [
+        21,
+        1034,
+        641,
+        1964
+      ],
+      "size": [
+        1024,
+        1536
+      ],
+      "sha256": "19ef9dd2e889f9d034be8052c3b8198d2d8c89dd36a82076c4c1bca5201b19d0"
+    },
+    "editorBaseSpellAlt": {
+      "file": "assets/card-bases/spell_alt.png",
+      "bbox_source": [
+        719,
+        1026,
+        1342,
+        1960
+      ],
+      "size": [
+        1024,
+        1536
+      ],
+      "sha256": "b6f46792ae2311f173606fdf03320ec0545922793e8a6f1183547c5d3a5fa158"
+    },
+    "editorBaseWeaponAlt": {
+      "file": "assets/card-bases/weapon_alt.png",
+      "bbox_source": [
+        1406,
+        1021,
+        2024,
+        1948
+      ],
+      "size": [
+        1024,
+        1536
+      ],
+      "sha256": "e5681e9d912818e8f98663fea32c3a1824f960da6bf376772bab834bb9cd5c23"
+    }
+  },
+  "note": "Original user-supplied artwork is cropped/resized, not redrawn. Runtime base64 copies embedded for offline PNG export."
+}

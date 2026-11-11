@@ -1,0 +1,41 @@
+{
+  "product": "Mythical Wars",
+  "version": "v2.1M.2 + v05.10 RC",
+  "status": "release_candidate",
+  "scope": "v05 unified card renderer for editor, 2D, mulligan and 3D fallback",
+  "counts": {
+    "library_cards": 162,
+    "tokens": 7,
+    "builtin_art_ids": 99,
+    "missing_art_ids": 70
+  },
+  "files": {
+    "battle-v05-card-bridge.js": "0ae15aa15a73bfcb565228910af9628cc4a2dc6e27eabde1929de6cae84908d0",
+    "battle-card-renderer-v2.1C.js": "e83032672c9171e8b9e5ed51f544ddcf0ac24b3460f7900c0e0df33245092d5e",
+    "arena-3d-v2.1H.js": "f74f04c67f6bed0f478b1e9c404630ef475f269fa16119b23cc66a20c81d7136",
+    "index.html": "2ccc66dd83c5ab55770a7c7b82e2c2d2c38ec61133fe3531199b77a040bc3aa1",
+    "v05-dynamic.js": "af8f5f11eeaaff5460662c3fd36005975358b1b50318a34e684ccd81cb7c6b35",
+    "v05-dynamic.html": "4dc66d661178e26b897414c5c8213df76dc6aa72cceb4e16fc8f1c881d42aa08"
+  },
+  "protected_manifest_sha256": "190371ce21046ba4530b9cb93b374292645218f4fcbe0a0f7e5ff0e529f5529f",
+  "tests": {
+    "node_pass": 108,
+    "renderer_browser_pass": 10,
+    "editor_stage7_pass": 24,
+    "editor_stage8_pass": 24,
+    "art_stage9_pass": 7,
+    "mulligan_and_2d_assertions_pass": 5,
+    "source_static_pass": 328,
+    "deployed_static_pass": 322
+  },
+  "blockers": [
+    "Real 3D WebGL on Windows and deployed GitHub Pages untested",
+    "Actual Google API service-account end-to-end untested",
+    "Browser process shutdown timed out after passing DOM assertions"
+  ],
+  "notes": [
+    "Do not change game rules or protected art manifest",
+    "GitHub Pages excludes private Google Sheets service-account backend",
+    "Clear old script caches after deployment"
+  ]
+}

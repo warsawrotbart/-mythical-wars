@@ -1,0 +1,104 @@
+/* MW v2.1H — styles scoped to the optional 3D arena. Existing 2D CSS is unchanged. */
+#battleWorkspace.mw3d-active .battle-layout > .battle-main{display:none!important}
+#battleWorkspace.mw3d-active .battle-layout{grid-template-columns:minmax(0,1fr)}
+#battleWorkspace.mw3d-active .battle-side:not([hidden]){position:absolute;right:8px;top:150px;width:min(420px,90vw);max-height:70vh;z-index:90}
+#mw3dStage{position:relative;min-width:0;width:100%;height:calc(100dvh - 184px);min-height:440px;max-height:1000px;
+ overflow:hidden;background:#0a1119;border:1px solid #695438;border-radius:12px;isolation:isolate;color:#f0e5cd;
+ font-family:Georgia,"Times New Roman",serif;box-shadow:0 16px 42px #0007}
+#mw3dStage[hidden]{display:none!important}
+#mw3dCanvas{display:block;width:100%;height:100%;outline:none;touch-action:none}
+#mw3dCanvas:focus-visible{outline:2px solid #d2b474;outline-offset:-3px}
+#mw3dStage button,#mw3dStage select{font-family:Arial,sans-serif;font-size:12px;color:#f3e6ce;background:#152831;
+ border:1px solid #78613e;border-radius:6px;padding:7px 10px}
+#mw3dStage button{cursor:pointer}
+#mw3dStage button:hover:not(:disabled){background:#25434b;border-color:#d7bb7e}
+#mw3dStage button:disabled{opacity:.42;cursor:not-allowed}
+#mw3dStage button:focus-visible,#mw3dStage select:focus-visible{outline:2px solid #ebcc86;outline-offset:3px}
+#mw3dStage .mw3d-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;
+ gap:12px;padding:16px 20px;pointer-events:none;background:linear-gradient(#08121bed,transparent)}
+#mw3dStage .mw3d-brand{display:flex;flex-direction:column;gap:3px;text-shadow:0 2px 4px #000}
+#mw3dStage .mw3d-brand>span{font:10px Arial,sans-serif;letter-spacing:.22em;color:#bfa87b}
+#mw3dStage .mw3d-brand>b{font-size:22px;font-weight:normal}
+#mw3dStage .mw3d-brand>small{font:9px Arial,sans-serif;letter-spacing:.12em;opacity:.6}
+#mw3dStage .mw3d-controls{display:flex;align-items:end;gap:8px;pointer-events:auto}
+#mw3dStage .mw3d-controls label{display:flex;flex-direction:column;gap:4px;font:10px Arial,sans-serif;color:#c9b891}
+#mw3dStage .mw3d-controls button{height:32px}
+#mw3dStage .mw3d-labels{position:absolute;inset:0;pointer-events:none}
+#mw3dStage .mw3d-object-label{position:absolute;left:0;top:0;white-space:nowrap;will-change:transform;
+ font:bold 14px Arial,sans-serif;border-radius:10px;padding:4px 9px;background:#0c1c24e8;
+ border:1px solid #9d875c;box-shadow:0 2px 5px #0008;color:#fff5dc;text-shadow:0 1px 2px #000}
+#mw3dStage .mw3d-object-label.enemy{border-color:#bc8173}
+#mw3dStage .mw3d-object-label.own{border-color:#6bb4a7}
+#mw3dStage .mw3d-object-label.hero-label{font-size:15px}
+#mw3dStage .mw3d-object-label.mana-label{border-radius:50%;background:#1a4a67;min-width:22px;padding:4px 6px;font-size:13px;text-align:center}
+#mw3dStage .mw3d-clock{position:absolute;left:18px;top:51%;transform:translateY(-50%);width:116px;text-align:center;pointer-events:none}
+#mw3dStage .mw3d-dial{position:relative;width:108px;height:108px;margin:auto;border:4px double #d1b376;border-radius:50%;
+ background:radial-gradient(circle at 47% 30%,#f7d384 0%,#5c8178 30%,#172b34 70%);box-shadow:0 5px 14px #0008}
+#mw3dStage[data-phase="night"] .mw3d-dial{background:radial-gradient(circle at 45% 35%,#6c8cba,#1a2945 52%,#0e1422)}
+#mw3dStage .mw3d-sky{position:absolute;inset:24px;border:1px solid #dbbb7870;border-radius:50%}
+#mw3dMarks{position:absolute;inset:0}
+#mw3dMarks>span{position:absolute;left:50%;top:50%;width:17px;height:17px;margin:-8.5px;
+ transform:rotate(var(--angle)) translateY(-43px) rotate(calc(-1 * var(--angle)));font:15px Arial,sans-serif;
+ color:#665e4d;background:#1b2021;border-radius:50%;line-height:17px}
+#mw3dMarks>span.passed{color:#ffe9a1;background:#77562b;text-shadow:0 0 5px #ffd36b;box-shadow:0 0 5px #f5cc7670}
+#mw3dStage[data-phase="night"] #mw3dMarks>span.passed{color:#deecff;background:#3e5278;text-shadow:0 0 5px #a9c7ff;box-shadow:0 0 5px #91baf170}
+#mw3dHand{position:absolute;bottom:50%;left:calc(50% - 2px);height:34px;width:4px;background:#f3d696;transform-origin:50% 100%;
+ border-radius:4px;box-shadow:1px 0 2px #000;z-index:2}
+#mw3dStage .mw3d-hub{position:absolute;left:calc(50% - 5px);top:calc(50% - 5px);width:10px;height:10px;border-radius:50%;background:#dcb877;z-index:3}
+#mw3dStage .mw3d-clock-caption{margin:10px auto 0;width:102px;padding:7px 5px;display:flex;flex-direction:column;gap:2px;
+ border:1px solid #a78d56;border-radius:7px;background:#101f29eb;box-shadow:0 3px 8px #0009}
+#mw3dTime{font:bold 21px Georgia,serif;font-variant-numeric:tabular-nums;line-height:1.1}
+#mw3dPhase{font:14px Arial,sans-serif;color:#dcc798}
+#mw3dStage .mw3d-turn{position:absolute;right:20px;top:43%;transform:translateY(-50%);display:flex;align-items:center;flex-direction:column;gap:9px}
+#mw3dTurnLabel{font:12px Arial,sans-serif;letter-spacing:.03em;background:#101f29c9;border-radius:8px;padding:5px 8px}
+#mw3dStage #mw3dEnd{width:106px;height:106px;border:4px double #ccb078;border-radius:50%;font:bold 17px/1.3 Georgia,serif;
+ color:#fff2c8;background:radial-gradient(circle at 45% 35%,#226151,#0c302c 75%);box-shadow:0 6px 15px #0008}
+#mw3dStage #mw3dEnd:disabled{background:radial-gradient(#35423f,#1d282a);opacity:.55}
+#mw3dStage .mw3d-hero-summary{position:absolute;left:20px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;
+ max-width:230px;padding:10px 12px;border-left:2px solid #b09a6c;background:linear-gradient(90deg,#0a1722ed,#0a172255);pointer-events:auto}
+#mw3dStage .mw3d-hero-summary.enemy{top:80px}
+#mw3dStage .mw3d-hero-summary.own{bottom:50px}
+#mw3dStage .mw3d-hero-summary b{font:bold 11px Arial,sans-serif;letter-spacing:.09em;color:#e2cda3}
+#mw3dStage .mw3d-hero-summary span{font:11px/1.55 Arial,sans-serif;max-width:180px;color:#d4d7d4}
+#mw3dStage .mw3d-hero-summary button{font-size:10px;padding:4px 6px;background:#10202ace}
+#mw3dStage .mw3d-bottom{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;gap:12px;padding:13px 18px;
+ background:linear-gradient(transparent,#07111af0 30%);pointer-events:none;font:11px/1.5 Arial,sans-serif;color:#d7d4c8}
+#mw3dStage .mw3d-help{color:#8a9a9e;white-space:nowrap}
+#mw3dStage .mw3d-hover{position:absolute;right:145px;top:80px;width:210px;max-height:calc(100% - 100px);padding:10px;
+ background:#0d1a22f2;border:1px solid #9e895b;border-radius:10px;box-shadow:0 8px 30px #0009;pointer-events:none;overflow:hidden;z-index:8}
+#mw3dStage .mw3d-hover img{display:block;width:160px;height:240px;object-fit:contain;margin:auto}
+#mw3dStage .mw3d-hover strong{display:block;margin-top:6px;font:14px Arial,sans-serif;color:#f0dfbd}
+#mw3dStage .mw3d-hover p{margin:6px 0;font:12px/1.5 Arial,sans-serif;color:#d7dbd9}
+#mw3dStage .mw3d-hover small{font:10px Arial,sans-serif;color:#a29d88}
+#mw3dStage .mw3d-aim{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none;overflow:visible}
+#mw3dStage .mw3d-empty{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);padding:28px 40px;background:#0c1b26ed;
+ border:1px solid #9b8052;border-radius:10px;box-shadow:0 12px 40px #0009;text-align:center}
+#mw3dStage .mw3d-empty b{font-size:24px}
+#mw3dStage .mw3d-empty p{font:14px/1.6 Arial,sans-serif;color:#bcc8c8}
+#mw3dStage [hidden]{display:none!important}
+#mw3dStage .mw3d-delta{position:absolute;left:0;top:0;pointer-events:none;color:#fff1d6;font:bold 26px Georgia,serif;text-shadow:0 2px 5px #000;
+ z-index:10;animation:mw3d-delta 720ms ease-out forwards}
+#mw3dStage .mw3d-delta.heal{color:#9ee8c6}
+@keyframes mw3d-delta{from{opacity:1;translate:0 0}to{opacity:0;translate:0 -38px}}
+@media(max-width:1100px){
+ #mw3dStage .mw3d-hero-summary{max-width:156px;left:10px;padding:6px 8px}
+ #mw3dStage .mw3d-clock{left:10px;scale:.83;transform-origin:left center}
+ #mw3dStage .mw3d-turn{right:12px;scale:.9;transform-origin:right center}
+ #mw3dStage .mw3d-help{display:none}
+ #mw3dStage .mw3d-controls{gap:5px}
+}
+@media(max-width:740px){
+ #mw3dStage{min-height:540px}
+ #mw3dStage .mw3d-brand>b{font-size:16px}
+ #mw3dStage .mw3d-top{padding:10px}
+ #mw3dStage .mw3d-controls label{display:none}
+ #mw3dStage .mw3d-hero-summary{max-width:125px}
+ #mw3dStage .mw3d-hero-summary.enemy{top:75px}
+ #mw3dStage .mw3d-hover{width:170px;right:10px}
+ #mw3dStage .mw3d-hover img{width:140px;height:210px}
+}
+@media(prefers-reduced-motion:reduce){
+ #mw3dStage *{transition:none!important;animation:none!important}
+}
+
+@media(max-height:800px){#mw3dStage .mw3d-clock{scale:.85;transform-origin:left center}#mw3dStage .mw3d-hero-summary{padding:6px 9px;gap:3px}#mw3dStage .mw3d-hero-summary span{font-size:10px;line-height:1.3}}

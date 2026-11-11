@@ -1,0 +1,128 @@
+/* Мифические войны v1.9 — enlarged tabletop cards, full artwork, hero frames, targeting and FX.
+   Rendering-only enhancement. No approved card border or game data is changed. */
+#battleWorkspace { --battle-scale:1.15; }
+#battleWorkspace .battle-main { overflow-x:hidden; }
+#battleWorkspace .battle-board { min-height:calc(157px * var(--battle-scale)); align-items:center; overflow-x:auto; overflow-y:visible; justify-content:flex-start; gap:9px; scrollbar-width:thin; scrollbar-color:#b79a65 #172735; }
+#battleWorkspace .battle-hand { min-height:calc(175px * var(--battle-scale)); justify-content:flex-start; overflow-x:auto; overflow-y:visible; gap:8px; scrollbar-width:thin; }
+#battleWorkspace .battle-card { box-sizing:border-box; position:relative; flex-shrink:0; flex-grow:0; outline-offset:3px; overflow:hidden; touch-action:manipulation; }
+#battleWorkspace .battle-card.minion { width:calc(120px * var(--battle-scale)); height:calc(154px * var(--battle-scale)); flex-basis:calc(120px * var(--battle-scale)); min-width:calc(120px * var(--battle-scale)); }
+#battleWorkspace .battle-card.hand { width:calc(115px * var(--battle-scale)); height:calc(168px * var(--battle-scale)); flex-basis:calc(115px * var(--battle-scale)); min-width:calc(115px * var(--battle-scale)); }
+#battleWorkspace .battle-card .bc-art { min-height:53px; flex:1; }
+#battleWorkspace .battle-card .bc-art img { object-fit:contain; object-position:center center; background:transparent; }
+#battleWorkspace[data-art-fit="cover"] .battle-card .bc-art img { object-fit:cover; }
+#battleWorkspace .battle-card .bc-name {font-size:11px;letter-spacing:.15px;max-height:38px;}
+#battleWorkspace .battle-card .bc-stats {font-size:14px;}
+#battleWorkspace .battle-card .bc-status {font-size:9px;min-height:10px;}
+#battleWorkspace .battle-card:hover { transform:translateY(-5px) scale(1.018);z-index:3; }
+#battleWorkspace .battle-card:focus-visible {outline:2px solid #f8d896;}
+.bc-inspect { position:absolute;top:24px;right:3px;z-index:6;background:#172a3dec;border:1px solid #ffd996a5;box-shadow:0 2px 8px #0008;
+ color:#fff0bf;font-size:14px;font-weight:800;border-radius:6px;min-width:26px;height:25px;cursor:zoom-in; }
+.bc-inspect:hover,.bc-inspect:focus-visible {background:#73562d;outline:2px solid #f5dfab;}
+.bc-burn {position:absolute;top:27px;left:3px;z-index:6;color:#ffe6b9;font-size:11px;font-weight:900;
+ border-radius:6px;padding:2px 4px;border:1px solid #f09c5f;background:#7d2b16e8;box-shadow:0 0 11px #ff8b40c0}
+.battle-card.burning {border-color:#e97840!important;box-shadow:0 0 0 2px #aa341d96,0 0 19px #ff702354!important;}
+.battle-zoom-control {display:flex!important;flex-direction:column;gap:3px;font-size:11px;color:#f1d9a7;}
+.battle-zoom-control select{max-width:144px;min-width:120px;border:1px solid #94794c;border-radius:7px;background:#1a3344;color:#fff1c9;padding:5px 6px}
+/* Hero portraits: class placeholder or a user-supplied image, no invented hero artwork */
+#battleWorkspace .hero-chassis {display:grid;grid-template-columns:78px minmax(125px,1fr) minmax(170px,235px) minmax(125px,185px);
+ align-items:center;gap:12px;min-height:102px;padding:7px 14px;border-radius:18px;border:2px ridge #c5a16a;
+ background:radial-gradient(ellipse at 12% 5%,#a07a4a4a,transparent 45%),linear-gradient(110deg,#172838,#304459 50%,#192b38);
+ box-shadow:inset 0 0 0 2px #15232be3,inset 0 0 0 4px #dfac5a43,0 6px 18px #03090eaa;}
+#battleWorkspace .battle-opponent .hero-chassis{border-color:#b68878}
+#battleWorkspace .hero-chassis::before{display:none}
+.hero-portrait-group{position:relative;width:72px;height:81px;display:flex;align-items:center}
+.hero-portrait{position:relative;display:flex;align-items:center;justify-content:center;overflow:visible;
+ width:68px;height:76px;border-radius:47% 47% 37% 37%;cursor:pointer;
+ background:radial-gradient(ellipse at 48% 18%,#7995a1,#1e2838 74%);
+ border:4px ridge #cfab67;box-shadow:0 0 0 2px #243140,0 0 0 5px #816844,0 6px 12px #000b;
+ color:#f6d89a;font:40px Georgia,serif;text-shadow:0 3px 5px #000;}
+.hero-portrait::after{content:"✦";position:absolute;bottom:-10px;left:23px;font-size:15px;color:#e9bc6e;text-shadow:0 1px 2px #000}
+.hero-portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;border-radius:46% 46% 32% 32%;background:#25343f}
+.hero-portrait-upload{position:absolute;right:-3px;bottom:0px;width:22px;height:22px;z-index:3;border:1px solid #d8b87b;border-radius:50%;
+ background:#284356;color:#ffedbc;font-weight:800;cursor:pointer}
+.hero-identity{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hero-identity .hero-label{font-size:10px;letter-spacing:1.1px;color:#f1dba8;font-weight:750}
+.hero-identity b{display:block;cursor:pointer;font:700 23px/1.15 Georgia,serif;color:#fff2d1;text-shadow:0 2px 4px #000;white-space:nowrap}
+.hero-identity b:hover{text-decoration:underline;text-decoration-color:#c99959}
+.hero-identity small{font-size:10px;color:#bdcbd2;line-height:1.3}
+.hero-power-group{display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:0}
+.hero-power-group .battle-hero-power{white-space:normal;min-height:38px;font-weight:750;line-height:1.2;border-radius:12px}
+.hero-power-group small{font-size:10px;color:#c5cdd8;line-height:1.35;max-height:42px;overflow:auto}
+.hero-chassis.hero-power-ready .battle-hero-power:not(:disabled){animation:heroGlow 3s ease-in-out infinite}
+.hero-resources{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.hero-resources .battle-grave-button{font-size:10px}
+.hero-resources>span{font-size:10px;text-align:right;color:#d5dce7}
+@keyframes heroGlow{50%{box-shadow:0 0 16px #f7d3818c,inset 0 0 6px #fbdb8055}}
+#battleWorkspace .battle-valid-target{outline:3px solid #83edba!important;outline-offset:-3px;
+ box-shadow:0 0 0 3px #83edba88,0 0 21px #7affc5c2!important;opacity:1!important;cursor:crosshair;}
+#battleWorkspace .battle-invalid-target {opacity:.5;filter:grayscale(.32)}
+.battle-floating-number{position:absolute;z-index:16;top:4px;left:28%;font:900 27px Georgia,serif;
+ pointer-events:none;text-shadow:0 3px 5px #000,0 0 13px #000;animation:combatFloat .9s ease-out forwards}
+.battle-floating-number.damaged{color:#ff685b}
+.battle-floating-number.healed{color:#8dfaa5}
+@keyframes combatFloat{from{opacity:0;transform:translateY(13px) scale(.65)}20%{opacity:1}to{opacity:0;transform:translateY(-31px) scale(1.15)}}
+.battle-death-flash {animation:deathGlow .46s ease-out}
+@keyframes deathGlow {0%{box-shadow:inset 0 0 38px #e95357c6}100%{box-shadow:inset 0 0 0 transparent}}
+/* Full-size art inspector */
+.battle-inspect-modal[hidden]{display:none!important}
+.battle-inspect-modal{position:fixed;inset:0;display:grid;place-items:center;z-index:190;padding:20px;
+ background:#020713df;backdrop-filter:blur(9px);}
+.battle-inspect-panel{position:relative;display:grid;grid-template-columns:minmax(280px,480px) minmax(240px,420px);
+ gap:20px;align-items:center;max-height:92vh;max-width:970px;width:100%;padding:22px;border:2px ridge #bc945a;
+ border-radius:18px;background:radial-gradient(circle at 28% 18%,#415667,#172330 65%);box-shadow:0 24px 120px #000d;color:#f7ead7}
+.battle-inspect-close{position:absolute;right:12px;top:10px;z-index:3;background:#26394b;border:1px solid #cba775;
+ border-radius:7px;color:#f7d69c;padding:7px 12px;cursor:pointer}
+.battle-inspect-art{width:100%;height:min(73vh,670px);background:radial-gradient(ellipse,#3a4a55,#17202b 78%);
+ display:grid;place-items:center;border-radius:49% 49% 22% 22%/30% 30% 12% 12%;
+ border:6px ridge #cba66a;overflow:hidden;box-shadow:inset 0 0 0 3px #302824,0 8px 20px #000b}
+.battle-inspect-art>img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;object-position:center;}
+.battle-no-art{font:700 17px/1.8 Georgia,serif;letter-spacing:1px;text-align:center;color:#b3a88f;padding:20px}
+.battle-no-art small{font:normal 11px/1.4 sans-serif;display:block;color:#9db2c0;letter-spacing:0}
+.battle-inspect-description{display:flex;flex-direction:column;gap:14px;min-width:0}
+.battle-inspect-description h2{font:700 clamp(23px,3vw,39px)/1.18 Georgia,serif;color:#ffe2a1;margin:0}
+#battleInspectMeta{font-size:12px;color:#b3c2d0;line-height:1.6;margin:0}
+.battle-inspect-stats{border:1px solid #96754d;border-radius:10px;background:#242e38;padding:12px;font-weight:800;color:#f1d39a}
+.battle-inspect-effect{border:1px solid #9b876a;padding:18px;border-radius:10px;background:#e4d4b5;color:#332a22;
+ font:600 17px/1.65 Georgia,serif;min-height:80px;white-space:pre-wrap}
+.battle-inspect-support{font-size:11px;color:#ffca91;line-height:1.5}
+.battle-inspect-modal:focus-within .battle-inspect-close:focus-visible{outline:2px solid #ffe29e}
+@media(max-width:1150px){
+ #battleWorkspace .hero-chassis{grid-template-columns:66px minmax(110px,1fr) minmax(145px,1.15fr);gap:7px;padding:5px 8px}
+ #battleWorkspace .hero-resources{grid-column:2 / 4;flex-direction:row;align-items:center;justify-content:space-between}
+ .hero-portrait{width:58px;height:65px;font-size:32px}.hero-portrait-group{width:60px;height:72px}
+}
+@media(max-width:800px){
+ #battleWorkspace .battle-layout{grid-template-columns:minmax(0,1fr)}
+ .battle-inspect-panel{grid-template-columns:1fr;padding-top:52px;overflow-y:auto}
+ .battle-inspect-art{height:46vh;max-width:420px;justify-self:center}
+ #battleWorkspace .hero-chassis{grid-template-columns:70px 1fr;gap:8px}
+ #battleWorkspace .hero-power-group,#battleWorkspace .hero-resources{grid-column:1/3}
+ .hero-resources{flex-direction:row!important}
+ #battleWorkspace .battle-card.hand{min-width:calc(115px * var(--battle-scale))}
+}
+@media(prefers-reduced-motion:reduce){
+ .battle-floating-number,.battle-death-flash,.hero-chassis.hero-power-ready .battle-hero-power{animation:none!important}
+}
+
+/* Prevent unused flexible empty zones from pushing the enlarged hand below the fold. */
+#battleWorkspace .battle-opponent,#battleWorkspace .battle-player {
+  flex:0 0 auto!important;min-height:auto!important;justify-content:flex-start!important;
+}
+#battleWorkspace .battle-main {justify-content:flex-start;}
+#battleWorkspace .battle-board { flex:0 0 auto!important; min-height:calc(155px * var(--battle-scale)); }
+#battleWorkspace .battle-hand {flex:0 0 auto!important;}
+
+/* On empty boards avoid wasting a full card's height: keep the hand visible. */
+#battleWorkspace .battle-board.board-empty{
+  min-height:43px!important;height:43px!important;
+  justify-content:flex-start;align-items:center;
+}
+#battleWorkspace .battle-board.board-empty .deck-small-muted{color:#91a9aa}
+
+/* The turn control remains reachable when very large cards require vertical scrolling. */
+#battleWorkspace .battle-actions{
+ position:sticky;bottom:3px;z-index:12;flex:0 0 auto;
+ background:linear-gradient(90deg,#142332f2,#283541ef);
+ border-top:1px solid #b9956388;border-radius:8px;padding:7px 10px;
+ box-shadow:0 -5px 13px #0007;
+}

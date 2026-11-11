@@ -1,0 +1,22 @@
+{
+  "release": "v2.1M.2 + v05.7 RC",
+  "date": "2026-11-10",
+  "target": "GitHub Pages self-contained full project",
+  "entrypoints": [
+    "index.html",
+    "v05-dynamic.html"
+  ],
+  "editor": "single visible v05-dynamic; old DOM hidden for compatibility",
+  "test_art": {
+    "allLibrary": 169,
+    "withTestArt": 92,
+    "withoutArt": 77,
+    "chrEmbedded": 45,
+    "otherFromDrive": 47
+  },
+  "test_art_inventory": "test-art/test_art_inventory.json",
+  "protected_v05_manifest_sha256": "190371ce21046ba4530b9cb93b374292645218f4fcbe0a0f7e5ff0e529f5529f",
+  "google_backend_included": false,
+  "release_status": "RC",
+  "live_pages_verified": false
+}

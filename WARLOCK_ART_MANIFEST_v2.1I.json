@@ -1,0 +1,457 @@
+{
+  "version": "2.1I",
+  "status": "test",
+  "count": 45,
+  "items": {
+    "CHR-001": {
+      "id": "CHR-001",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "35f20480705cbe6717ab945c98454db7722e9b68a8920af9f4bfc14c303a3e5d",
+      "originalWidth": 1448,
+      "originalHeight": 1086
+    },
+    "CHR-002": {
+      "id": "CHR-002",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "a5b5b32fce0c1c84d5f9e203440747ac5610b3989e3c4be8e19c74bab0f783b7",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-003": {
+      "id": "CHR-003",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "7c68214664d87cc5d01cbc4fdf323c4336d83f73ee7a8207834e29041b0de085",
+      "originalWidth": 1448,
+      "originalHeight": 1086
+    },
+    "CHR-004": {
+      "id": "CHR-004",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "ac8e9bdfe7435d565a14c4e3676deb23c4b0654d963cca133b3f83aa35e1a249",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-005": {
+      "id": "CHR-005",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "e50d37fad218874712d357d7b64bbc10f03c2f2bc7772ac6c72994b7394ff1e8",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-006": {
+      "id": "CHR-006",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "983b0069b53c97b53e3cc23f54a58ba88625075c03ecdf0d0090486f983bf779",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-007": {
+      "id": "CHR-007",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "99cf9e40a6997dac3339951890c6cc1987a307a75a1527a30aa7e2664dde7275",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-008": {
+      "id": "CHR-008",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "1e80eca86b18b5a5ca2550a5a5ed706e99858199abdd52ff2b0ab1fb7eba3c17",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-009": {
+      "id": "CHR-009",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "418fc9385a267a68963735f597b06b21a8b144fd11dc2d66c483808d61fe3de5",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-010": {
+      "id": "CHR-010",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "f7f2e45619cc916162837d389e7b3e8850a7881de24fa97a2c3fe70c14f0c803",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-011": {
+      "id": "CHR-011",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "31f9edde035bcdb6767f19c2bc0f132a1721f803f96948e7b7b15f37588e12ac",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-012": {
+      "id": "CHR-012",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "e05442bc68730f58e095096e81cde8e2beba0110d92e38f12add03143dfbfdb2",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-013": {
+      "id": "CHR-013",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "034d26b06398e33b541d9e32fd9f54657f3e7acb4563a16806cc85f235f1a092",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-014": {
+      "id": "CHR-014",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "29054950a5a5d32fa9fd67f864a7a712a93e8564f3bd6d8f95988c70990de0ff",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-015": {
+      "id": "CHR-015",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v02",
+      "hadVariants": true,
+      "originalSha256": "c2d3d7f0d526a29b03f3f432ac5563bdd2432e145010879a8273d73a60b45982",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-016": {
+      "id": "CHR-016",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "62d6621ba4581b4d2d3de613ff8a10aa85934202cea4b7130273b98729055522",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-017": {
+      "id": "CHR-017",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "a60359f6fc016517ce668753b18cfca7ce970f48fdcd7f2a396c224cb8ccfe8b",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-018": {
+      "id": "CHR-018",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "713f1d3e77b00a67ea8a40b0f42c96f0384cfa6dc47f1b4215e8fe005bb94733",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-019": {
+      "id": "CHR-019",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "14036ae192d74e245db6a2e2cea73d6965342e3ad411803fc40690ae6315a499",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-020": {
+      "id": "CHR-020",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "dcacb7d2d222e8b7964d483f1af8dbc0bd873f05423e88ac0901b54c1b036d3b",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-021": {
+      "id": "CHR-021",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "13320cf15e5d0e90814eb03ea4074b976422b8d1b88bd80d0561efd14efd8e8c",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-022": {
+      "id": "CHR-022",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "9d674b433ea2dd2b5aa7a614ff17159b78c1b197e99913d95ae570f2657e4fbd",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-023": {
+      "id": "CHR-023",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v02",
+      "hadVariants": true,
+      "originalSha256": "5622d544e606b3c7d5deb779aea4a55024972020585d5b4ad8f2a24654cc1676",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-024": {
+      "id": "CHR-024",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "b8ab30c012903f04a30d1b407548dccb087c64971f54fb67edee6c9c53566a0a",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-025": {
+      "id": "CHR-025",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "994fe0c3d971954af92896fab2648de264b8ea8a93b570c4293584bdb9dc0f9e",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-026": {
+      "id": "CHR-026",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "9ec00fa2a492c46b99eefc948aceb0302b0bfd3ff37b217c879e3d3cad05773e",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-027": {
+      "id": "CHR-027",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "3b21e2c57084500e8e5d2107d66391f6af73f9a8a4caba0a7bf2737ec3ca56e4",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-028": {
+      "id": "CHR-028",
+      "source": "generated",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "ee355ea89de9dbd8016e06a6a7964b84f09a07c1d5f6e53ab90104ec011725a7",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-029": {
+      "id": "CHR-029",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "34c149fe090e11085859bed07356cfd2878cbdd06a5c981360e93c34c305e95f",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-030": {
+      "id": "CHR-030",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "274c25dda4dcec9db884d35db2e37ad7d779e0b9e75ebd95e670ba74dc5c2f98",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-031": {
+      "id": "CHR-031",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "70f7e6d117f89df89c32bd942e6a9cc19d5248785168104334c2054f283b59ed",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-032": {
+      "id": "CHR-032",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "56241999e43cabcd9928df3c4a8b3c641715821f96e0e2f9a401a2440103c4ef",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-033": {
+      "id": "CHR-033",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "0575a4dc21cb33de05fa22c3e28ee66d681c6661cf396c4083dac3c11c716a7e",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-034": {
+      "id": "CHR-034",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "2ded7c8b5863351a764b5ef1639a7023e93ee79af28d93b8bc7a7c546a4ad4b0",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-035": {
+      "id": "CHR-035",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "73f813c4a5f42973660c97c894bf0252fc3bc8e05393aa37a9e66b9584cd7ea4",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-036": {
+      "id": "CHR-036",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "76decfacd02a30c2a24f9a8b1263056216c692082fcb9855e31f193372db95ba",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-037": {
+      "id": "CHR-037",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "1771799a805b5e465423e7a12f158d323dcad465fea9d0fe65b05a093b503ccb",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-038": {
+      "id": "CHR-038",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "41a013269fa03ca723df1b44475b8b213f34956b39f6c8a06ff613afd73b99d0",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-039": {
+      "id": "CHR-039",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "79f7f7b1f5a08dc0fc71b30dc9df0d9e091d7827e2c99ab26ddbd5ff30c013e2",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-040": {
+      "id": "CHR-040",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "ef70092309abe59d8f86cb57f31f96c45ae716db7c34b54310491f03db174194",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-041": {
+      "id": "CHR-041",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "4bae9b3b89f5fbf56ae16f71e918c3e34a501a105bcf8fd0bb7d4f38552d8067",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-042": {
+      "id": "CHR-042",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "c0b334e0966334a59c1971388b1cdd8db0a324358e8bc186373cc658cdf468ef",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-043": {
+      "id": "CHR-043",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "584750dc0ab82f3f94ad048801f8dd6bf466ce0848a1c24ec7560c984da9cad9",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-044": {
+      "id": "CHR-044",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "b17c5e1950e15cf114be4db9761284689c890763bbcb497ce31a3e359dafe9f4",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    },
+    "CHR-045": {
+      "id": "CHR-045",
+      "source": "original",
+      "status": "test",
+      "sourceVersion": "v01",
+      "hadVariants": false,
+      "originalSha256": "a882ae65ff548f72dfaa1fed5406c42d4625a769c030acb586a84ae1630635c5",
+      "originalWidth": 1254,
+      "originalHeight": 1254
+    }
+  }
+}

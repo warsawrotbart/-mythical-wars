@@ -1,0 +1,21 @@
+name: Verify Mythical Wars frontend
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run client-side Node tests
+        run: node --test tests/*.test.cjs tests/*.test.js
+      - name: Check static site and v05 asset integrity
+        run: python3 tools/check_static_site.py
+      - name: Build GitHub Pages
+        run: python3 tools/build_pages.py
+      - name: Recheck built artifact
+        run: python3 tools/check_static_site.py --root _site

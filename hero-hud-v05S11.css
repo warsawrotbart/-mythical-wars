@@ -1,0 +1,298 @@
+/* Mythical Wars v05.11 — shared hero / ability / weapon visual language.
+   Presentation-only; exact health/armor/weapon/power values come from the engine.
+   This stylesheet follows legacy v2.1K and all compact layout rules. */
+:root{--mw11-gold:#e8c57f;--mw11-brass:#a98343;--mw11-dark:#0e1c24;--mw11-ink:#142330;}
+#battleWorkspace .hero-chassis.mw11-chassis{
+  width:100%;max-width:1000px;min-height:102px!important;max-height:none!important;
+  overflow:visible!important;margin:1px auto!important;padding:2px 3px!important;
+}
+#battleWorkspace .mw11-chassis .hero-avatar-ability,
+#battleWorkspace:not(.mw-art-off) .mw11-chassis .hero-avatar-ability{
+  box-sizing:border-box;position:relative;display:flex!important;flex-direction:row!important;
+  align-items:center!important;justify-content:center!important;gap:11px!important;
+  width:min(100%,464px)!important;max-width:464px!important;
+  height:98px!important;min-height:98px!important;padding:7px 13px!important;
+  border:1px solid #cd9b58!important;border-radius:21px!important;
+  background:linear-gradient(120deg,#442e23ed 0%,#18323bec 40%,#111f2cef 70%,#37261cea 100%)!important;
+  box-shadow:0 1px 0 #f3cf819c inset,0 0 0 2px #20170fc9,0 8px 16px #0008!important;
+}
+#battleWorkspace .battle-opponent .hero-avatar-ability{border-color:#b6846d!important;}
+#battleWorkspace .mw11-weapon-slot{
+  display:flex;position:relative;flex:0 0 69px;width:69px;height:79px;
+  align-items:center;justify-content:center;box-sizing:border-box;
+  border:2px solid #af8b53;border-radius:15px;
+  background:radial-gradient(ellipse at 48% 27%,#745430bb,#1b2b33 60%,#0d151d);
+  box-shadow:inset 0 0 0 2px #fff2b126,0 3px 10px #0009;
+  color:#efd09a;isolation:isolate;
+}
+#battleWorkspace .mw11-weapon-slot[data-equipped="true"]{border-color:#e8c178;box-shadow:inset 0 0 0 1px #f5d49550,0 0 10px #e4b76e39,0 3px 12px #0009;}
+#battleWorkspace .mw11-weapon-slot[data-equipped="false"] .mw11-slot-icon{opacity:.55;filter:grayscale(.45);}
+#battleWorkspace .mw11-weapon-slot .mw11-slot-icon{font:30px/1 Georgia,serif;text-shadow:0 2px 6px #000;}
+#battleWorkspace .mw11-weapon-slot .mw11-weapon-caption{
+  position:absolute;bottom:2px;left:2px;right:2px;
+  font:700 8px/1.1 Arial,sans-serif;letter-spacing:.06em;text-align:center;color:#efcf8f;
+}
+#battleWorkspace .mw11-weapon-slot.mw11-weapon-damaged{border-color:#e38b72;box-shadow:0 0 0 2px #ad513b70,0 0 12px #f4714785;}
+#battleWorkspace .mw11-weapon-slot .mw-equipped-weapon,
+#battleWorkspace:not(.mw-art-off) .mw11-weapon-slot .mw-equipped-weapon{
+  position:absolute!important;left:3px!important;right:3px!important;top:2px!important;bottom:15px!important;
+  width:auto!important;height:auto!important;z-index:2;
+  background-image:url("arena-art/weapon_frame.webp")!important;background-position:center!important;
+  background-size:contain!important;background-repeat:no-repeat!important;
+  box-shadow:none!important;pointer-events:none;border:0!important;border-radius:12px!important;
+}
+#battleWorkspace .mw11-weapon-slot .mw-weapon-icon,
+#battleWorkspace:not(.mw-art-off) .mw11-weapon-slot .mw-weapon-icon{
+  display:block;box-sizing:border-box;width:84%!important;height:84%!important;margin:5% auto!important;
+  object-fit:cover;object-position:center 30%;border-radius:47%!important;
+}
+#battleWorkspace .mw11-weapon-slot .mw-weapon-values{
+  position:absolute;left:-4px;right:-4px;bottom:-25px;z-index:4;
+  padding:3px 1px;box-sizing:border-box;white-space:nowrap;
+  background:#132935f2;border:1px solid #bb9a59;border-radius:7px;
+  font:800 10px/1.1 Georgia,serif;color:#fff0be;
+}
+#battleWorkspace .mw11-hero-core{display:flex;align-items:center;gap:9px;flex:0 0 190px;min-width:0;}
+#battleWorkspace .mw11-hero-core .hero-portrait-group{
+  flex:0 0 79px!important;width:79px!important;height:82px!important;min-width:79px!important;
+}
+#battleWorkspace .mw11-hero-core .hero-portrait{
+  width:74px!important;height:78px!important;min-width:74px!important;
+  border-radius:50%!important;overflow:hidden;font-size:29px!important;
+  box-shadow:0 0 0 1px #f2d5a77c!important;
+}
+#battleWorkspace .mw11-hero-core .hero-portrait img{object-fit:cover;object-position:center 31%;}
+#battleWorkspace .mw11-hero-core .hero-portrait-group::before,
+#battleWorkspace .mw11-hero-core .hero-portrait-group::after{inset:-4%!important;}
+#battleWorkspace .mw11-hero-core .hero-portrait-upload{
+  right:-1px;bottom:0;width:20px!important;height:20px!important;font-size:11px!important;
+}
+#battleWorkspace .mw11-hero-core .hero-identity{
+  min-width:0!important;max-width:none!important;flex:1 1 auto;gap:4px;
+  text-align:left!important;justify-content:center;align-items:flex-start;
+}
+#battleWorkspace .mw11-hero-core .hero-label{
+  max-width:94px;white-space:normal;font:800 9px/1.2 Arial,sans-serif;
+  text-transform:uppercase;letter-spacing:.09em;color:#efd7a4;
+}
+#battleWorkspace .mw11-hero-core .hero-identity b,
+#battleWorkspace:not(.mw-art-off) .mw11-hero-core .hero-identity b{
+  box-sizing:border-box;padding:4px 9px!important;margin:1px 0;
+  font:800 22px/1.15 Georgia,serif!important;color:#ffedd0!important;
+  border:1px solid #c39b5c;border-radius:12px;
+  background:#3c1920e8!important;text-shadow:0 1px 3px #000!important;
+  white-space:nowrap;cursor:pointer;
+}
+#battleWorkspace .mw11-hero-core .hero-identity small{display:none!important;}
+#battleWorkspace .mw11-armor:not([hidden]){
+  display:inline-flex;align-items:center;justify-content:center;padding:2px 7px;
+  border:1px solid #6badd4;border-radius:9px;background:#203f56;
+  font:800 13px/1.25 Georgia,serif;color:#c7ecff;
+}
+#battleWorkspace .mw11-chassis .hero-power-group{
+  position:relative;flex:0 0 155px!important;min-width:155px!important;max-width:155px!important;
+  display:flex;flex-direction:column;align-items:stretch;justify-content:center;
+  gap:4px!important;
+}
+#battleWorkspace .mw11-chassis .hero-power-group .battle-hero-power,
+#battleWorkspace:not(.mw-art-off) .mw11-chassis .hero-power-group .battle-hero-power{
+  box-sizing:border-box;position:relative;display:flex!important;flex-direction:column;
+  align-items:flex-start;justify-content:center;min-width:0!important;
+  width:100%;height:57px!important;min-height:57px!important;
+  padding:6px 30px 6px 57px!important;
+  border:1px solid #d0aa62!important;border-radius:15px!important;
+  background:#112c37e8!important;color:#f8e9ca!important;
+  box-shadow:inset 0 1px 0 #fff7b644,0 3px 7px #0008!important;
+  text-align:left!important;white-space:normal;
+  text-shadow:0 1px 2px #000;animation:none!important;
+}
+#battleWorkspace .mw11-chassis .battle-hero-power.mw-hero-art-ability::before{
+  content:"";display:block!important;position:absolute;left:5px!important;top:50%;transform:translateY(-50%);
+  width:42px!important;height:42px!important;background:var(--mw-ability-image) center/cover no-repeat;
+  border:2px solid #d5ae6d;border-radius:50%;box-shadow:0 2px 6px #0009;
+}
+#battleWorkspace .mw11-ability-title{font:750 11px/1.18 Arial,sans-serif;max-height:40px;overflow:hidden;}
+#battleWorkspace .mw11-ability-cost{
+  position:absolute;right:5px;top:50%;transform:translateY(-50%);
+  width:25px;height:25px;display:flex;align-items:center;justify-content:center;
+  color:#f7fbff;background:radial-gradient(circle at 30% 24%,#51b8ec,#0d528c 72%);
+  border:2px solid #d2c68b;clip-path:polygon(50% 0,94% 26%,94% 74%,50% 100%,6% 74%,6% 26%);
+  font:900 14px/1 Georgia,serif;text-shadow:0 1px 2px #000;
+}
+#battleWorkspace .mw11-chassis .hero-power-group .mw11-ability-state{
+  display:block!important;position:static;transform:none;overflow:visible;
+  padding:0 4px!important;max-width:none;height:auto;white-space:nowrap;
+  text-align:center;font:800 9px/1 Arial,sans-serif;letter-spacing:.09em;
+  background:none!important;color:#e9c68d;
+}
+#battleWorkspace .mw11-chassis .hero-power-group[data-mw11-state="ready"] .mw11-ability-state{color:#a9edbf;}
+#battleWorkspace .mw11-chassis .hero-power-group[data-mw11-state="used"] .mw11-ability-state{color:#d9ad77;}
+#battleWorkspace .mw11-chassis .hero-power-group[data-mw11-state="locked"] .mw11-ability-state{color:#b7a6a1;}
+#battleWorkspace .mw11-chassis .battle-hero-power:disabled{opacity:.76!important;filter:saturate(.58);}
+#battleWorkspace .mw11-chassis .battle-hero-power:not(:disabled){box-shadow:inset 0 1px 0 #fff7b64c,0 0 9px #67d8a535!important;}
+#battleWorkspace .mw11-chassis .hero-power-group>small:not(.mw11-ability-state){
+  display:none;position:absolute;left:50%;bottom:100%;top:auto;z-index:60;
+  transform:translateX(-50%);width:max-content;max-width:min(310px,85vw);
+  padding:12px 15px!important;border:1px solid #c6a06b;
+  border-radius:12px;background:#102330f8!important;
+  box-shadow:0 10px 26px #000d;color:#ffe3b4;font:12px/1.5 Arial,sans-serif;
+}
+#battleWorkspace .mw11-chassis .hero-power-group:is(:hover,:focus-within)>small:not(.mw11-ability-state){display:block;}
+#battleWorkspace .mw11-chassis.mw11-hit .hero-avatar-ability{animation:mw11-hit .36s ease-out;}
+#battleWorkspace .mw11-chassis.mw11-heal .hero-avatar-ability{animation:mw11-heal .45s ease-out;}
+@keyframes mw11-hit{50%{filter:brightness(1.4) sepia(.6) hue-rotate(-40deg);}}
+@keyframes mw11-heal{50%{filter:brightness(1.2) drop-shadow(0 0 9px #8fd7b2);}}
+
+/* 3D — same horizontal weapon / portrait / ability arrangement. The arena still
+   draws real 3D hero objects; this is a screen-space control and status layer. */
+#mw3dStage .mw11-stage-hud{
+  display:flex;position:absolute;align-items:center;gap:8px;box-sizing:border-box;
+  width:414px;height:99px;padding:7px 9px;pointer-events:auto;z-index:9;
+  border:1px solid #c09a60;border-radius:17px;
+  background:linear-gradient(110deg,#42301fed,#172d37f3 40%,#12242fed 73%,#33231aec);
+  box-shadow:inset 0 1px 0 #f8dca342,0 5px 14px #000c;
+  color:#f3e3c5;
+}
+#mw3dStage .mw11-stage-hud.enemy{border-color:#ad846b;}
+#mw3dStage .mw11-stage-hud.own{border-color:#d3ad68;}
+#mw3dStage .mw11-stage-hud .mw11-weapon-slot{
+  position:relative;flex:0 0 61px;width:61px;height:77px;
+  box-sizing:border-box;display:flex;align-items:center;justify-content:center;
+  border:2px solid #b28b4e;border-radius:12px;
+  background:linear-gradient(145deg,#5d442baa,#122630);
+}
+#mw3dStage .mw11-stage-hud .mw11-slot-icon{font:30px Georgia,serif;opacity:.65;}
+#mw3dStage .mw11-stage-hud .mw11-weapon-caption{
+  position:absolute;bottom:2px;font:700 8px Arial,sans-serif;letter-spacing:.06em;color:#f3d7a1;
+}
+#mw3dStage .mw11-stage-hud .mw11-weapon-picture{
+  position:absolute;inset:3px 5px 16px;width:calc(100% - 10px);height:calc(100% - 19px);
+  object-fit:cover;object-position:center 27%;border-radius:9px;
+}
+#mw3dStage .mw11-stage-hud .mw11-weapon-slot[data-equipped="true"] .mw11-slot-icon{visibility:hidden;}
+#mw3dStage .mw11-stage-hud .mw11-weapon-values{
+  position:absolute;bottom:-13px;left:-4px;right:-4px;
+  background:#122b3bf5;border:1px solid #a98d56;border-radius:6px;
+  text-align:center;font:800 10px Georgia,serif;color:#ffe5b0;
+}
+#mw3dStage .mw11-stage-hud .mw11-weapon-slot.mw11-weapon-damaged{border-color:#ec8c74;}
+#mw3dStage .mw11-3d-core{flex:1 1 171px;min-width:0;display:flex;align-items:center;gap:8px;}
+#mw3dStage .mw11-3d-avatar{
+  flex:0 0 72px;width:72px;height:72px;overflow:hidden;
+  border:3px double #e4bf78;border-radius:50%;
+  background:radial-gradient(circle,#7b6c51,#182b38 67%);
+  box-shadow:0 0 0 2px #24170b,0 2px 8px #0009;
+}
+#mw3dStage .mw11-3d-portrait{width:100%;height:100%;object-fit:cover;object-position:center 31%;}
+#mw3dStage .mw11-stage-hud .mw3d-hero-summary{
+  position:relative!important;left:auto!important;top:auto!important;bottom:auto!important;
+  display:flex!important;flex-direction:column;flex:1 1 auto;min-width:0;max-width:none!important;
+  width:auto!important;padding:0!important;gap:2px;border:0!important;
+  border-radius:0;background:none!important;box-shadow:none!important;
+}
+#mw3dStage .mw11-stage-hud .mw3d-hero-summary b{
+  font:800 10px/1.2 Arial,sans-serif!important;letter-spacing:.035em!important;color:#f9d7a2;
+  overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+}
+#mw3dStage .mw11-stage-hud .mw3d-hero-summary span{display:none!important;}
+#mw3dStage .mw11-3d-stats{font:800 18px/1.2 Georgia,serif;color:#ffe6c8;white-space:nowrap;text-shadow:0 2px 3px #000;}
+#mw3dStage .mw11-3d-ability{
+  flex:0 0 121px;min-width:121px;display:flex;flex-direction:column;align-items:stretch;gap:5px;
+}
+#mw3dStage .mw11-stage-hud .mw3d-hero-power{
+  position:relative!important;left:auto!important;top:auto!important;bottom:auto!important;
+  display:flex!important;flex-direction:column;justify-content:center;align-items:flex-start;
+  box-sizing:border-box;width:121px!important;min-height:59px!important;max-width:none!important;
+  padding:6px 26px 6px 38px!important;margin:0;
+  border:1px solid #d1ab6e!important;border-radius:13px!important;
+  background:#162d38e8!important;color:#f6e7c8!important;
+  text-align:left!important;font:700 11px/1.2 Arial,sans-serif!important;
+  box-shadow:0 2px 8px #0008;
+}
+#mw3dStage .mw11-stage-hud .mw3d-hero-power.mw3d-hero-ability-art::before{
+  left:4px!important;width:32px!important;height:32px!important;
+  border:2px solid #d7ae6b;border-radius:50%;
+  background:var(--mw-ability-image) center/cover no-repeat;
+}
+#mw3dStage .mw11-stage-hud .mw11-ability-title{font:800 10px/1.15 Arial,sans-serif;max-height:38px;overflow:hidden;}
+#mw3dStage .mw11-stage-hud .mw11-ability-cost{
+  position:absolute;right:4px;top:50%;transform:translateY(-50%);
+  width:23px;height:23px;display:flex;align-items:center;justify-content:center;
+  color:#fff;background:radial-gradient(circle at 30% 24%,#66c5ee,#135a96 70%);
+  border:1px solid #eed8a0;border-radius:7px;
+  font:900 13px Georgia,serif;text-shadow:0 1px 2px #000;
+}
+#mw3dStage .mw11-3d-status{
+  color:#e7c58c;text-align:center;font:800 9px/1 Arial,sans-serif;letter-spacing:.065em;
+}
+#mw3dStage .mw11-3d-ability[data-mw11-state="ready"] .mw11-3d-status{color:#a5e8b6;}
+#mw3dStage .mw11-3d-ability[data-mw11-state="used"] .mw11-3d-status{color:#d9ad7d;}
+#mw3dStage .mw11-stage-hud button:disabled{opacity:.77!important;filter:saturate(.6);}
+
+@media(max-width:1040px){
+  #mw3dStage .mw11-stage-hud{width:365px;height:93px;gap:5px;padding:6px;}
+  #mw3dStage .mw11-stage-hud .mw11-weapon-slot{flex-basis:51px;width:51px;height:69px;}
+  #mw3dStage .mw11-3d-avatar{flex-basis:62px;width:62px;height:62px;}
+  #mw3dStage .mw11-3d-ability{flex-basis:110px;min-width:110px;}
+  #mw3dStage .mw11-stage-hud .mw3d-hero-power{width:110px!important;}
+}
+@media(max-width:800px){
+  #battleWorkspace .hero-chassis.mw11-chassis{min-height:86px!important;max-height:none!important;}
+  #battleWorkspace .mw11-chassis .hero-avatar-ability,
+  #battleWorkspace:not(.mw-art-off) .mw11-chassis .hero-avatar-ability{
+    max-width:314px!important;width:min(100%,314px)!important;
+    height:82px!important;min-height:82px!important;gap:5px!important;padding:5px!important;
+  }
+  #battleWorkspace .mw11-chassis .mw11-weapon-slot{flex-basis:48px;width:48px;height:65px;}
+  #battleWorkspace .mw11-chassis .mw11-slot-icon{font-size:24px;}
+  #battleWorkspace .mw11-chassis .mw11-hero-core{flex-basis:126px;gap:4px;}
+  #battleWorkspace .mw11-chassis .hero-portrait-group{flex-basis:58px!important;width:58px!important;height:61px!important;min-width:58px!important;}
+  #battleWorkspace .mw11-chassis .hero-portrait{width:55px!important;height:58px!important;min-width:55px!important;}
+  #battleWorkspace .mw11-chassis .hero-label{font-size:8px;}
+  #battleWorkspace .mw11-chassis .hero-identity b{font-size:16px!important;padding:3px 5px!important;}
+  #battleWorkspace .mw11-chassis .hero-power-group{flex:0 0 110px!important;min-width:110px!important;max-width:110px!important;}
+  #battleWorkspace .mw11-chassis .hero-power-group .battle-hero-power{height:51px!important;min-height:51px!important;padding:4px 25px 4px 40px!important;}
+  #battleWorkspace .mw11-chassis .battle-hero-power.mw-hero-art-ability::before{left:3px!important;width:31px!important;height:31px!important;}
+  #battleWorkspace .mw11-ability-title{font-size:9px;}
+  #battleWorkspace .mw11-ability-cost{width:20px;height:20px;font-size:12px;}
+  #mw3dStage .mw11-stage-hud{width:296px;height:82px;gap:4px;padding:4px;}
+  #mw3dStage .mw11-stage-hud .mw11-weapon-slot{flex-basis:42px;width:42px;height:62px;}
+  #mw3dStage .mw11-3d-avatar{flex-basis:53px;width:53px;height:53px;}
+  #mw3dStage .mw11-stage-hud .mw3d-hero-summary b{font-size:8px!important;}
+  #mw3dStage .mw11-3d-stats{font-size:14px;}
+  #mw3dStage .mw11-3d-ability{flex-basis:95px;min-width:95px;}
+  #mw3dStage .mw11-stage-hud .mw3d-hero-power{width:95px!important;min-height:52px!important;padding:4px 20px 4px 30px!important;}
+  #mw3dStage .mw11-stage-hud .mw3d-hero-power.mw3d-hero-ability-art::before{width:26px!important;height:26px!important;left:2px!important;}
+  #mw3dStage .mw11-stage-hud .mw11-ability-title{font-size:8px;}
+  #mw3dStage .mw11-stage-hud .mw11-ability-cost{font-size:10px;width:19px;height:19px;}
+}
+@media(max-height:780px) and (min-width:801px){
+  #battleWorkspace .hero-chassis.mw11-chassis{min-height:88px!important;max-height:none!important;}
+  #battleWorkspace .mw11-chassis .hero-avatar-ability,
+  #battleWorkspace:not(.mw-art-off) .mw11-chassis .hero-avatar-ability{
+    height:83px!important;min-height:83px!important;padding:3px 10px!important;
+  }
+  #battleWorkspace .mw11-chassis .hero-portrait-group{height:69px!important;}
+  #battleWorkspace .mw11-chassis .hero-portrait{height:66px!important;width:70px!important;}
+  #battleWorkspace .mw11-chassis .mw11-weapon-slot{height:65px;}
+  #battleWorkspace .mw11-chassis .hero-power-group .battle-hero-power{min-height:51px!important;height:51px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  #battleWorkspace .mw11-hit .hero-avatar-ability,
+  #battleWorkspace .mw11-heal .hero-avatar-ability{animation:none!important;}
+}
+#mw3dStage .mw11-3d-ability{position:relative;}
+#mw3dStage .mw11-ability-detail{
+  display:none;position:absolute;left:50%;bottom:calc(100% + 9px);transform:translateX(-50%);
+  z-index:85;width:260px;max-width:74vw;padding:11px 13px;
+  color:#ffe4b6;border:1px solid #bd9d64;border-radius:10px;
+  background:#0f202cf7;box-shadow:0 8px 22px #000c;
+  font:12px/1.42 Arial,sans-serif;white-space:normal;pointer-events:none;
+}
+#mw3dStage .mw11-stage-hud.enemy .mw11-ability-detail{bottom:auto;top:calc(100% + 9px);}
+#mw3dStage .mw11-3d-ability:is(:hover,:focus-within) .mw11-ability-detail{display:block;}
+
+#battleWorkspace .mw11-chassis .hero-power-group[data-mw11-state="target"] .mw11-ability-state,
+#mw3dStage .mw11-3d-ability[data-mw11-state="target"] .mw11-3d-status{color:#fff1a5;}
+#battleWorkspace .mw11-chassis .hero-power-group[data-mw11-state="target"] .battle-hero-power,
+#mw3dStage .mw11-3d-ability[data-mw11-state="target"] .mw3d-hero-power{border-color:#ffe29f!important;box-shadow:0 0 0 2px #e4c4768f,0 0 13px #f5cd7e66!important;}

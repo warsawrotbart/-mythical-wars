@@ -1,0 +1,23 @@
+# Protected configuration / personal exports
+.env
+.env.*
+*.pem
+*.key
+*service-account*.json
+*service_account*.json
+*credentials*.json
+*secrets*.json
+.mw-v05-sync-audit/
+*.audit-private.json
+
+# Generated content
+_site/
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.log
+*.zip
+*.xlsx
+*.xls

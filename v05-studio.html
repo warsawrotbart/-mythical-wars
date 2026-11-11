@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Мифические войны — Контрольный стенд v05</title>
+<link rel="stylesheet" href="v05-studio.css">
+<script src="v05-meta.js" defer></script>
+<script src="v05-studio.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">✦</div><div><strong>МИФИЧЕСКИЕ ВОЙНЫ</strong><small>Утверждённое оформление карт · v05</small></div></div>
+  <div class="head-actions"><span class="stage">Этап 1 · контрольная интеграция</span><a class="outline" href="v05-dynamic.html">✦ Динамический редактор</a><a class="outline" href="index.html">← Назад к игре</a></div>
+</header>
+<section class="intro">
+  <div><span class="eyebrow">АВТОНОМНЫЙ ПРОСМОТРЩИК ШАБЛОНОВ</span><h1>Три карты. Один стандарт.</h1>
+    <p>Сборка контрольных карт из независимых слоёв утверждённого пакета v05. Исходные изображения и геометрия не изменены. Это проверочный стенд перед подключением полного редактора.</p>
+  </div>
+  <div class="intro-note"><strong id="sourceStatus">Проверено: v05</strong><span>3 типа · 8 палитр · 88 графических компонентов</span><span>Экспорт: 1024 × 1536 · RGBA</span></div>
+</section>
+<div class="workspace">
+  <aside class="sidebar">
+    <h2>Контрольные карты</h2>
+    <p class="small">Выбери тип карты. Слева рендер из слоёв, справа исходный утверждённый образец.</p>
+    <div id="cards" class="card-list"></div>
+    <div class="notice">
+      <strong>Важно</strong>
+      <p>Изменение общего шаблона, редактирование баланса и публикация 162 карт здесь не выполняются. Эти функции относятся к последующим этапам ТЗ.</p>
+    </div>
+  </aside>
+  <main class="comparison">
+    <div class="sectiontop">
+      <div><span class="eyebrow" id="selectedId">KNZ-019</span><h2 id="selectedName">Контрольная карта</h2></div>
+      <div class="controls"><button id="verifyBtn" class="primary" type="button">Проверить совпадение</button><button id="allLayersBtn" type="button">Все слои</button></div>
+    </div>
+    <div class="two-up">
+      <section class="preview-panel"><div class="preview-heading"><strong>Собрано из слоёв</strong><span id="layersCount">…</span></div><div id="layerStack" class="canvas-stack" aria-label="Собранная карта из слоёв"></div></section>
+      <section class="preview-panel"><div class="preview-heading"><strong>Утверждённый образец</strong><span>v05 · PNG</span></div><div class="reference-frame"><img id="reference" alt="Контрольный образец v05"></div></section>
+    </div>
+    <div id="verifyMessage" class="result" role="status" aria-live="polite">Проверенные исходные компоненты загружаются…</div>
+    <p class="footnote">Пиксельное сравнение проверяет альфа-канал и каждый канал RGBA в масштабе 1024 × 1536. При открытии напрямую с диска браузер может ограничивать чтение пикселей; в этом случае автономная сверка подтверждается отчётом сборки.</p>
+  </main>
+  <aside class="sidebar detail">
+    <h2>Данные и слои</h2>
+    <div class="facts" id="facts"></div>
+    <div class="source-link"><a id="downloadReference" href="#" download>↓ Исходный контрольный PNG</a></div>
+    <div class="source-link"><a href="v05/production/editor_manifest.json" download>↓ Оригинальный манифест v05</a></div>
+    <div class="layers-title"><h3>Порядок слоёв</h3><span>Снизу вверх</span></div>
+    <div id="layerList" class="layer-list"></div>
+    <div class="mini-note">Снятие галочки временно скрывает слой только на экране. Оригиналы не меняются и не сохраняются.</div>
+  </aside>
+</div>
+<footer>«Мифические войны» · контрольный стенд v05 · данные только для чтения · без изменений боевого движка</footer>
+</body>
+</html>

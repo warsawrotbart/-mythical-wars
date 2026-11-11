@@ -1,0 +1,31 @@
+{
+  "version": "v2.1M.2 + v05.8 RC",
+  "date": "2026-11-10",
+  "packageType": "GitHub Pages full project",
+  "editor": "v05-dynamic.html",
+  "fullLibrary": 169,
+  "canonicalCards": 162,
+  "tokens": 7,
+  "embeddedTestArt": 92,
+  "withoutArt": 77,
+  "controlArtPreserved": [
+    "KNZ-019",
+    "KNZ-006",
+    "KNZ-014"
+  ],
+  "protectedFilesSha256": {
+    "v05/production/editor_manifest.json": "190371ce21046ba4530b9cb93b374292645218f4fcbe0a0f7e5ff0e529f5529f",
+    "battle-engine.js": "149ab675f3c523ab7006fb8281cdb9af8671f9f9e0ee70422cc65ca06bc1a62c",
+    "card-catalog.js": "b8d9c84c3a720dbb88645463f5c3e283589817fd68aee3c3229b404435a1eac2",
+    "deck-model.js": "5b962fb4148e2114684a0704852645b77133bd923af9c00fd81807ad89a4a839",
+    "deckgame.js": "59e0901a6c0d425fe7ae04bca3e6108c18f6db436384084235517ad10ef9e4c3"
+  },
+  "testSummary": {
+    "node": "97/97",
+    "browserStage7": "24/24",
+    "browserStage8": "22/22",
+    "staticSource": 308,
+    "staticDeploy": 302
+  },
+  "status": "release candidate; live Windows, published Pages, real IndexedDB persistence and Google API QA pending"
+}

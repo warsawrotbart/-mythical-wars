@@ -1,0 +1,34 @@
+{
+  "release": "MW v2.1M.2 + v05.6 RC",
+  "date": "2026-11-10",
+  "status": "RELEASE_CANDIDATE_ACCEPTANCE_PENDING",
+  "base": "v2.1M.2 + v05.5",
+  "scope": "Stage 6 QA and release candidate, no gameplay/catalog changes",
+  "tests": {
+    "node": "101/101 PASS",
+    "file_integrity": "105/105 PASS",
+    "stage3_xlsx_csv_chromium": "24/24 PASS",
+    "stage4_sync_legacy_compat_chromium": "21/21 PASS",
+    "stage5_sync_chromium": "23/23 PASS",
+    "stage6_original_png_chromium": "28/28 PASS",
+    "v2.1M2_templates": "10 PASS",
+    "v2.1K1_chr_art": "PASS"
+  },
+  "real_png_ids": [
+    "KNZ-019",
+    "KNZ-006",
+    "KNZ-014"
+  ],
+  "protected_files_unchanged": true,
+  "known_issues": [
+    "legacy 2D/3D fixed-clock tests not passing under scripted state overrides",
+    "Windows PowerShell launch untested",
+    "real IndexedDB reload not tested",
+    "Google service account JWT via Node untested",
+    "published GitHub Pages URL unprovided/not tested",
+    "DejaVu Serif availability on target Windows untested"
+  ],
+  "manifest_sha256": "190371ce21046ba4530b9cb93b374292645218f4fcbe0a0f7e5ff0e529f5529f",
+  "google_live_production_modified": false,
+  "google_test_copy": "Previously used for write/restore through Drive connector, not through Node service account"
+}

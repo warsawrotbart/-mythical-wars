@@ -1,0 +1,25 @@
+/* v2.1G — compact accessible card library workflow. */
+.workflow-panel,.sheets-bridge{margin:12px 0 0;padding:12px;border:1px solid rgba(225,191,121,.27);
+  border-radius:10px;background:rgba(20,29,36,.55);}
+.workflow-panel label{display:block;font-size:12px;margin-bottom:7px;}
+.workflow-panel .library-select{width:100%;margin-bottom:10px;}
+.workflow-panel .btn-block{margin-top:7px;white-space:normal;text-align:center;min-height:33px;}
+.sheets-bridge summary{cursor:pointer;color:#efdaaa;font-weight:700;font-size:13px;}
+.sheets-bridge p,.workflow-help{font-size:12px;line-height:1.45;color:#bdc2c8;}
+.sheets-bridge textarea{box-sizing:border-box;width:100%;border-radius:6px;
+ border:1px solid #8d806b;background:#161f2a;color:#faf7ec;padding:8px;
+ resize:vertical;min-height:110px;font-size:12px;}
+.workflow-message{font-size:12px;line-height:1.42;color:#d9d1bd;margin-top:8px;
+ overflow-wrap:anywhere;white-space:pre-wrap;}
+.workflow-message.error{color:#ffbcb6;}
+.workflow-message.success{color:#a6e1ba;}
+.saved-card-selector{display:flex;align-items:center;gap:5px;font-size:11px;color:#ebe3c8;}
+.saved-card-selector input{width:16px;height:16px;accent-color:#b58a42;}
+.saved-card-stage{font-size:11px;color:#d9bd86;font-weight:700;}
+.art-quality-report{font-size:12px;line-height:1.45;padding:9px 10px;margin:8px 0 10px;
+ background:rgba(0,0,0,.16);border-left:3px solid #ba9458;border-radius:5px;}
+.art-quality-report.warn{border-left-color:#df8a55;color:#ffd0a9;}
+body.mw-export-busy #editorWorkspace{pointer-events:none;opacity:.83;}
+
+/* v2.1I: Test-art state is independent of card approval state. */
+.mw-art-test-badge{display:inline-flex;max-width:max-content;opacity:.9;font-size:.75em;border:1px dashed rgba(170,135,75,.6);border-radius:5px;padding:1px 6px;margin-top:4px;}

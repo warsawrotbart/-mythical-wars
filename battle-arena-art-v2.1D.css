@@ -1,0 +1,340 @@
+/* MW 2.1D — Art-pack integration (presentation only).
+   These declarations overlay the approved art layers, and never replace the game DOM.
+   Toggle "Арт" off to restore the block arena of v2.1C without changing state.
+   Source pack: reference_docs/MW_Art_Pack_v2_original.zip
+   Cropped runtime sprites: tools/build_arena_art.py / arena-art/runtime_manifest.json.
+*/
+#battleWorkspace:not(.mw-art-off) .battle-main{
+  background-image:url("arena-art/arena_day.webp")!important;
+  background-position:center center!important;
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+  box-shadow:none!important;
+}
+#battleWorkspace:not(.mw-art-off)[data-phase="night"] .battle-main,
+#battleWorkspace:not(.mw-art-off)[data-phase="evening"] .battle-main{
+  background-image:url("arena-art/arena_night.webp")!important;
+}
+#battleWorkspace:not(.mw-art-off) .battle-main::before{
+  content:"";position:absolute;inset:0;z-index:0;
+  background:url("arena-art/arena_border.webp") center/100% 100% no-repeat;
+  opacity:.55;pointer-events:none;
+}
+/* Each interactive region stays above the decorative border, remains keyboard-usable. */
+#battleWorkspace:not(.mw-art-off) .battle-opponent,
+#battleWorkspace:not(.mw-art-off) .battle-player{z-index:1;}
+#battleWorkspace:not(.mw-art-off) .battle-board,
+#battleWorkspace:not(.mw-art-off) .battle-board.board-empty {
+  border-color:transparent!important;border-radius:8px!important;
+  background-image:url("arena-art/slot_empty.webp")!important;
+  background-position:center center!important;
+  background-size:calc(100% / 7) 95%!important;
+  background-repeat:repeat-x!important;
+  box-shadow:none!important;
+}
+#battleWorkspace:not(.mw-art-off) .battle-board.drag-over{
+  background-image:url("arena-art/slot_highlight.webp")!important;
+}
+#battleWorkspace:not(.mw-art-off) .battle-zone-title{
+  text-shadow:0 1px 3px #030708;opacity:.9;
+  background:#241d16bf;padding:3px 9px;border-radius:15px;
+}
+#battleWorkspace:not(.mw-art-off) .battle-clock-bar {
+  border-top:0!important;
+  height:8px!important;
+  background:url("arena-art/divider.webp") center/100% 100% no-repeat!important;
+  box-shadow:0 3px 5px #0005!important;
+}
+#battleWorkspace:not(.mw-art-off) .battle-clock-bar::before{
+  content:"";display:block;position:absolute;inset:-4px 0;
+  background:url("arena-art/divider.webp") center/100% 100% no-repeat;
+  pointer-events:none;opacity:.94;
+}
+#battleWorkspace:not(.mw-art-off) #battleTurnInfo{
+  border-color:#9d733e;background:#242019e5;color:#ffe9ba;
+  box-shadow:0 2px 10px #261b13d9;
+}
+
+/* ART-15/16/17: scene + bezel + 12 visual states + pointer; real phase/time still driven by engine. */
+#battleWorkspace:not(.mw-art-off) .battle-time-dial{
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  width:clamp(94px,11.5vw,158px);height:clamp(94px,11.5vw,158px);
+  padding:0!important;overflow:visible;isolation:isolate;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock-disc{
+  position:absolute;inset:9.5%;border-radius:50%;
+  background:url("arena-art/clock_day_dial.webp") center/contain no-repeat;
+}
+#battleWorkspace:not(.mw-art-off)[data-phase="night"] .mw-art-clock-disc,
+#battleWorkspace:not(.mw-art-off)[data-phase="evening"] .mw-art-clock-disc{
+  background-image:url("arena-art/clock_night_dial.webp");
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock-frame{
+  position:absolute;inset:0;background:url("arena-art/clock_frame.webp") center/contain no-repeat;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock-pointer{
+  position:absolute;z-index:3;left:50%;top:10%;width:14%;height:42%;
+  background:url("arena-art/clock_pointer.webp") center/contain no-repeat;
+  transform:translateX(-50%) rotate(var(--mw-hour-angle, 0deg));
+  transform-origin:50% 95%;
+  filter:drop-shadow(0 1px 3px #101824bc);
+  transition:transform .25s ease-out;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock-marker{
+  position:absolute;z-index:2;display:block;
+  width:13%;aspect-ratio:1/1;
+  transform:translate(-50%,-50%);
+  background:center/contain no-repeat;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock-marker.day.off{background-image:url("arena-art/clock_day_off.webp")}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock-marker.day.on{background-image:url("arena-art/clock_day_on.webp")}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock-marker.night.off{background-image:url("arena-art/clock_night_off.webp")}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock-marker.night.on{background-image:url("arena-art/clock_night_on.webp")}
+#battleWorkspace:not(.mw-art-off) .battle-time-dial .battle-celestial,
+#battleWorkspace:not(.mw-art-off) .battle-time-dial .battle-clock-title{display:none!important;}
+#battleWorkspace:not(.mw-art-off) .battle-time-dial>div:not(.mw-art-clock){
+  position:relative;z-index:5;margin-top:auto;margin-bottom:20%;
+  pointer-events:none;max-width:88%;
+}
+#battleWorkspace:not(.mw-art-off) .battle-time-dial #battleClock{
+  color:#fff6d8!important;font-size:clamp(10px,1.1vw,14px);
+  text-align:center;line-height:1.1;
+  background:#17252cd4;padding:3px 5px;border-radius:9px;
+  border:1px solid #dfc38785;max-width:100%;white-space:normal;
+  text-shadow:0 1px 3px #03080e;
+}
+/* ART-18: 3 actual source states; button retains accessible text and disabled behavior. */
+#battleWorkspace:not(.mw-art-off) .battle-actions #battleEndTurn{
+  border:0!important;border-radius:50%!important;
+  background:url("arena-art/end_turn_idle.webp") center/contain no-repeat!important;
+  background-color:transparent!important;
+  box-shadow:none!important;
+  text-shadow:0 2px 3px #092811,0 0 8px #061d0d;
+  color:#fff7c9!important;
+  transition:filter .16s ease;
+}
+#battleWorkspace:not(.mw-art-off) .battle-actions #battleEndTurn:not(:disabled):hover{
+  background-image:url("arena-art/end_turn_hover.webp")!important;
+  filter:drop-shadow(0 0 10px #5edb6a9a);
+}
+#battleWorkspace:not(.mw-art-off) .battle-actions #battleEndTurn:disabled{
+  background-image:url("arena-art/end_turn_disabled.webp")!important;
+  color:#dee0d9!important;filter:brightness(.83);
+}
+
+/* ART-07..14: ornate hero, portrait backplate, hero power, resource, weapons. */
+#battleWorkspace:not(.mw-art-off) .hero-avatar-ability{
+  border:1px solid #bb9151a8;
+  background:linear-gradient(90deg,#382a1db8,#182c32df 50%,#3b291fbb)!important;
+  box-shadow:inset 0 0 0 1px #e8be714a,0 3px 10px #130c078c;
+}
+#battleWorkspace:not(.mw-art-off) .hero-portrait-group{
+  isolation:isolate;position:relative;overflow:visible!important;
+}
+#battleWorkspace:not(.mw-art-off) .hero-portrait-group::before,
+#battleWorkspace:not(.mw-art-off) .hero-portrait-group::after{
+  content:"";position:absolute;inset:-9%;pointer-events:none;
+}
+#battleWorkspace:not(.mw-art-off) .hero-portrait-group::before{
+  background:url("arena-art/hero_backplate.webp") center/contain no-repeat;z-index:-1;
+}
+#battleWorkspace:not(.mw-art-off) .hero-portrait-group::after{
+  background:url("arena-art/hero_frame.webp") center/contain no-repeat;z-index:4;
+}
+#battleWorkspace:not(.mw-art-off) .hero-portrait{
+  border:0!important;background-color:transparent!important;
+  box-shadow:none!important;overflow:hidden;
+  border-radius:50%!important;
+}
+#battleWorkspace:not(.mw-art-off) .hero-portrait-upload{z-index:7;}
+#battleWorkspace:not(.mw-art-off) .hero-identity b{
+  padding-left:20px!important;
+  background:url("arena-art/health_badge.webp") left center/20px 24px no-repeat;
+  text-shadow:0 1px 3px #060b10;
+}
+#battleWorkspace:not(.mw-art-off) .hero-power-group .battle-hero-power{
+  border-color:#d9b4759c!important;
+  background-image:url("arena-art/power_frame.webp")!important;
+  background-repeat:no-repeat!important;
+  background-position:4px center!important;
+  background-size:45px 45px!important;
+  background-color:#2e2b24d4!important;
+  padding-left:48px!important;
+  border-radius:30px!important;
+  box-shadow:0 2px 7px #0007;
+  color:#f5e3c6!important;text-shadow:0 1px 2px #0a1119;
+}
+#battleWorkspace:not(.mw-art-off) .hero-power-group small{
+  background:#1e1915f3 url("arena-art/tooltip.webp") center/100% 100% no-repeat!important;
+  padding:21px 29px!important;
+}
+#battleWorkspace:not(.mw-art-off) .mw-equipped-weapon{
+  background:url("arena-art/weapon_frame.webp") center/contain no-repeat!important;
+  box-shadow:none!important;
+}
+#battleWorkspace:not(.mw-art-off) .mw-weapon-icon{
+  width:72%;height:72%;margin:14% auto;border-radius:50%;
+}
+#battleWorkspace:not(.mw-art-off) .hero-resources>span{
+  color:#fff4d6!important;
+  background:url("arena-art/resource_panel.webp") center/100% 100% no-repeat;
+  padding:7px 10px;text-align:center;max-width:100%;
+  text-shadow:0 2px 4px #04080d;font-size:10px!important;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-mana{
+  display:flex;align-items:center;justify-content:center;
+  height:19px;gap:0;width:100%;max-width:160px;
+  filter:drop-shadow(0 1px 2px #0009);
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-mana-gem{
+  flex:1 1 0;max-width:19px;height:18px;
+  background:url("arena-art/mana_empty.webp") center/contain no-repeat;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-mana-gem.filled{background-image:url("arena-art/mana_full.webp")}
+#battleWorkspace:not(.mw-art-off) .battle-grave-button{
+  padding-left:30px!important;
+  background-image:url("arena-art/graveyard.webp")!important;
+  background-repeat:no-repeat!important;
+  background-position:3px center!important;
+  background-size:22px 29px!important;
+  background-color:#34281ed9!important;
+  border-color:#a1875ca4!important;
+  text-shadow:0 1px 2px #000;
+}
+#battleWorkspace:not(.mw-art-off) .battle-bot-hand{
+  background:url("arena-art/hand_opponent.webp") center bottom/96% 95% no-repeat!important;
+}
+#battleWorkspace:not(.mw-art-off) .battle-hand{
+  position:relative;border-top:0!important;
+  background:url("arena-art/hand_player.webp") center bottom/100% 100% no-repeat!important;
+}
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-minion.ready::after,
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-minion.selected::after{
+  content:"";position:absolute;z-index:6;left:3px;top:4px;width:18px;height:18px;
+  background:url("arena-art/state_ready.webp") center/contain no-repeat;
+  pointer-events:none;
+}
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-minion.selected::after{
+  background-image:url("arena-art/state_selected.webp");
+}
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-ready.battle-valid-target::after,
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-ready.battle-invalid-target::after,
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-ready.drag-over::after,
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-hand.disabled::after{
+  content:"";position:absolute;z-index:6;left:3px;top:3px;
+  width:18px;height:18px;pointer-events:none;
+  background:url("arena-art/state_target.webp") center/contain no-repeat;
+}
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-ready.battle-invalid-target::after,
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-hand.disabled::after{
+  background-image:url("arena-art/state_forbidden.webp");
+}
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-minion.drag-over::after{
+  background-image:url("arena-art/state_attack.webp");
+}
+#battleWorkspace:not(.mw-art-off) .battle-card.mw-hybrid-minion.selected::after{
+  background-image:url("arena-art/state_selected.webp");
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-armor[hidden],
+#battleWorkspace:not(.mw-art-off) .mw-art-corpse[hidden]{display:none!important}
+#battleWorkspace:not(.mw-art-off) .mw-art-armor{
+ position:absolute;z-index:7;right:-13px;top:-4px;
+ width:25px;height:27px;display:flex;align-items:center;justify-content:center;
+ background:url("arena-art/armor_badge.webp") center/contain no-repeat;
+ font:900 11px Georgia,serif;color:#fff7d4;text-shadow:0 1px 3px #111;
+ pointer-events:none;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-corpse{
+ position:absolute;z-index:4;top:0;right:-4px;transform:translate(35%,-40%);
+ min-width:23px;height:24px;display:flex;align-items:center;justify-content:center;
+ padding:1px 4px;background: url("arena-art/corpse_icon.webp") center/contain no-repeat;
+ font:900 12px Georgia,serif;color:#fff8e1;text-shadow:0 1px 4px #000;
+ pointer-events:none;
+}
+#battleWorkspace .mw-art-armor,#battleWorkspace .mw-art-corpse{display:none;}
+
+#battleWorkspace:not(.mw-art-off) .battle-log-header{
+  background:#281d13 url("arena-art/log_header.webp") center/100% 100% no-repeat!important;
+  border-bottom:0!important;color:#ffeac0;
+  padding:13px 16px!important;text-shadow:0 2px 4px #000;
+}
+#battleWorkspace:not(.mw-art-off) .battle-side{
+  background:linear-gradient(180deg,#1f1814,#13252e 40%,#101a23)!important;
+}
+
+/* Dynamic deck stands are indicators, not buttons; no click blockers. */
+#battleWorkspace .mw-art-deck{display:none;pointer-events:none;}
+#battleWorkspace:not(.mw-art-off) .mw-art-deck{
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  position:absolute;z-index:7;right:clamp(10px,2.15vw,42px);
+  width:clamp(58px,7.2vw,103px);
+  height:clamp(82px,9.7vw,145px);
+  background:url("arena-art/deck_stand.webp") center/100% 100% no-repeat;
+  filter:drop-shadow(0 4px 6px #0007);
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-deck.enemy{top:4px;}
+#battleWorkspace:not(.mw-art-off) .mw-art-deck.player{bottom:10px;}
+#battleWorkspace:not(.mw-art-off) .mw-art-deck strong{
+  margin-bottom:9%;min-width:35px;
+  display:block;padding:3px 6px;
+  background:#1a272be6;border:1px solid #ebcc89a6;border-radius:12px;
+  font:900 clamp(12px,1.35vw,18px)/1.2 Georgia,serif;
+  color:#ffe5af;text-align:center;
+  text-shadow:0 1px 3px #000;
+}
+#battleWorkspace:not(.mw-art-off) .mw-art-deck small{
+  font-size:clamp(8px,.68vw,10px);color:#fbe6b7;
+  text-shadow:0 1px 2px #111;
+  background:#1b211fd4;padding:1px 5px;border-radius:7px;
+}
+
+/* Disable art cleanly; all underlying v2.1B & hybrid controls remain unchanged. */
+#battleArtToggle[aria-pressed="true"]{border-color:#daa65c;background:#3c3527;color:#fae2b4}
+#battleWorkspace .mw-art-clock{display:none;}
+#battleWorkspace:not(.mw-art-off) .mw-art-clock{display:block;}
+#battleWorkspace.mw-art-off .mw-art-mana{display:none!important;}
+
+/* Compact screens preserve the original 7+7 + 10 layout, with art scaling as ornament. */
+@media(max-width:1150px){
+ #battleWorkspace:not(.mw-art-off) .battle-time-dial{
+   left:-105px;width:104px;height:104px;
+ }
+ #battleWorkspace:not(.mw-art-off) .mw-art-deck{right:4px;width:74px;height:95px;}
+ #battleWorkspace:not(.mw-art-off) .hero-power-group .battle-hero-power{
+   padding-left:29px!important;background-size:31px 31px!important;
+   background-position:1px center!important;font-size:9px;
+ }
+ #battleWorkspace:not(.mw-art-off) .hero-resources>span{font-size:9px!important;}
+}
+@media(max-width:800px){
+ #battleWorkspace:not(.mw-art-off) .battle-time-dial{left:-69px;width:67px;height:74px;}
+ #battleWorkspace:not(.mw-art-off) .battle-time-dial #battleClock{font-size:8px;padding:1px;}
+ #battleWorkspace:not(.mw-art-off) .battle-time-dial>div:not(.mw-art-clock){margin-bottom:15%;}
+ #battleWorkspace:not(.mw-art-off) .mw-art-deck{width:50px;height:68px;right:2px;}
+ #battleWorkspace:not(.mw-art-off) .mw-art-deck strong{font-size:11px;padding:1px 3px;}
+ #battleWorkspace:not(.mw-art-off) .mw-art-deck small{font-size:8px;}
+ #battleWorkspace:not(.mw-art-off) .hero-power-group .battle-hero-power{
+   padding-left:20px!important;background-size:24px 24px!important;font-size:8px;
+ }
+ #battleWorkspace:not(.mw-art-off) .hero-identity b{
+   padding-left:14px!important;background-size:14px 16px;
+ }
+}
+@media(max-height:780px){
+ #battleWorkspace:not(.mw-art-off) .battle-clock-bar{height:6px!important}
+ #battleWorkspace:not(.mw-art-off) .mw-art-deck.enemy{top:4px}
+ #battleWorkspace:not(.mw-art-off) .mw-art-deck.player{bottom:6px}
+ #battleWorkspace:not(.mw-art-off) .hero-resources>span{
+   font-size:9px!important;padding:3px 8px!important;line-height:1.25;
+ }
+ #battleWorkspace:not(.mw-art-off) .mw-art-mana{height:12px;}
+ #battleWorkspace:not(.mw-art-off) .mw-art-mana-gem{height:12px;}
+ #battleWorkspace:not(.mw-art-off) .battle-grave-button{background-size:18px 22px!important;padding-left:22px!important;min-height:20px!important;}
+ #battleWorkspace:not(.mw-art-off) .hero-avatar-ability{height:58px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+ #battleWorkspace:not(.mw-art-off) .mw-art-clock-pointer{transition:none;}
+}

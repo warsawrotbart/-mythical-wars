@@ -1,0 +1,800 @@
+[
+  {
+    "art_id": "ART-01",
+    "source_file": "art/ART-01_arena_day.png",
+    "runtime_file": "arena-art/arena_day.webp",
+    "source_sha256": "30148bc968d6d9505606390055803c20373f02fed0d0b61e1a31bd06cba0531e",
+    "source_size": [
+      1672,
+      941
+    ],
+    "crop_xyxy": [
+      0,
+      0,
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "runtime_sha256": "3e5412bb4c401c42b1cf32f9cddc57995321fa4fb825b26185fe8b16ad0524a4"
+  },
+  {
+    "art_id": "ART-02",
+    "source_file": "art/ART-02_arena_night.png",
+    "runtime_file": "arena-art/arena_night.webp",
+    "source_sha256": "3799d16b6cd81d13a2dcc01840152faeeeae36453bc56903636f894488bcc84b",
+    "source_size": [
+      1671,
+      941
+    ],
+    "crop_xyxy": [
+      0,
+      0,
+      1671,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "runtime_sha256": "a1b94e4650d08aee5da96dd38eb7c451b9d7812e7304de6965415feaff9bf544"
+  },
+  {
+    "art_id": "ART-03",
+    "source_file": "art/ART-03_arena_border.png",
+    "runtime_file": "arena-art/arena_border.webp",
+    "source_sha256": "611a6a2e788518552e81271279580aac48571c20102fbd195e5c7a20aa67d329",
+    "source_size": [
+      1672,
+      941
+    ],
+    "crop_xyxy": [
+      0,
+      0,
+      1672,
+      941
+    ],
+    "runtime_size": [
+      1920,
+      1080
+    ],
+    "runtime_sha256": "d77a5ba5fd2c09df7d84eab491ba14f95b824d02f415936cf07dafb253315cce"
+  },
+  {
+    "art_id": "ART-04",
+    "source_file": "art/ART-04_arena_divider.png",
+    "runtime_file": "arena-art/divider.webp",
+    "source_sha256": "351b501d74296fb57236eccfd994a57a597a8adff5219ba972fa4ec2bd64f178",
+    "source_size": [
+      2172,
+      724
+    ],
+    "crop_xyxy": [
+      22,
+      262,
+      2152,
+      467
+    ],
+    "runtime_size": [
+      1280,
+      112
+    ],
+    "runtime_sha256": "e55e35b7c188690c8f55bb9242dc8e72b2745e073b33e2fb69f469d4acbc7363"
+  },
+  {
+    "art_id": "ART-05",
+    "source_file": "art/ART-05_slot_empty.png",
+    "runtime_file": "arena-art/slot_empty.webp",
+    "source_sha256": "3d7ac1b47b0b8c0418f7dff6472076a5eb1cd210c493a7598743ad23e6e100ae",
+    "source_size": [
+      1100,
+      1429
+    ],
+    "crop_xyxy": [
+      84,
+      83,
+      1017,
+      1349
+    ],
+    "runtime_size": [
+      120,
+      166
+    ],
+    "runtime_sha256": "f8fc76ca07079912a11440df01ee0b491477e73aedd8d133d2da8c71018541e9"
+  },
+  {
+    "art_id": "ART-06",
+    "source_file": "art/ART-06_slot_highlight.png",
+    "runtime_file": "arena-art/slot_highlight.webp",
+    "source_sha256": "eb68c31a3725a6772768670eeb35fe0c37350a11dea65642fb138ed07123ddb2",
+    "source_size": [
+      1100,
+      1430
+    ],
+    "crop_xyxy": [
+      78,
+      77,
+      1024,
+      1354
+    ],
+    "runtime_size": [
+      120,
+      166
+    ],
+    "runtime_sha256": "51d48c10c4e06fa90c751f2ed38d741e809a030d361433156fa085432b27e826"
+  },
+  {
+    "art_id": "ART-07",
+    "source_file": "art/ART-07_hero_frame.png",
+    "runtime_file": "arena-art/hero_frame.webp",
+    "source_sha256": "962f09e21e4ad6fdcf146884631df0f543ad0b0edf2ad8ca0203de0948493446",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      38,
+      23,
+      1215,
+      1178
+    ],
+    "runtime_size": [
+      132,
+      132
+    ],
+    "runtime_sha256": "a25e4422f8129bc188f63a4d9d441f64bf57e3ce605154bcdfee08c02756f1f6"
+  },
+  {
+    "art_id": "ART-08",
+    "source_file": "art/ART-08_hero_backplate.png",
+    "runtime_file": "arena-art/hero_backplate.webp",
+    "source_sha256": "f38698948c55e783b72d42ec438c38905db70812fd3457e863e441c4d29986b9",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      36,
+      51,
+      1210,
+      1223
+    ],
+    "runtime_size": [
+      116,
+      116
+    ],
+    "runtime_sha256": "3e6c42585482abbfd1cd422947b170c6cb0e512988cfd1142efa01b6bd102360"
+  },
+  {
+    "art_id": "ART-09",
+    "source_file": "art/ART-09_hero_power_frame.png",
+    "runtime_file": "arena-art/power_frame.webp",
+    "source_sha256": "1e33fab4a1fb214cfcdbcbd937f97dd13ffc4673032020761371056dc37bcf3b",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      83,
+      49,
+      1162,
+      1159
+    ],
+    "runtime_size": [
+      102,
+      102
+    ],
+    "runtime_sha256": "b800f541e1cbca78439de0d5845b6de4c1455877a7b94a6fd68f48e4911a4bd2"
+  },
+  {
+    "art_id": "ART-10",
+    "source_file": "art/ART-10_weapon_frame.png",
+    "runtime_file": "arena-art/weapon_frame.webp",
+    "source_sha256": "ff5bf8bd69a59faa5d9843ed72d36d12d98a6fbde62dbe7ed887b1c644fe90c7",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      76,
+      77,
+      1173,
+      1182
+    ],
+    "runtime_size": [
+      106,
+      106
+    ],
+    "runtime_sha256": "0d58b1569a8f2011fca69935372153744ad9cf9faa7e52e706de03f5618640c5"
+  },
+  {
+    "art_id": "ART-11",
+    "source_file": "art/ART-11_health_badge.png",
+    "runtime_file": "arena-art/health_badge.webp",
+    "source_sha256": "93487fdb00373612e097c5f4f4f7a74d6bb42b53d3bb4523bb6eb6d4122ea004",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      217,
+      138,
+      1033,
+      1115
+    ],
+    "runtime_size": [
+      58,
+      58
+    ],
+    "runtime_sha256": "991ce82e79bf79c8627b609c504317357c75b4f203b2d729483199f32a824706"
+  },
+  {
+    "art_id": "ART-11",
+    "source_file": "art/ART-11_armor_badge.png",
+    "runtime_file": "arena-art/armor_badge.webp",
+    "source_sha256": "c986a591003745ba246e9fc88357b2d96925c13618072cf6804cf476a5d3c013",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      215,
+      136,
+      1036,
+      1118
+    ],
+    "runtime_size": [
+      58,
+      58
+    ],
+    "runtime_sha256": "2f1ca6f3b51c40d071c2cc48f047786e12f9019677b7a86ff7d01587d22a2423"
+  },
+  {
+    "art_id": "ART-12",
+    "source_file": "art/ART-12_resource_panel.png",
+    "runtime_file": "arena-art/resource_panel.webp",
+    "source_sha256": "db4e0585f31b98ffd3a0c44ee76727194150c1c44fb5c7baed0928de3bdee9c3",
+    "source_size": [
+      2172,
+      724
+    ],
+    "crop_xyxy": [
+      92,
+      252,
+      2080,
+      468
+    ],
+    "runtime_size": [
+      500,
+      60
+    ],
+    "runtime_sha256": "35dcf03df8a3716747391d77bb91ddb90cf6034cf9a44c53cfa81eb243480803"
+  },
+  {
+    "art_id": "ART-13",
+    "source_file": "art/ART-13_mana_empty.png",
+    "runtime_file": "arena-art/mana_empty.webp",
+    "source_sha256": "e812fccaed0eb270396b68d79a49c681ae4f80fd2b2a282be6ea127e6dd35138",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      359,
+      121,
+      892,
+      1116
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "runtime_sha256": "41ef939e11cd86d9224283ffcd36d04a26ce0bfecd4b8b2a023b6445781aaeb9"
+  },
+  {
+    "art_id": "ART-13",
+    "source_file": "art/ART-13_mana_full.png",
+    "runtime_file": "arena-art/mana_full.webp",
+    "source_sha256": "50541b94bb0184307a23aac9e2154ca60068ada416088fd7ec5ebea5f1824795",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      361,
+      121,
+      891,
+      1115
+    ],
+    "runtime_size": [
+      32,
+      32
+    ],
+    "runtime_sha256": "ea14a9ab340f0271a9d76e74486e45b73030c1b1e544b54e7199607c35c6313b"
+  },
+  {
+    "art_id": "ART-14",
+    "source_file": "art/ART-14_corpse_resource.png",
+    "runtime_file": "arena-art/corpse_icon.webp",
+    "source_sha256": "7e5c97af2f98fd2b21e3e3bf73ef32aea74451162cf98d9b03ab9be7bc86b03f",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      239,
+      130,
+      1011,
+      1146
+    ],
+    "runtime_size": [
+      48,
+      48
+    ],
+    "runtime_sha256": "24109ac23006bc80a9f8199448ef0111be76df3df65a00df7e6d02f18eee3dc3"
+  },
+  {
+    "art_id": "ART-15",
+    "source_file": "clock_v2/ART-15_clock_frame_v2.png",
+    "runtime_file": "arena-art/clock_frame.webp",
+    "source_sha256": "2daa5be5f31fa5445db01266a5a52588daa1f5c46ff9be246ca2456efd99f4dd",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      47,
+      8,
+      1201,
+      1236
+    ],
+    "runtime_size": [
+      260,
+      260
+    ],
+    "runtime_sha256": "6e06987340121d3547bac4132960f92db973b5327a808b8c681c5090da940b61"
+  },
+  {
+    "art_id": "ART-15",
+    "source_file": "clock_v2/ART-15_clock_day_marker_off_v2.png",
+    "runtime_file": "arena-art/clock_day_off.webp",
+    "source_sha256": "88b999ca57f2900b2dd9b04aca1eda7fe5bcfa44238a08d81d19899460f78b37",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      213,
+      209,
+      1036,
+      1040
+    ],
+    "runtime_size": [
+      35,
+      35
+    ],
+    "runtime_sha256": "a49a581f4d553a37196b2ee8ac4e45065826d7508e3d6fd16913c60ae8049dbb"
+  },
+  {
+    "art_id": "ART-15",
+    "source_file": "clock_v2/ART-15_clock_day_marker_on_v2.png",
+    "runtime_file": "arena-art/clock_day_on.webp",
+    "source_sha256": "6f4b957d095a02489ff7300b57450413c85ec82478c0e978be0f195225bb7ea7",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      198,
+      198,
+      1053,
+      1054
+    ],
+    "runtime_size": [
+      35,
+      35
+    ],
+    "runtime_sha256": "93cbdb6d4928cc224bb972fe126fa75816d034fa3371072e1a978db796664046"
+  },
+  {
+    "art_id": "ART-15",
+    "source_file": "clock_v2/ART-15_clock_night_marker_off_v2.png",
+    "runtime_file": "arena-art/clock_night_off.webp",
+    "source_sha256": "c0e060c3e1cd7a165ef437a680ff8f6f2b6c993a6c3403ba17c5c43da06f51e7",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      339,
+      342,
+      904,
+      913
+    ],
+    "runtime_size": [
+      35,
+      35
+    ],
+    "runtime_sha256": "a2ac72d615704eda9c974c059f70502194bf60cd0eaeadce69fd742cb6b5d7ac"
+  },
+  {
+    "art_id": "ART-15",
+    "source_file": "clock_v2/ART-15_clock_night_marker_on_v2.png",
+    "runtime_file": "arena-art/clock_night_on.webp",
+    "source_sha256": "6977411fd2ae6594bca1a6a7319e5ff2b1a325158e4c5ffebaa1f4c86f338d5d",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      292,
+      287,
+      953,
+      961
+    ],
+    "runtime_size": [
+      35,
+      35
+    ],
+    "runtime_sha256": "6c5c0307b74d0f5a2a58541b6510d64b376ce4cc8fe5b80e981c45133806d2c8"
+  },
+  {
+    "art_id": "ART-16",
+    "source_file": "clock_v2/ART-16_clock_day_dial_v2.png",
+    "runtime_file": "arena-art/clock_day_dial.webp",
+    "source_sha256": "6641124a055bd17f379e6cc2db8d88fb49f9166142b77107e70aefc5253f7eac",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      11,
+      14,
+      1235,
+      1231
+    ],
+    "runtime_size": [
+      218,
+      218
+    ],
+    "runtime_sha256": "93f35ff21f51a28eca4e5bda53286411fae10483f98ef35187ec6d9831234d00"
+  },
+  {
+    "art_id": "ART-16",
+    "source_file": "clock_v2/ART-16_clock_night_dial_v2.png",
+    "runtime_file": "arena-art/clock_night_dial.webp",
+    "source_sha256": "1d8b04384dcc574f231e79c7702213733c52189366912e8dfbad4202818c30a3",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      9,
+      11,
+      1240,
+      1233
+    ],
+    "runtime_size": [
+      218,
+      218
+    ],
+    "runtime_sha256": "efbc367d6c5d9db68695b9b69d1d738e47fe4496d49b5b921598d5538db668b3"
+  },
+  {
+    "art_id": "ART-17",
+    "source_file": "clock_v2/ART-17_clock_pointer.png",
+    "runtime_file": "arena-art/clock_pointer.webp",
+    "source_sha256": "43c54a49d4cbe62443e93ce6706d7384e90b14c9fdf98b798533191ae316aab7",
+    "source_size": [
+      724,
+      2172
+    ],
+    "crop_xyxy": [
+      225,
+      84,
+      500,
+      2083
+    ],
+    "runtime_size": [
+      28,
+      95
+    ],
+    "runtime_sha256": "5570e9cdff079f9442ebb0bd6a4714fea24ac23a8c525d65a96767a780635c43"
+  },
+  {
+    "art_id": "ART-18",
+    "source_file": "art/ART-18_end_turn_idle.png",
+    "runtime_file": "arena-art/end_turn_idle.webp",
+    "source_sha256": "c78050e283b61356b00791d5dbea306f8c2393e2fa288358850152f82160cdd4",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      32,
+      11,
+      1220,
+      1183
+    ],
+    "runtime_size": [
+      238,
+      238
+    ],
+    "runtime_sha256": "99e8a78f650076654aa4a21a29cad301ab2b31901686d3d823089d5ee6a4e68d"
+  },
+  {
+    "art_id": "ART-18",
+    "source_file": "art/ART-18_end_turn_hover.png",
+    "runtime_file": "arena-art/end_turn_hover.webp",
+    "source_sha256": "2ce3c3cdef7683207d6416e4367adead08c0c2cd9d850a2ebc00be886e6c0fc9",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      32,
+      8,
+      1218,
+      1182
+    ],
+    "runtime_size": [
+      238,
+      238
+    ],
+    "runtime_sha256": "d9cbe1ec5caa2efaea419f9633c22c15892a87519f4f059aeb97026245904b23"
+  },
+  {
+    "art_id": "ART-18",
+    "source_file": "art/ART-18_end_turn_disabled.png",
+    "runtime_file": "arena-art/end_turn_disabled.webp",
+    "source_sha256": "64e9fbe976c1493d129954fe15bb45daff1d6856700be891f1baadc9257d7184",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      32,
+      6,
+      1220,
+      1183
+    ],
+    "runtime_size": [
+      238,
+      238
+    ],
+    "runtime_sha256": "6d740684047c740e9064c02dc10d30a28154e2f0358cd0082d5656afcd2493e8"
+  },
+  {
+    "art_id": "ART-19",
+    "source_file": "art/ART-19_deck_stand.png",
+    "runtime_file": "arena-art/deck_stand.webp",
+    "source_sha256": "72f62f427b623e9e7bf96c49ebfa4dc0b344951dddf79e39fd0163013eab9253",
+    "source_size": [
+      1079,
+      1458
+    ],
+    "crop_xyxy": [
+      13,
+      42,
+      1066,
+      1409
+    ],
+    "runtime_size": [
+      170,
+      230
+    ],
+    "runtime_sha256": "2161fdf98ee40f5ede20800f63e8c72c0a12f638142752f9e292c8eb6e62239b"
+  },
+  {
+    "art_id": "ART-20",
+    "source_file": "art/ART-20_graveyard.png",
+    "runtime_file": "arena-art/graveyard.webp",
+    "source_sha256": "db352bbb0d9d9377474c05096031c9530b4ff8ca9252c2da13906e5caaac2b4a",
+    "source_size": [
+      1106,
+      1422
+    ],
+    "crop_xyxy": [
+      10,
+      42,
+      1095,
+      1365
+    ],
+    "runtime_size": [
+      90,
+      114
+    ],
+    "runtime_sha256": "1b59436904214ca5f0320c905559dd0ec1c3e8665887164aebeaa13ba94dc854"
+  },
+  {
+    "art_id": "ART-21",
+    "source_file": "art/ART-21_player_hand_backplate.png",
+    "runtime_file": "arena-art/hand_player.webp",
+    "source_sha256": "986e5a9eb4ae15a3695711b5d1250b5fa442695d3ec691044703f606933305d4",
+    "source_size": [
+      2172,
+      724
+    ],
+    "crop_xyxy": [
+      41,
+      245,
+      2132,
+      529
+    ],
+    "runtime_size": [
+      1200,
+      150
+    ],
+    "runtime_sha256": "3b5498549f74ac8e3c91db4a781231f01d9f4f51a1afe6e8a6cab731fe78eeb8"
+  },
+  {
+    "art_id": "ART-22",
+    "source_file": "art/ART-22_opponent_hand_backplate.png",
+    "runtime_file": "arena-art/hand_opponent.webp",
+    "source_sha256": "de0227734b8b9a1ac3d59b51ff779f184a5d5e1a52cc1d2682077b5ab59dff3a",
+    "source_size": [
+      2172,
+      724
+    ],
+    "crop_xyxy": [
+      39,
+      243,
+      2134,
+      431
+    ],
+    "runtime_size": [
+      1050,
+      90
+    ],
+    "runtime_sha256": "84e511c448a1635c033e48ed53d66376bcbf8690ee38d1f282ec3d6a43221cf3"
+  },
+  {
+    "art_id": "ART-23",
+    "source_file": "art/ART-23_tooltip_frame.png",
+    "runtime_file": "arena-art/tooltip.webp",
+    "source_sha256": "5095bcbf35b07d6826006a31bfa3f54566a7c0c0c68c17177c32b1198a2bbc1a",
+    "source_size": [
+      1508,
+      1043
+    ],
+    "crop_xyxy": [
+      55,
+      80,
+      1454,
+      959
+    ],
+    "runtime_size": [
+      400,
+      285
+    ],
+    "runtime_sha256": "2a5aba156318d779474c1be10ece72b416403393402ba2f9464986c12b0abd4d"
+  },
+  {
+    "art_id": "ART-24",
+    "source_file": "art/ART-24_log_header.png",
+    "runtime_file": "arena-art/log_header.webp",
+    "source_sha256": "a67676b2640de9193d6e913f7cffe74c7ce72d92cc190abd79fb8cab2576021c",
+    "source_size": [
+      2172,
+      724
+    ],
+    "crop_xyxy": [
+      66,
+      254,
+      2105,
+      467
+    ],
+    "runtime_size": [
+      640,
+      90
+    ],
+    "runtime_sha256": "0265c1ce65ee658b77ba82da3bdb2bc126d61f256edfd9120d423ab46c266b51"
+  },
+  {
+    "art_id": "ART-25",
+    "source_file": "art/ART-25_state_ready.png",
+    "runtime_file": "arena-art/state_ready.webp",
+    "source_sha256": "60c686e95cf0648d7b810602a014c4c7862206d70b55075b8222058611c267f0",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      163,
+      278,
+      1110,
+      1066
+    ],
+    "runtime_size": [
+      40,
+      40
+    ],
+    "runtime_sha256": "cf6c0307c29b8e726c50a412a986fc3ef0fc5a520314ce39f00b7b8a8c4cc00b"
+  },
+  {
+    "art_id": "ART-25",
+    "source_file": "art/ART-25_state_forbidden.png",
+    "runtime_file": "arena-art/state_forbidden.webp",
+    "source_sha256": "2f8407b69c5f962a58ff7b055bbc5a9612ba1eea2ce3843bf1e18a0b4a2321de",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      146,
+      160,
+      1082,
+      1108
+    ],
+    "runtime_size": [
+      40,
+      40
+    ],
+    "runtime_sha256": "1b05f109e1d137de0a5cb3a0af35a8a83ca158f5a30ad37483403cc3f9746f28"
+  },
+  {
+    "art_id": "ART-25",
+    "source_file": "art/ART-25_state_selected.png",
+    "runtime_file": "arena-art/state_selected.webp",
+    "source_sha256": "4932d7b1a7f3391769a7b22ce08a449027862cb9333d8f1d998fde5f9bc33bad",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      125,
+      122,
+      1129,
+      1131
+    ],
+    "runtime_size": [
+      40,
+      40
+    ],
+    "runtime_sha256": "84728e5bcfe0faf8d0653d90395fde2e202d5d6fa423404226bbae605d0004d0"
+  },
+  {
+    "art_id": "ART-25",
+    "source_file": "art/ART-25_state_target.png",
+    "runtime_file": "arena-art/state_target.webp",
+    "source_sha256": "feba26e8794d550fae6324dca37bdbfceccfb539f6a50c0240484adf89321972",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      119,
+      115,
+      1120,
+      1136
+    ],
+    "runtime_size": [
+      40,
+      40
+    ],
+    "runtime_sha256": "d107068c74bc7ad64d6d8d9aeba14c7dfdb1bc703d50fa6b331bb7a1a0f43c84"
+  },
+  {
+    "art_id": "ART-25",
+    "source_file": "art/ART-25_state_attack.png",
+    "runtime_file": "arena-art/state_attack.webp",
+    "source_sha256": "279fda88530db8c9f7cdfb34218d6fc2b44c687fbb74cd79b618387e4ed18d16",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "crop_xyxy": [
+      231,
+      297,
+      1030,
+      1051
+    ],
+    "runtime_size": [
+      40,
+      40
+    ],
+    "runtime_sha256": "3c6cf3134911bf98c6f2d0eb61b9865ac4ea0a1f2f0bc89ac786aed007e894ca"
+  }
+]

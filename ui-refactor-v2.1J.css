@@ -1,0 +1,237 @@
+/* MW v2.1J — 3D arena / card typography / mulligan UX.
+   Presentation only. Existing gameplay state, targeting and saves are unchanged. */
+
+/* 3D: art clock is the same visual asset family as the 2D clock. */
+#mw3dStage .mw3d-clock{
+  left:12px;top:50%;width:132px;
+  pointer-events:none;text-align:center;z-index:7;scale:1;
+  transform:translateY(-50%);
+}
+#mw3dStage .mw3d-clock-face{
+  width:126px;height:126px;position:relative;margin:auto;
+}
+#mw3dStage .mw3d-art-clock{position:absolute;inset:0;}
+#mw3dStage .mw3d-art-clock .mw-art-clock-disc{
+  position:absolute;inset:9.5%;border-radius:50%;
+  background:url("arena-art/clock_day_dial.webp") center/contain no-repeat;
+}
+#mw3dStage[data-phase="night"] .mw3d-art-clock .mw-art-clock-disc{
+  background-image:url("arena-art/clock_night_dial.webp");
+}
+#mw3dStage .mw3d-art-clock .mw-art-clock-frame{
+  position:absolute;inset:0;
+  background:url("arena-art/clock_frame.webp") center/contain no-repeat;
+}
+#mw3dStage .mw3d-marks{position:absolute;inset:0;}
+#mw3dStage .mw3d-marks .mw-art-clock-marker{
+  position:absolute;z-index:2;display:block;
+  width:13%;aspect-ratio:1/1;transform:translate(-50%,-50%);
+  background:center/contain no-repeat;
+}
+#mw3dStage .mw3d-art-clock .mw-art-clock-marker.day.off{background-image:url("arena-art/clock_day_off.webp")}
+#mw3dStage .mw3d-art-clock .mw-art-clock-marker.day.on{background-image:url("arena-art/clock_day_on.webp")}
+#mw3dStage .mw3d-art-clock .mw-art-clock-marker.night.off{background-image:url("arena-art/clock_night_off.webp")}
+#mw3dStage .mw3d-art-clock .mw-art-clock-marker.night.on{background-image:url("arena-art/clock_night_on.webp")}
+#mw3dStage .mw3d-art-clock .mw-art-clock-pointer{
+  position:absolute;z-index:3;left:50%;top:10%;
+  width:14%;height:42%;background:url("arena-art/clock_pointer.webp") center/contain no-repeat;
+  transform:translateX(-50%) rotate(var(--mw-hour-angle,0deg));
+  transform-origin:50% 95%;filter:drop-shadow(0 1px 3px #101824bc);
+  transition:transform .25s ease-out;
+}
+#mw3dStage .mw3d-clock-caption{
+  width:112px;box-sizing:border-box;margin:3px auto 0;padding:5px 4px;
+  border:1px solid #a78d56;border-radius:7px;
+  background:#101f29f0;display:flex;flex-direction:column;align-items:center;
+  gap:2px;box-shadow:0 3px 8px #0009;
+}
+#mw3dStage #mw3dTime{font:bold 20px/1.1 Georgia,serif;color:#fff5d8;}
+#mw3dStage #mw3dPhase{font:14px/1.15 Arial,sans-serif;color:#e1c68c;}
+
+/* End turn is deliberately two centred lines without an arrow. */
+#mw3dStage .mw3d-turn{
+  top:50%;right:12px;width:118px;gap:7px;
+  transform:translateY(-50%);z-index:8;scale:1;
+}
+#mw3dStage #mw3dEnd{
+  width:112px;height:112px;min-width:112px;min-height:112px;
+  display:flex;justify-content:center;align-items:center;
+  box-sizing:border-box;border:4px double #d0ac69;border-radius:50%;
+  padding:13px!important;margin:0 auto;
+  color:#fff2c8;font:bold 16px/1.12 Georgia,serif;letter-spacing:0;
+  overflow:hidden;text-align:center;white-space:normal;
+  background:url("arena-art/end_turn_idle.webp") center/contain no-repeat,
+             radial-gradient(circle at 45% 35%,#226151,#0c302c 75%);
+}
+#mw3dStage #mw3dEnd span{display:block;max-width:86px;overflow-wrap:normal;}
+#mw3dStage #mw3dEnd:not(:disabled):hover{
+  background:url("arena-art/end_turn_hover.webp") center/contain no-repeat,
+             radial-gradient(circle,#276e51,#14382f);
+}
+#mw3dStage #mw3dEnd:disabled{
+  background:url("arena-art/end_turn_disabled.webp") center/contain no-repeat,
+             radial-gradient(#35423f,#1d282a);
+}
+#mw3dStage #mw3dTurnLabel{max-width:115px;text-align:center;}
+
+/* Compact two-player deck resource panels, anchored below physical deck stacks. */
+#mw3dStage .mw3d-deck-panel{
+  position:absolute;width:176px;box-sizing:border-box;
+  padding:5px 7px 7px;border:1px solid #ac8a55a8;
+  background:#10212ae8;color:#ffe1a8;border-radius:10px;
+  box-shadow:0 4px 14px #0009;
+  font:700 12px/1.3 Arial,sans-serif;
+  display:flex;flex-direction:column;gap:4px;text-align:center;
+  pointer-events:auto;z-index:8;
+}
+#mw3dStage .mw3d-deck-panel strong{font:700 13px/1.25 Georgia,serif;}
+#mw3dStage .mw3d-deck-panel>span{font-size:12px;color:#b1d9f7;}
+#mw3dStage .mw3d-deck-footer{
+  display:flex;justify-content:space-between;align-items:center;gap:4px;
+  padding-top:3px;border-top:1px solid #c1a56a55;
+}
+#mw3dStage .mw3d-deck-footer button{font-size:10px;padding:4px 5px;white-space:nowrap;}
+#mw3dStage .mw3d-deck-footer span{font-size:10px;color:#d7c8ab;white-space:nowrap;}
+#mw3dStage .mw3d-deck-panel.enemy{border-color:#b88473b0;}
+#mw3dStage .mw3d-deck-panel.own{border-color:#6bb4a7b0;}
+
+/* Hero has a larger physical WebGL avatar; the power sits beside its projected position. */
+#mw3dStage .mw3d-hero-summary{
+  position:absolute;bottom:auto!important;
+  padding:7px 10px;max-width:none;width:174px;
+  box-sizing:border-box;
+  display:flex;flex-direction:column;gap:3px;
+  border:1px solid #ab9065;border-left:3px solid #c4a670;
+  border-radius:8px;background:#0b1b26e9;
+  box-shadow:0 5px 12px #0008;z-index:6;pointer-events:none;
+}
+#mw3dStage .mw3d-hero-summary b{font:700 12px/1.25 Arial,sans-serif;letter-spacing:.02em;}
+#mw3dStage .mw3d-hero-summary span{font:700 14px/1.2 Georgia,serif;color:#ffe2bd;}
+#mw3dStage .mw3d-hero-power{
+  position:absolute;bottom:auto!important;max-width:180px;width:165px;
+  padding:8px 10px;border:1px solid #a48651;border-radius:10px;
+  background:#182d35ed;color:#e8d8b0;font:700 12px/1.2 Arial,sans-serif;
+  box-shadow:0 4px 10px #0009;text-align:center;z-index:7;
+  pointer-events:auto;white-space:normal;
+}
+#mw3dStage .mw3d-hero-power.enemy{opacity:.78;pointer-events:none;border-color:#886c58;}
+#mw3dStage .mw3d-hero-power.own:disabled{opacity:.57;}
+#mw3dStage .mw3d-hover{z-index:14;}
+
+/* Single card + metadata: the duplicated large free-standing illustration is gone. */
+#battleWorkspace .battle-inspect-panel{
+  width:min(820px,95vw)!important;max-width:820px!important;
+  display:grid;grid-template-columns:minmax(195px,300px) minmax(285px,1fr)!important;
+  align-items:center;gap:23px;padding:52px 24px 24px!important;
+  max-height:92dvh;overflow:auto;
+}
+#battleWorkspace .mw-inspect-template{
+  width:100%;max-height:calc(92dvh - 80px);min-height:80px;
+  display:flex;justify-content:center;align-items:center;
+}
+#battleWorkspace .mw-inspect-template img{
+  width:100%;height:auto;max-height:calc(92dvh - 85px);
+  aspect-ratio:2/3;object-fit:contain;border-radius:10px;
+}
+#battleWorkspace .battle-inspect-description{min-width:0;}
+#battleWorkspace .battle-inspect-description .section-eyebrow{font-size:10px;letter-spacing:.12em;}
+#battleWorkspace .battle-inspect-effect{font-size:clamp(14px,1.2vw,17px);line-height:1.45;}
+
+/* Mulligan: show actual full card renders, not text placeholders. */
+#battleWorkspace .battle-mulligan-panel{
+  width:min(960px,97vw);max-height:93dvh;overflow-y:auto;
+  padding:22px 24px 18px;
+}
+#battleWorkspace .battle-mulligan-cards{
+  display:flex;justify-content:center;flex-wrap:wrap;
+  gap:14px;margin:18px auto;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card{
+  position:relative;flex:0 1 168px;width:168px;height:auto;
+  box-sizing:border-box;padding:5px;
+  display:flex;flex-direction:column;gap:5px;
+  border:2px solid #856b46;border-radius:11px;
+  background:#192d39;color:#fce6bc;
+  box-shadow:0 6px 18px #0007;
+  cursor:pointer;transition:transform .15s,box-shadow .15s;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card:disabled{
+  opacity:1;cursor:default;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card.replace{
+  border-color:#f5b75a;background:#634132;
+  box-shadow:0 0 0 2px #ffce7aa8,0 7px 18px #0008;
+}
+#battleWorkspace .mulligan-face{
+  position:relative;width:100%;aspect-ratio:2/3;
+  border-radius:7px;overflow:hidden;
+  background:linear-gradient(145deg,#293d47,#1a2b32);
+}
+#battleWorkspace .mulligan-face img{
+  width:100%;height:100%;object-fit:fill;display:block;
+}
+#battleWorkspace .mulligan-fallback{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+  color:#f9dba7;font:700 14px/1.3 Georgia,serif;padding:12px;
+  text-align:center;
+}
+#battleWorkspace .mulligan-fallback>span:first-child{font-size:46px;}
+#battleWorkspace .mulligan-face img:not([hidden])+.mulligan-fallback{display:none;}
+#battleWorkspace .mulligan-choice{
+  min-height:25px;display:flex;align-items:center;justify-content:center;
+  padding:4px 5px;font:700 12px/1.1 Arial,sans-serif;
+  color:#ffe1a3;text-align:center;
+}
+#battleWorkspace button.mulligan-card.replace .mulligan-choice{color:#fff1c4;}
+#battleWorkspace button.mulligan-card:focus-visible{
+  outline:3px solid #f7dd92;outline-offset:2px;
+}
+
+@media(max-width:1100px){
+ #mw3dStage .mw3d-clock{scale:.82;transform-origin:left center;}
+ #mw3dStage .mw3d-turn{scale:.87;transform-origin:right center;}
+ #mw3dStage .mw3d-deck-panel{width:147px;font-size:11px;}
+ #mw3dStage .mw3d-deck-footer{gap:2px;}
+ #mw3dStage .mw3d-deck-footer span{font-size:9px;}
+ #mw3dStage .mw3d-deck-footer button{padding:3px;font-size:9px;}
+ #mw3dStage .mw3d-hero-summary{width:136px;max-width:136px;}
+ #mw3dStage .mw3d-hero-power{width:130px;font-size:10px;}
+}
+@media(max-width:780px){
+ #mw3dStage .mw3d-deck-panel{width:122px;padding:4px;gap:2px;}
+ #mw3dStage .mw3d-deck-footer{flex-direction:column;}
+ #mw3dStage .mw3d-hero-summary{width:108px;padding:5px;}
+ #mw3dStage .mw3d-hero-summary b{font-size:10px;}
+ #mw3dStage .mw3d-hero-power{width:95px;font-size:9px;padding:5px;}
+ #mw3dStage .mw3d-clock{scale:.65;}
+ #mw3dStage .mw3d-turn{scale:.72;}
+ #battleWorkspace .battle-inspect-panel{
+  grid-template-columns:1fr!important;gap:13px;padding:52px 18px 20px!important;
+  width:min(430px,95vw)!important;justify-items:center;
+ }
+ #battleWorkspace .mw-inspect-template{max-width:245px;}
+ #battleWorkspace .battle-inspect-description{width:100%;}
+ #battleWorkspace .battle-mulligan-cards button.mulligan-card{flex-basis:140px;width:140px;}
+}
+@media(prefers-reduced-motion:reduce){
+ #mw3dStage .mw3d-art-clock .mw-art-clock-pointer,
+ #battleWorkspace .battle-mulligan-cards button.mulligan-card{transition:none;}
+}
+
+#battleWorkspace .mulligan-face img[hidden]{display:none!important}
+
+#battleWorkspace .mw-inspect-coin{
+ aspect-ratio:2/3;width:min(100%,300px);display:flex;
+ flex-direction:column;justify-content:center;align-items:center;
+ gap:24px;border:8px ridge #e3bf76;border-radius:13px;
+ background:linear-gradient(160deg,#193a42,#10202c);color:#f8e3b0;text-align:center;
+ box-shadow:inset 0 0 0 2px #a78a54,0 9px 18px #0008;
+}
+#battleWorkspace .mw-inspect-coin span{
+ width:124px;height:124px;display:grid;place-items:center;
+ border-radius:50%;background:radial-gradient(circle,#f4d98f,#a66d24);
+ border:5px ridge #d8a64c;font-size:72px;color:#563811;
+}
+#battleWorkspace .mw-inspect-coin strong{font:700 26px Georgia,serif}
+#battleWorkspace .mw-inspect-coin small{font:13px Arial,sans-serif}

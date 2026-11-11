@@ -1,0 +1,33 @@
+{
+  "version": "v2.1K",
+  "status": "test",
+  "selectedWarlockConcept": "№3 — Хранитель проклятий",
+  "heroArt": {
+    "Чернокнижник": {
+      "day": "assets/hero-art-v2.1K/warlock_keeper_test.webp",
+      "night": "assets/hero-art-v2.1K/warlock_keeper_test.webp"
+    },
+    "Воин": {
+      "day": "assets/hero-art-v2.1K/warrior_day_test.webp",
+      "night": "assets/hero-art-v2.1K/warrior_night_test.webp"
+    }
+  },
+  "abilityArt": {
+    "Чернокнижник": "assets/hero-art-v2.1K/warlock_ability_void_test.webp",
+    "Воин": "assets/hero-art-v2.1K/warrior_ability_torch_test.webp"
+  },
+  "rules": {
+    "defaultStatus": "test",
+    "customPortraitsTakePrecedence": true,
+    "artDoesNotContainNumbers": true,
+    "clockPositionChanged": false,
+    "gameplayRulesChanged": false,
+    "graveyardUi": "icon plus numeric counter without banner",
+    "corpseUi": "icon plus numeric counter without banner"
+  },
+  "sourceNotes": {
+    "Чернокнижник": "Концепт №3, ранее сгенерированный в беседе",
+    "Воин": "Кадры из предоставленных пользователем дневного и ночного референсов",
+    "Способности": "Вихрь без солдата; огненный факел без персонажа"
+  }
+}

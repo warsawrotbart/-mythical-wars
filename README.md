@@ -1,5 +1,7 @@
 # Мифические войны — v2.1M.2 + v05.11 Hero HUD RC
 
+**Актуальное 2D-поле:** [Battlefield v02](battlefield-v02.js) по [ТЗ v02](https://drive.google.com/file/d/182JOOXK0wQllAHhljQh-BhJtIOhWupiK/view). Старые выбираемые 2D-варианты удалены из интерфейса; 3D-прототип остаётся. Задачи и QA: [TASK_JOURNAL.md](TASK_JOURNAL.md).
+
 
 > **Текущий релиз: v05.11 Hero HUD RC.** Полная автономная поставка — все предыдущие патчи не нужны. Обновлены герои, способности и оружие в 2D и в DOM-панелях 3D. Читайте [README_START_v05.11_RU.md](README_START_v05.11_RU.md), [CHANGELOG_v05S11.md](CHANGELOG_v05S11.md), [MW_v05.11_TEST_REPORT.md](MW_v05.11_TEST_REPORT.md) и [MW_v05.11_NEW_CHAT_HANDOFF.md](MW_v05.11_NEW_CHAT_HANDOFF.md). Реальный WebGL 3D требует отдельной приёмки.
 

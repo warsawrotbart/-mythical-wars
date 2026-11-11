@@ -6,21 +6,17 @@
   "use strict";
   const $=id=>document.getElementById(id);
   let initialized=false;
-  const STASH="mw-art-arena-enabled-v2.1D";
+  // Canonical v02 is the only available 2D battlefield. This compatibility
+  // helper still provides counters; the old art/block switch is retired.
   function make(tag,cls){const el=document.createElement(tag);el.className=cls;return el;}
-  function setOn(enabled,persist=true){
-    const workspace=$("battleWorkspace"),btn=$("battleArtToggle");
-    if(!workspace||!btn)return;
-    workspace.classList.toggle("mw-art-off",!enabled);
-    btn.setAttribute("aria-pressed",String(enabled));
-    btn.textContent=enabled?"🎨 Арт: вкл":"🎨 Арт: выкл";
-    btn.title=enabled?"Переключить на блочное поле v2.1C":"Вернуть нарисованное поле v2.1D";
-    if(persist)try{localStorage.setItem(STASH,enabled?"1":"0");}catch(_){}
+  function setOn(){
+    const workspace=$("battleWorkspace");
+    if(workspace)workspace.classList.remove("mw-art-off");
   }
   function init(){
     if(initialized)return true;
-    const workspace=$("battleWorkspace"),toggle=$("battleArtToggle"),dial=workspace?.querySelector(".battle-time-dial");
-    if(!workspace||!toggle||!dial)return false;
+    const workspace=$("battleWorkspace"),dial=workspace?.querySelector(".battle-time-dial");
+    if(!workspace||!dial)return false;
     initialized=true;
     const art=make("div","mw-art-clock");
     art.setAttribute("aria-hidden","true");
@@ -59,10 +55,7 @@
       armor.hidden=true;
       chassis.querySelector(".hero-portrait-group")?.appendChild(armor);
     }
-    let on=true;
-    try{on=localStorage.getItem(STASH)!=="0";}catch(_){}
-    setOn(on,false);
-    toggle.addEventListener("click",()=>setOn(workspace.classList.contains("mw-art-off")));
+    setOn();
     return true;
   }
   function render(game){

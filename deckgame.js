@@ -418,7 +418,7 @@ function timeLabel(s){
 }
 function pName(owner){return owner===0?"Игрок":"Бот";}
 function battleCard(h,owner,kind){
- const c=game.cards[h.cardId],coin=h.cardId==="__coin__";
+ const c=game.cards[h.cardId]||(kind==="minion"?window.MW14_BOARD_STATUS?.cardDefinition(game,h,eng.TOKEN_DATA):null),coin=h.cardId==="__coin__";
  const name=coin?"Монетка":c?.name||h.name||"Неизвестная карта";
  const cost=coin?"0":owner===0&&kind==="hand"&&c?
    String(eng.currentCost(game,owner,h)):String(c?.costValue??"—");
@@ -434,13 +434,25 @@ function battleCard(h,owner,kind){
    "Заморожено":ready?"Готов":"Ждёт"):
    notSupported?"Недоступно":c&&eng.abilitySupport(c)==="partial"?"Частичный эффект":"";
  const label=coin?"Монетка · +1 маны":(c?.ability||"")+
-   (c&&eng.abilitySupport(c)!=="complete"?" · НЕ ПОЛНОСТЬЮ РЕАЛИЗОВАНО":"")+
+   ((kind==="hand"&&c&&eng.abilitySupport(c)!=="complete")||(kind==="minion"&&h.unsupported)?" · НЕ ПОЛНОСТЬЮ РЕАЛИЗОВАНО":"")+
    (notSupported?" · "+status.reason:"");
  const type=coin?"coin":c?.cardType||"creature";
  const rarityClass=/^(common|standard|rare|epic|legendary)$/.test(c?.rarityId)?c.rarityId:"common";
  const affinity=kind==="minion"?(h.affinity||c?.timeAffinityId):c?.timeAffinityId;
  const theme=affinity==="Ноч"?"moon":affinity==="Дзень"?"sun":"neutral";
  const frozen=kind==="minion"&&h.timed?.some(t=>t.kind==="frozen");
+ const statusIcons=kind==="minion"?(window.MW14_BOARD_STATUS?.statusIcons(h)||[]):[];
+ const deathIcon=statusIcons.find(x=>x.id==="deathrattle");
+ const otherIcons=statusIcons.filter(x=>x.id!=="deathrattle");
+ const effectBadge=kind==="minion"&&otherIcons.length?
+   '<span class="mw14-sigils" aria-hidden="true">'+otherIcons.map(x=>
+     '<span class="mw14-sigil mw14-sigil-'+esc(x.id)+'" title="'+esc(x.label)+'">'+esc(x.glyph)+'</span>').join("")+'</span>':"";
+ const deathBadge=kind==="minion"&&deathIcon?
+   '<span class="mw14-deathrattle" title="'+esc(deathIcon.label)+'" aria-hidden="true">'+esc(deathIcon.glyph)+'</span>':"";
+ const guardCrest=taunt?'<span class="mw14-guard-emblem" title="Провокация" aria-hidden="true">⛨</span>':"";
+ const boardTooltip=name+" · атака "+atk+", здоровье "+hp+
+   (taunt?" · Провокация":"")+(affinity?" · "+affinity:"")+
+   (statusIcons.length?" · "+statusIcons.map(x=>x.label).join(", "):"")+(label?" · "+label:"");
  const affinityMark=kind==="minion"&&["Ноч","Дзень"].includes(affinity)?
    '<span class="mw14-affinity" title="'+esc(affinity)+'" aria-hidden="true">'+(affinity==="Ноч"?"☾":"☀")+"</span>":"";
  // Prefer original card artwork over a potentially stale cached thumbnail.
@@ -454,8 +466,8 @@ function battleCard(h,owner,kind){
  const dragEnabled=owner===0&&["hand","minion"].includes(kind)&&game.phase==="battle"&&game.turn===0;
  const burn=kind==="hand"&&h.burnTurnsLeft!=null;
  return `<div class="battle-card ${kind==="minion"?"minion":"hand"} ${notSupported?"disabled":""} ${active?"selected":""}
-  ${ready?"ready":""} ${taunt?"mw14-taunt":""} ${frozen?"mw14-frozen":""} theme-${theme} rarity-${rarityClass} cardtype-${type}${burn?" burning":""}${kind==="minion"?targetClass(owner,"minion",h.uid):""}"
-  role="button" tabindex="0" ${dragEnabled?'draggable="true"':""} title="${esc(kind==="minion"?name+" · атака "+atk+", здоровье "+hp+(taunt?" · Провокация":"")+(affinity?" · "+affinity:"")+(label?" · "+label:""):label)}" data-battle-${kind}="${esc(pick)}" data-mw-card-id="${esc(h.cardId)}" data-mw-template-type="${esc(type)}" data-mw-cost="${esc(cost)}">
+  ${ready?"ready":""} ${taunt?"mw14-taunt":""} ${frozen?"mw14-frozen":""} ${h.token?"mw14-token":""} theme-${theme} rarity-${rarityClass} cardtype-${type}${burn?" burning":""}${kind==="minion"?targetClass(owner,"minion",h.uid):""}"
+  role="button" tabindex="0" ${dragEnabled?'draggable="true"':""} title="${esc(kind==="minion"?boardTooltip:label)}" ${kind==="minion"?`aria-label="${esc(boardTooltip)}"`:""} data-battle-${kind}="${esc(pick)}" data-mw-card-id="${esc(h.cardId)}" data-mw-template-type="${esc(type)}" data-mw-cost="${esc(cost)}">
   <button type="button" class="bc-inspect" data-preview-card="${esc(owner+"|"+kind+"|"+h.uid)}" title="Полный просмотр карты и арта" aria-label="Увеличить карту ${esc(name)}">⛶</button>
   ${burn?`<span class="bc-burn" title="Падпал: оставшиеся собственные ходы">🔥 ${h.burnTurnsLeft}</span>`:""}
   <span class="bc-top"><b>${esc(cost)}</b><span>${taunt?"🛡":coin?"✦":esc(rarity.slice(0,4))}</span></span>
@@ -463,6 +475,7 @@ function battleCard(h,owner,kind){
      `<span class="bc-fallback" aria-hidden="true">${icon}</span>`}</span>
   <span class="bc-name">${esc(kind==="minion"?h.name:name)}</span>
   ${affinityMark}
+  ${guardCrest}${deathBadge}${effectBadge}
   <span class="bc-stats">${coin?"":`<span class="bc-attack">${atk??"—"} ⚔</span><span class="bc-health">${hp??(c?.durability??"—")} ♥</span>`}</span>
   <span class="bc-status">${esc(more)}</span></div>`;
 }

@@ -63,3 +63,60 @@
 @media(prefers-reduced-motion:reduce){
  #battleWorkspace:not(.mw3d-active) .battle-card.mw14-board-portrait .bc-inspect{transition:none;}
 }
+
+/* v05.14 Stage 2 — status insignia and ornate Provocation guard in 2D only.
+ * All icons are display-only and follow live engine state.
+ */
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait.mw14-taunt::before{
+ inset:-2px 2px 7px!important;
+ border:6px ridge #e8c578!important;
+ border-radius:47% 47% 42% 42% / 48% 48% 42% 42%!important;
+ box-shadow:0 0 0 2px #392313e8,0 0 0 4px #b68543b8,
+   inset 0 0 0 2px #ffe4a085,inset 0 0 13px #000b,0 0 13px #c9a25ba3!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait.mw14-taunt>.mw-template-face{
+ filter:drop-shadow(0 3px 5px #000c) drop-shadow(0 0 4px #caa35d);
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-guard-emblem{
+ position:absolute;z-index:8;left:50%;top:-13px;transform:translateX(-50%);
+ display:grid;place-items:center;width:34px;height:28px;pointer-events:none;
+ color:#fff0c1;font:900 23px/1 Georgia,serif;text-shadow:0 1px 3px #291500;
+ background:radial-gradient(ellipse,#583a27 25%,#1c191b 69%,transparent 73%),
+  url("arena-art/armor_badge.webp") center/contain no-repeat;
+ border:2px solid #dcb669;border-radius:42% 42% 55% 55%;
+ box-shadow:0 2px 6px #000b,inset 0 0 4px #f7dfaa95;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-sigils{
+ position:absolute;right:-7px;top:34%;z-index:8;pointer-events:none;
+ display:flex;flex-direction:column;gap:3px;align-items:center;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-sigil{
+ box-sizing:border-box;display:grid;place-items:center;width:23px;height:23px;
+ font:900 15px/1 Georgia,serif;color:#fff1cf;text-shadow:0 1px 2px #000;
+ background:radial-gradient(circle at 35% 24%,#64513a,#231d1c 82%);
+ border:1.5px solid #d8b77f;border-radius:50%;
+ box-shadow:0 2px 5px #000d,inset 0 1px 2px #f3ce7770;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-sigil-frozen{
+ border-color:#9bccf5;color:#d4ecff;background:#1b3750;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-sigil-reborn{
+ border-color:#bb98ef;color:#e4d4ff;background:#332344;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-sigil-stealth{
+ border-color:#a5b0c8;color:#cbdcf1;background:#293447;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-deathrattle{
+ box-sizing:border-box;position:absolute;z-index:8;left:50%;bottom:26px;
+ transform:translateX(-50%);pointer-events:none;
+ display:grid;place-items:center;width:26px;height:26px;
+ font:900 19px/1 Georgia,serif;color:#f6e4c4;text-shadow:0 2px 3px #130c08;
+ border:2px solid #cab184;border-radius:50% 50% 43% 43%;
+ background:radial-gradient(circle at 35% 22%,#4e423e,#1a1a20 82%);
+ box-shadow:0 2px 7px #000d,inset 0 1px 2px #faf0dc6b;
+}
+@media(max-width:1350px){
+ #battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-sigils{right:-4px;gap:2px;}
+ #battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-sigil{width:20px;height:20px;font-size:13px;}
+ #battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-guard-emblem{width:29px;height:25px;font-size:19px;}
+}

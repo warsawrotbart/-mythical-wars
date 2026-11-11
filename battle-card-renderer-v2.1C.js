@@ -340,9 +340,13 @@ function hydrate(game,root=document){
  root.querySelectorAll(".battle-card[data-mw-template-type]").forEach(node=>{
   const type=node.dataset.mwTemplateType;
   if(!["creature","spell","weapon"].includes(type))return;
-  const id=node.dataset.mwCardId,card=game.cards?.[id];
-  if(!card)return;
+  const id=node.dataset.mwCardId;
   const kind=node.classList.contains("minion")?"compact":"full";
+  // Summoned tokens exist on the board but are not stored in game.cards.
+  const unit=kind==="compact"?global.MW14_BOARD_STATUS?.boardUnit(game,node.dataset.battleMinion):null;
+  const card=game.cards?.[id]||(unit?global.MW14_BOARD_STATUS?.cardDefinition(
+    game,unit,global.MW_GAME_ENGINE?.TOKEN_DATA):null);
+  if(!card)return;
   const cost=node.dataset.mwCost;
   const workspace=global.document.getElementById("battleWorkspace");
   const artFit=workspace?.dataset.artFit||"contain";
@@ -383,7 +387,8 @@ function hydrateInspect(game,owner,kind,uid){
  const node=document.getElementById("battleInspectTemplate");if(!node||!game)return;
  const item=kind==="hand"?game.players[owner].hand.find(x=>x.uid===uid):
                            game.players[owner].board.find(x=>x.uid===uid);
- const card=item&&game.cards?.[item.cardId];
+ const card=item&&(game.cards?.[item.cardId]||(kind==="minion"?
+   global.MW14_BOARD_STATUS?.cardDefinition(game,item,global.MW_GAME_ENGINE?.TOKEN_DATA):null));
  node.replaceChildren();
  if(!card||!["creature","spell","weapon"].includes(card.cardType)){
   if(item?.cardId==="__coin__"){

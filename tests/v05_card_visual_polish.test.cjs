@@ -10,7 +10,7 @@ test("curved heading preserves every character and follows arch",()=>{
   assert.ok(p[0].angle<0&&p.at(-1).angle>0);
 });
 test("stroke/fill of title both performed for all glyphs",()=>{
-  const calls=[],ctx={measureText:()=>24,save(){},restore(){},translate(){},rotate(){},scale(){},
+  const calls=[],ctx={measureText:()=>({width:24}),save(){},restore(){},translate(){},rotate(){},scale(){},
     strokeText(s){calls.push("s"+s)},fillText(s){calls.push("f"+s)}};
   polish.drawCurvedTitle(ctx,"ДЗЕНЬ",[512,799],676);
   assert.equal(calls.filter(x=>x[0]==="s").length,5);

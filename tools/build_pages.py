@@ -3,6 +3,7 @@
 from __future__ import annotations
 from pathlib import Path
 import shutil, argparse
+from unpack_battlefield import unpack as unpack_battlefield
 
 ROOT=Path(__file__).resolve().parents[1]
 RUNTIME_DIRS=('assets','v05','arena-art','figma-assets','references','examples','test-art')
@@ -25,6 +26,8 @@ def build(dest: Path):
         shutil.copy2(ROOT/name,dest/name)
     for name in RUNTIME_DIRS:
         shutil.copytree(ROOT/name,dest/name)
+    # Reconstruct approved, losslessly packed battlefield-v02 art before publication.
+    unpack_battlefield(ROOT/'battlefield-v02', dest/'battlefield-v02')
     (dest/'.nojekyll').write_text('',encoding='utf-8')
     print('Pages:',dest,'files',sum(1 for _ in dest.rglob('*') if _.is_file()))
 

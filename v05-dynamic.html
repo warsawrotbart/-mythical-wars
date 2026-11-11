@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Мифические войны — v05.12 RC · Редактор слоёв шаблона</title>
+<title>Мифические войны — v05.12.1 RC · Редактор слоёв шаблона</title>
 <link rel="stylesheet" href="v05-dynamic.css?v=0512">
-<link rel="stylesheet" href="v05-template-editor.css?v=0512">
+<link rel="stylesheet" href="v05-template-editor.css?v=05121">
 <script src="v05-dynamic-manifest.js" defer></script>
 <script src="v05-dynamic-core.js" defer></script>
 <script src="deck-sheet-import.js" defer></script>
@@ -13,7 +13,7 @@
 <script src="v05-library-core.js" defer></script>
 <script src="v05-art-store.js" defer></script>
 <script src="v05-template-core.js?v=0512" defer></script>
-<script src="v05-template-editor.js?v=0512" defer></script>
+<script src="v05-template-editor.js?v=05121" defer></script>
 <script src="mw-test-art-catalog.js" defer></script>
 <script src="v05-dynamic.js?v=0512" defer></script>
 <script src="v05-library-ui.js" defer></script>
@@ -22,14 +22,14 @@
 <body>
 <header class="bar">
   <div class="wordmark"><div class="mark">✦</div><div><strong>МИФИЧЕСКИЕ ВОЙНЫ</strong><span>Редактор карт · утверждённый стандарт v05</span></div></div>
-  <nav aria-label="Навигация"><span class="stage">v05.12 RC · редактор шаблонов · встроенные арты</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><a href="index.html">← В игру</a></nav>
+  <nav aria-label="Навигация"><span class="stage">v05.12.1 RC · редактор шаблонов · встроенные арты</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><a href="index.html">← В игру</a></nav>
 </header>
 <section class="heading">
   <div><span class="eyebrow">КОМПОЗИТОР ИЗ ИСХОДНЫХ СЛОЁВ</span>
     <h1>Один шаблон. Любая карта.</h1>
     <p>Единственный редактор карт v05: настраивайте слои, расположение, размеры и иконки прямо на карте. Изменения сохраняются отдельно для существ, оружия и заклинаний. Исходный манифест и игровые данные остаются неизменными.</p>
   </div>
-  <aside class="spec"><strong>MW · v05.12 RC</strong><span>Холст 1024 × 1536 RGBA</span><span>Оригинальный манифест и исходные слои</span><span>Локальный запуск без интернета</span></aside>
+  <aside class="spec"><strong>MW · v05.12.1 RC</strong><span>Холст 1024 × 1536 RGBA</span><span>Оригинальный манифест и исходные слои</span><span>Локальный запуск без интернета</span></aside>
 </section>
 <div class="workspace">
   <aside class="panel left">
@@ -56,18 +56,20 @@
       <div><span class="eyebrow" id="selectedId">KNZ-019</span><h2 id="selectedName">Сборка карты</h2></div>
       <button id="exportBtn" class="primary" type="button" disabled>↓ Экспорт PNG</button>
     </div>
-    <div class="canvas-area">
-      <div class="canvas-holder"><div class="canvas-interactive"><canvas id="cardCanvas" width="1024" height="1536" aria-label="Динамически собранная карта"></canvas><canvas id="templateSelectionCanvas" width="1024" height="1536" aria-label="Интерактивное выделение и перемещение элементов шаблона"></canvas></div></div>
+    <div class="editor-stage" id="editorStage">
+      <div class="canvas-area">
       <div id="referenceWrap" class="reference">
         <div class="reference-title">Эталон v05 <span>Для сверки</span></div>
         <img id="referenceImg" alt="Утверждённая контрольная карта v05">
         <p class="muted">Эталон собран из оригинальных слоёв. Динамический холст слева использует текст Canvas — небольшие отличия сглаживания допустимы.</p>
       </div>
-    </div>
+      <div class="canvas-holder"><div class="canvas-interactive"><canvas id="cardCanvas" width="1024" height="1536" aria-label="Динамически собранная карта"></canvas><canvas id="templateSelectionCanvas" width="1024" height="1536" aria-label="Интерактивное выделение и перемещение элементов шаблона"></canvas></div></div>
+      </div>
     <section class="template-workbench" id="templateWorkbench" aria-labelledby="tplTitle">
       <header class="tpl-heading"><div><span class="eyebrow">03 / КОНСТРУКТОР ШАБЛОНА · v05.12</span><h3 id="tplTitle">Слои и расположение элементов</h3>
-      <p class="muted">Настройки действуют на <strong>все карты того же типа</strong> (существо / оружие / заклинание), а не изменяют боевые данные. На карте можно перетаскивать выделенное; квадратный угол меняет размер.</p></div>
+      <p class="muted">Настройки действуют на <strong>все карты того же типа</strong> (существо / оружие / заклинание), а не изменяют боевые данные. На карте можно перетаскивать выделенное; квадратный угол меняет размер.</p><p class="tpl-shortcuts">Клавиши: <kbd>Ctrl+Z</kbd> отмена · <kbd>Ctrl+Shift+Z</kbd> / <kbd>Ctrl+Y</kbd> повтор · <kbd>Del</kbd> удалить свою иконку · <kbd>Esc</kbd> снять выделение · стрелки — перемещение</p></div>
       <label class="tpl-switch"><input type="checkbox" id="tplEditMode" checked> Перемещение на карте</label></header>
+      <p id="tplStatus" class="tpl-status" role="status" aria-live="polite">Готово к настройке. Изменения сохраняются только в этом браузере.</p>
       <div class="tpl-columns">
         <section class="tpl-layers" aria-label="Порядок слоёв"><div class="tpl-subhead"><strong>Слои (верхний первым)</strong><span id="tplLayerCount">0 слоёв</span></div>
           <div id="tplLayerList" class="tpl-layer-list" role="group" aria-label="Элементы шаблона"></div>
@@ -91,9 +93,10 @@
       </div>
       <div class="tpl-footer"><div class="tpl-row-buttons"><button id="tplUndo" type="button" disabled>↶ Отменить</button><button id="tplRedo" type="button" disabled>↷ Повторить</button><button id="tplResetTemplate" type="button">↺ Исходный шаблон</button></div>
         <div class="tpl-row-buttons"><button id="tplExport" type="button">↓ Скачать шаблон JSON</button><label class="tpl-import-button" for="tplImport">↑ Загрузить шаблон JSON</label><input id="tplImport" class="tpl-file-hidden" type="file" accept=".json,application/json"></div></div>
-      <p id="tplStatus" class="tpl-status" role="status" aria-live="polite">Готово к настройке.</p>
+
       <p class="tip">Черновики сохраняются локально в IndexedDB. Экспорт PNG учитывает настройки редактора; 2D/3D игры не получают эти изменения автоматически, пока шаблон не утверждён и не интегрирован отдельно.</p>
     </section>
+    </div><!-- /.editor-stage -->
     <div class="render-footer">
       <span id="sizeBadge">1024 × 1536</span>
       <span id="status" role="status" aria-live="polite">Загрузка...</span>

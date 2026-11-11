@@ -1,4 +1,4 @@
-/* Mythical Wars v05.12 — interactive non-destructive layout editor.
+/* Mythical Wars v05.12.1 — interactive non-destructive layout editor.
  * Runs only in v05-dynamic.html; does not modify the battle engine or approved asset manifest.
  */
 (function(){
@@ -39,6 +39,7 @@ function create({manifest,requestPaint}){
   function scheduleSave(){
     const rev=++c.revision,type=c.type,data=snapshot();
     memoryLayouts.set(type,data);
+    status('Сохранение шаблона '+type+'… изменения остаются в этом браузере.');
     if(saveTimers.has(type))clearTimeout(saveTimers.get(type));
     saveTimers.set(type,setTimeout(async()=>{
       saveTimers.delete(type);
@@ -197,11 +198,14 @@ function create({manifest,requestPaint}){
   $('tplLock').onclick=()=>{const it=chosen();if(it)mutate({locked:!it.transform.locked})};
   $('tplUndo').onclick=()=>historyAction(false);$('tplRedo').onclick=()=>historyAction(true);
   $('tplResetTemplate').onclick=reset;
-  $('tplDelete').onclick=()=>{const it=chosen();if(!it||it.kind!=='custom')return;
+  function deleteSelectedCustom(){
+    const it=chosen();if(!it||it.kind!=='custom')return false;
     const before=snapshot();c.layout.custom=c.layout.custom.filter(x=>x.id!==it.id);
     delete c.layout.overrides[it.id];c.layout.order=c.layout.order.filter(x=>x!==it.id);
-    c.selected=null;record(before);requestPaint();updateInspector();status('Пользовательская иконка удалена из черновика.');
-  };
+    c.selected=null;record(before);requestPaint();updateInspector();status('Пользовательская иконка удалена из черновика. Ctrl+Z — восстановить.');
+    return true;
+  }
+  $('tplDelete').onclick=deleteSelectedCustom;
   $('tplEditMode').addEventListener('change',()=>{c.edit=$('tplEditMode').checked;overlay.style.pointerEvents=c.edit?'auto':'none';drawOverlay()});
   $('tplExport').onclick=()=>{
     const payload={...snapshot(),kind:'MW_v05_template_draft',sourceManifestSha:SHA,exportedAt:new Date().toISOString()};
@@ -245,13 +249,25 @@ function create({manifest,requestPaint}){
     }catch(err){status('Добавление иконки: '+err.message,true)}
   });
   window.addEventListener('keydown',ev=>{
-    const tag=ev.target?.tagName;
-    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||ev.target?.isContentEditable)return;
-    if((ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='z'){
-      ev.preventDefault();historyAction(!!ev.shiftKey);return;
+    if(ev.defaultPrevented)return;
+    const target=ev.target,tag=target?.tagName,key=ev.key.toLowerCase();
+    const templateNumber=tag==='INPUT'&&target.type==='number'&&!!target.closest?.('#templateWorkbench');
+    const entry=tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||target?.isContentEditable;
+    // Ctrl/Cmd+Z applies to the template even while its numeric inspector has focus.
+    // Leave normal text inputs, search fields and other controls to the browser.
+    if((ev.ctrlKey||ev.metaKey)&&!ev.altKey&&(key==='z'||key==='y')){
+      if(entry&&!templateNumber)return;
+      if(templateNumber)target.blur(); // Commit a pending numeric edit before undo/redo.
+      ev.preventDefault();historyAction(key==='y'||(key==='z'&&ev.shiftKey));return;
     }
-    if((ev.ctrlKey||ev.metaKey)&&ev.key.toLowerCase()==='y'){
-      ev.preventDefault();historyAction(true);return;
+    if(entry||ev.ctrlKey||ev.metaKey||ev.altKey)return;
+    if(ev.key==='Escape'){
+      if(c.selected){ev.preventDefault();choose(null)}
+      return;
+    }
+    if(ev.key==='Delete'||ev.key==='Backspace'){
+      if(chosen()?.kind==='custom'){ev.preventDefault();deleteSelectedCustom()}
+      return;
     }
     const it=chosen();if(!c.edit||!it||it.transform.locked)return;
     const arrows={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};

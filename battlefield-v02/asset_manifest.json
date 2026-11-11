@@ -1,0 +1,378 @@
+{
+  "version": "v02",
+  "source": "MW_Battlefield_TZ_Package_v02.zip",
+  "chunkSize": 524288,
+  "compressed_total": 4838635,
+  "entries": [
+    {
+      "path": "board_assets/ART-01_arena_day.webp",
+      "offset": 0,
+      "compressed": 855339,
+      "uncompressed": 855074,
+      "crc32": 2238669124,
+      "method": 8
+    },
+    {
+      "path": "battlefield_layout_v02.json",
+      "offset": 855339,
+      "compressed": 991,
+      "uncompressed": 2464,
+      "crc32": 3055401592,
+      "method": 8
+    },
+    {
+      "path": "board_assets/ART-02_arena_night.webp",
+      "offset": 856330,
+      "compressed": 657111,
+      "uncompressed": 656906,
+      "crc32": 793724077,
+      "method": 8
+    },
+    {
+      "path": "board_assets/ART-04_arena_divider.png",
+      "offset": 1513441,
+      "compressed": 156508,
+      "uncompressed": 158653,
+      "crc32": 3116332765,
+      "method": 8
+    },
+    {
+      "path": "board_assets/ART-12_resource_panel.png",
+      "offset": 1669949,
+      "compressed": 103875,
+      "uncompressed": 103878,
+      "crc32": 2453203316,
+      "method": 8
+    },
+    {
+      "path": "board_assets/ART-13_mana_empty.png",
+      "offset": 1773824,
+      "compressed": 8553,
+      "uncompressed": 8548,
+      "crc32": 1700222473,
+      "method": 8
+    },
+    {
+      "path": "board_assets/ART-13_mana_full.png",
+      "offset": 1782377,
+      "compressed": 7260,
+      "uncompressed": 7255,
+      "crc32": 9114916,
+      "method": 8
+    },
+    {
+      "path": "board_assets/ART-18_end_turn_disabled.png",
+      "offset": 1789637,
+      "compressed": 243585,
+      "uncompressed": 243522,
+      "crc32": 135731470,
+      "method": 8
+    },
+    {
+      "path": "board_assets/ART-18_end_turn_hover.png",
+      "offset": 2033222,
+      "compressed": 296693,
+      "uncompressed": 296598,
+      "crc32": 4049136441,
+      "method": 8
+    },
+    {
+      "path": "board_assets/ART-18_end_turn_idle.png",
+      "offset": 2329915,
+      "compressed": 266950,
+      "uncompressed": 266971,
+      "crc32": 2395917112,
+      "method": 8
+    },
+    {
+      "path": "board_assets/ART-19_deck_stand.png",
+      "offset": 2596865,
+      "compressed": 232167,
+      "uncompressed": 232228,
+      "crc32": 2303629987,
+      "method": 8
+    },
+    {
+      "path": "clock_assets/ART-15_clock_day_marker_off_v2.png",
+      "offset": 2829032,
+      "compressed": 10661,
+      "uncompressed": 10656,
+      "crc32": 82433214,
+      "method": 8
+    },
+    {
+      "path": "clock_assets/ART-15_clock_day_marker_on_v2.png",
+      "offset": 2839693,
+      "compressed": 14706,
+      "uncompressed": 14701,
+      "crc32": 3712411868,
+      "method": 8
+    },
+    {
+      "path": "clock_assets/ART-15_clock_frame_v2.png",
+      "offset": 2854399,
+      "compressed": 282502,
+      "uncompressed": 282724,
+      "crc32": 777157524,
+      "method": 8
+    },
+    {
+      "path": "clock_assets/ART-15_clock_night_marker_off_v2.png",
+      "offset": 3136901,
+      "compressed": 10939,
+      "uncompressed": 10934,
+      "crc32": 228436035,
+      "method": 8
+    },
+    {
+      "path": "clock_assets/ART-15_clock_night_marker_on_v2.png",
+      "offset": 3147840,
+      "compressed": 16744,
+      "uncompressed": 16734,
+      "crc32": 4198191234,
+      "method": 8
+    },
+    {
+      "path": "clock_assets/ART-16_clock_day_dial_v2.png",
+      "offset": 3164584,
+      "compressed": 379055,
+      "uncompressed": 378935,
+      "crc32": 296136059,
+      "method": 8
+    },
+    {
+      "path": "clock_assets/ART-16_clock_night_dial_v2.png",
+      "offset": 3543639,
+      "compressed": 364170,
+      "uncompressed": 364061,
+      "crc32": 3807953701,
+      "method": 8
+    },
+    {
+      "path": "clock_assets/ART-17_clock_pointer.png",
+      "offset": 3907809,
+      "compressed": 10980,
+      "uncompressed": 10975,
+      "crc32": 3338364396,
+      "method": 8
+    },
+    {
+      "path": "clock_assets/clock_layout.json",
+      "offset": 3918789,
+      "compressed": 667,
+      "uncompressed": 2167,
+      "crc32": 1723915313,
+      "method": 8
+    },
+    {
+      "path": "hero/approval.json",
+      "offset": 3919456,
+      "compressed": 137,
+      "uncompressed": 181,
+      "crc32": 2461176516,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/hero_armor.png",
+      "offset": 3919593,
+      "compressed": 18596,
+      "uncompressed": 18586,
+      "crc32": 3388096946,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/hero_frame.png",
+      "offset": 3938189,
+      "compressed": 160474,
+      "uncompressed": 160598,
+      "crc32": 2985327656,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/hero_hp.png",
+      "offset": 4098663,
+      "compressed": 23091,
+      "uncompressed": 23081,
+      "crc32": 746509373,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/hero_mask.png",
+      "offset": 4121754,
+      "compressed": 1817,
+      "uncompressed": 1938,
+      "crc32": 1006529180,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/hero_portrait_masked.png",
+      "offset": 4123571,
+      "compressed": 201879,
+      "uncompressed": 202853,
+      "crc32": 2570970825,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/number_overlay_test.png",
+      "offset": 4325450,
+      "compressed": 11707,
+      "uncompressed": 14033,
+      "crc32": 1291737101,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/power_art_day.png",
+      "offset": 4337157,
+      "compressed": 92079,
+      "uncompressed": 92408,
+      "crc32": 121920279,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/power_art_night.png",
+      "offset": 4429236,
+      "compressed": 64506,
+      "uncompressed": 64875,
+      "crc32": 3884230671,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/power_cost.png",
+      "offset": 4493742,
+      "compressed": 18173,
+      "uncompressed": 18163,
+      "crc32": 2411323278,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/power_cost_number_day.png",
+      "offset": 4511915,
+      "compressed": 2563,
+      "uncompressed": 4769,
+      "crc32": 2816694780,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/power_cost_number_night.png",
+      "offset": 4514478,
+      "compressed": 2998,
+      "uncompressed": 5206,
+      "crc32": 2545988408,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/power_frame_day.png",
+      "offset": 4517476,
+      "compressed": 71698,
+      "uncompressed": 71673,
+      "crc32": 844684095,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/power_frame_night.png",
+      "offset": 4589174,
+      "compressed": 71698,
+      "uncompressed": 71673,
+      "crc32": 844684095,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/power_mask.png",
+      "offset": 4660872,
+      "compressed": 1151,
+      "uncompressed": 1156,
+      "crc32": 1701723738,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/weapon_art_masked.png",
+      "offset": 4662023,
+      "compressed": 59680,
+      "uncompressed": 59974,
+      "crc32": 1530609258,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/weapon_attack.png",
+      "offset": 4721703,
+      "compressed": 19980,
+      "uncompressed": 19970,
+      "crc32": 467702847,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/weapon_durability.png",
+      "offset": 4741683,
+      "compressed": 16552,
+      "uncompressed": 16542,
+      "crc32": 2848421258,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/weapon_frame.png",
+      "offset": 4758235,
+      "compressed": 78685,
+      "uncompressed": 78660,
+      "crc32": 1571496575,
+      "method": 8
+    },
+    {
+      "path": "hero/layers/weapon_mask.png",
+      "offset": 4836920,
+      "compressed": 993,
+      "uncompressed": 1033,
+      "crc32": 3856172963,
+      "method": 8
+    },
+    {
+      "path": "hero/layout.json",
+      "offset": 4837913,
+      "compressed": 722,
+      "uncompressed": 3170,
+      "crc32": 2078164807,
+      "method": 8
+    }
+  ],
+  "chunks": [
+    {
+      "path": "source-pack/chunk-000.bin",
+      "size": 524288
+    },
+    {
+      "path": "source-pack/chunk-001.bin",
+      "size": 524288
+    },
+    {
+      "path": "source-pack/chunk-002.bin",
+      "size": 524288
+    },
+    {
+      "path": "source-pack/chunk-003.bin",
+      "size": 524288
+    },
+    {
+      "path": "source-pack/chunk-004.bin",
+      "size": 524288
+    },
+    {
+      "path": "source-pack/chunk-005.bin",
+      "size": 524288
+    },
+    {
+      "path": "source-pack/chunk-006.bin",
+      "size": 524288
+    },
+    {
+      "path": "source-pack/chunk-007.bin",
+      "size": 524288
+    },
+    {
+      "path": "source-pack/chunk-008.bin",
+      "size": 524288
+    },
+    {
+      "path": "source-pack/chunk-009.bin",
+      "size": 120043
+    }
+  ]
+}

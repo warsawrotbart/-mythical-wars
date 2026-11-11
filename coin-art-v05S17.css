@@ -1,0 +1,10 @@
+/* MW v05.17 — coin uses the full approved Spell visual, not the old CSS placeholder. */
+#battleWorkspace .battle-mulligan-cards button.mulligan-card[data-mulligan-card="__coin__"] .mulligan-fallback[hidden],
+#battleWorkspace .battle-mulligan-cards .mulligan-fallback[hidden]{display:none!important}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card[data-mulligan-card="__coin__"] .mulligan-face:has(img:not([hidden])){
+  display:block!important;align-items:initial!important;justify-content:initial!important;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card[data-mulligan-card="__coin__"] .mulligan-face img:not([hidden]){
+  display:block!important;width:100%!important;height:100%!important;
+  object-fit:contain!important;
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "mw-art-registry-v1",
+  "purpose": "Single-art controlled integration. Does not grant game/deck admission.",
+  "sourceSnapshotDate": "2026-11-11",
+  "source": "Библиотека карт / Токены / Медиа / Данные редактора",
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "entries": [
+    {
+      "cardId": "SYS-001",
+      "artVersion": "v01",
+      "originalPath": "assets/SYS-001_art_v01.png",
+      "originals": [
+        {
+          "artVersion": "v01",
+          "path": "assets/SYS-001_art_v01.png"
+        }
+      ],
+      "sourceFileId": "1VzHc1HRW-0O8BFqg86bkK1iqAzKHQIse",
+      "sourceFileName": "SYS-001_art_v01.png",
+      "sha256": "a236ecc3af18bb2c0a289f37243c3abd2c72594fb5874815bcefb444a7ec0ff4",
+      "originalWidth": 1448,
+      "originalHeight": 1086,
+      "originalFormat": "PNG",
+      "alphaChannel": false,
+      "importDate": "2026-11-11",
+      "artApproval": "approved-test",
+      "templateId": "Spell",
+      "templateVersion": "v05",
+      "classId": "Нейтральная",
+      "crop": {
+        "x": 0.48,
+        "y": 0.4,
+        "zoom": 1,
+        "coordinateSystem": "normalized",
+        "verified": false,
+        "source": "current editor starting values"
+      },
+      "maskCheck": "pending-visual-review",
+      "cardAdmission": "service-only; not collectible",
+      "runtimeAlias": "__coin__",
+      "derivativeRendering": {
+        "type": "runtime-v05-compositor",
+        "cardView": {
+          "width": 512,
+          "height": 768
+        },
+        "compactView": {
+          "width": 256,
+          "height": 304
+        },
+        "format": "PNG",
+        "persistedFiles": false
+      },
+      "dependencies": [
+        "v05/production/editor_manifest.json",
+        "v05 spell mask"
+      ],
+      "notes": "Initial import limited to SYS-001. Mask and crop not artistically approved. Do not change the temporary-mana effect."
+    }
+  ]
+}

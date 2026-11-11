@@ -344,8 +344,8 @@ function hydrate(game,root=document){
   const kind=node.classList.contains("minion")?"compact":"full";
   // Summoned tokens exist on the board but are not stored in game.cards.
   const unit=kind==="compact"?global.MW14_BOARD_STATUS?.boardUnit(game,node.dataset.battleMinion):null;
-  const card=game.cards?.[id]||(unit?global.MW14_BOARD_STATUS?.cardDefinition(
-    game,unit,global.MW_GAME_ENGINE?.TOKEN_DATA):null);
+  const card=id==="__coin__"?global.MW_SYS001_COIN?.definition():game.cards?.[id]||(unit?global.MW14_BOARD_STATUS?.cardDefinition(
+     game,unit,global.MW_GAME_ENGINE?.TOKEN_DATA):null);
   if(!card)return;
   const cost=node.dataset.mwCost;
   const workspace=global.document.getElementById("battleWorkspace");
@@ -387,19 +387,11 @@ function hydrateInspect(game,owner,kind,uid){
  const node=document.getElementById("battleInspectTemplate");if(!node||!game)return;
  const item=kind==="hand"?game.players[owner].hand.find(x=>x.uid===uid):
                            game.players[owner].board.find(x=>x.uid===uid);
- const card=item&&(game.cards?.[item.cardId]||(kind==="minion"?
+ const card=item&&(item.cardId==="__coin__"?global.MW_SYS001_COIN?.definition():game.cards?.[item.cardId]||(kind==="minion"?
    global.MW14_BOARD_STATUS?.cardDefinition(game,item,global.MW_GAME_ENGINE?.TOKEN_DATA):null));
  node.replaceChildren();
  if(!card||!["creature","spell","weapon"].includes(card.cardType)){
-  if(item?.cardId==="__coin__"){
-   node.hidden=false;
-   const face=document.createElement("div");face.className="mw-inspect-coin";
-   const emblem=document.createElement("span");emblem.textContent="1";
-   const caption=document.createElement("strong");caption.textContent="МОНЕТКА";
-   const effect=document.createElement("small");effect.textContent="+1 мана на этот ход";
-   face.append(emblem,caption,effect);node.append(face);
-  }else{node.hidden=true;}
-  return;
+  node.hidden=true;return;
  }
  node.hidden=false;
  const img=document.createElement("img");img.alt="Полная карта";img.draggable=false;

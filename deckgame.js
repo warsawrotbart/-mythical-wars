@@ -117,15 +117,16 @@ function openCardInspect(owner,kind,uid){
  const p=game.players[owner];
  const item=kind==="hand"?p.hand.find(x=>x.uid===uid):p.board.find(x=>x.uid===uid);
  if(!item)return;
- const c=game.cards[item.cardId]||{},coin=item.cardId==="__coin__";
- const type=coin?"Особая":dm.types[c.cardType]||c.cardType||"Существо";
- $("battleInspectName").textContent=coin?"Монетка":c.name||item.name||item.cardId;
+ const coin=item.cardId==="__coin__";
+ const c=(coin?window.MW_SYS001_COIN?.definition():game.cards[item.cardId])||{};
+ const type=coin?"Служебное заклинание":dm.types[c.cardType]||c.cardType||"Существо";
+ $("battleInspectName").textContent=c.name||item.name||item.cardId;
  $("battleInspectMeta").textContent=(c.cardId||item.cardId)+" · "+type+" · "+(c.classId||"")+" · "+(dm.rarityLabel[c.rarityId]||"");
  const attack=kind==="minion"?eng.effectiveAttack(game,item):c.attack;
  const health=kind==="minion"?item.health:c.health??c.durability;
  $("battleInspectStats").textContent=`Стоимость ${c.costValue??"без стоимости"} · Атака ${attack??"—"} · Здоровье/прочность ${health??"—"}`;
- $("battleInspectEffect").textContent=coin?"Даёт 1 временную ману.":c.ability||"Без способности";
- $("battleInspectSupport").textContent=c.cardId&&eng.abilitySupport(c)!=="complete"?
+ $("battleInspectEffect").textContent=c.ability||"Без способности";
+ $("battleInspectSupport").textContent=!coin&&c.cardId&&eng.abilitySupport(c)!=="complete"?
    "Часть игровой механики пока не реализована полностью.":"";
  window.MW_BATTLE_CARD_RENDERER?.hydrateInspect(game,owner,kind,uid);
  $("battleCardInspect").hidden=false;inspectOpen=true;
@@ -418,7 +419,8 @@ function timeLabel(s){
 }
 function pName(owner){return owner===0?"Игрок":"Бот";}
 function battleCard(h,owner,kind){
- const c=game.cards[h.cardId]||(kind==="minion"?window.MW14_BOARD_STATUS?.cardDefinition(game,h,eng.TOKEN_DATA):null),coin=h.cardId==="__coin__";
+ const coin=h.cardId==="__coin__";
+ const c=coin?window.MW_SYS001_COIN?.definition():game.cards[h.cardId]||(kind==="minion"?window.MW14_BOARD_STATUS?.cardDefinition(game,h,eng.TOKEN_DATA):null);
  const name=coin?"Монетка":c?.name||h.name||"Неизвестная карта";
  const cost=coin?"0":owner===0&&kind==="hand"&&c?
    String(eng.currentCost(game,owner,h)):String(c?.costValue??"—");
@@ -436,7 +438,7 @@ function battleCard(h,owner,kind){
  const label=coin?"Монетка · +1 маны":(c?.ability||"")+
    ((kind==="hand"&&c&&eng.abilitySupport(c)!=="complete")||(kind==="minion"&&h.unsupported)?" · НЕ ПОЛНОСТЬЮ РЕАЛИЗОВАНО":"")+
    (notSupported?" · "+status.reason:"");
- const type=coin?"coin":c?.cardType||"creature";
+ const type=coin?"spell":c?.cardType||"creature";
  const rarityClass=/^(common|standard|rare|epic|legendary)$/.test(c?.rarityId)?c.rarityId:"common";
  const affinity=kind==="minion"?(h.affinity||c?.timeAffinityId):c?.timeAffinityId;
  const theme=affinity==="Ноч"?"moon":affinity==="Дзень"?"sun":"neutral";
@@ -815,15 +817,15 @@ function selectMulligan(){
  const renderer=window.MW_BATTLE_CARD_RENDERER;
  if(!renderer?.request)return;
  for(const h of me.hand){
-  if(h.cardId==="__coin__")continue;
-  const c=game.cards[h.cardId];if(!c)continue;
+  const c=h.cardId==="__coin__"?window.MW_SYS001_COIN?.definition():game.cards[h.cardId];
+  if(!c)continue;
   const cost=eng.currentCost(game,0,h);
   renderer.request(c,"full",{cost}).then(url=>{
    if(!url)return;
    const button=[...$("mulliganCards").querySelectorAll("[data-mulligan]")].find(x=>x.dataset.mulligan===h.uid);
    if(!button||button.dataset.mulliganCard!==h.cardId)return;
    const img=button.querySelector(".mulligan-face img");
-   if(img){img.src=url;img.hidden=false;}
+   if(img){img.src=url;img.hidden=false;button.querySelector(".mulligan-fallback")?.setAttribute("hidden","");}
   }).catch(()=>{/* visible card-name fallback remains */});
  }
 }

@@ -64,7 +64,7 @@
       portal.style.left=dimensions.left+"px";portal.style.top=dimensions.top+"px";
       portal.hidden=false;img.hidden=true;img.removeAttribute("src");
       // The full card comes from the same renderer as the hand/inspect, not a duplicate UI drawing.
-      const definition=state.cards?.[hand.cardId];
+      const definition=hand.cardId==="__coin__"?win.MW_SYS001_COIN?.definition():state.cards?.[hand.cardId];
       const fallback=node.querySelector(":scope > .mw-template-face");
       const token=generation;
       const renderer=win.MW_BATTLE_CARD_RENDERER;

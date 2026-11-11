@@ -19,7 +19,7 @@ test('v05.7 uses one visible editor and retains game/deck navigation',()=>{
   assert.match(index, /id="editorWorkspace" hidden aria-hidden="true"/);
   assert.match(index, /data-app-mode="decks"/);
   assert.match(index, /data-app-mode="battle"/);
-  assert.match(index, /src="mw-test-art-catalog\.js"/);
+  assert.match(index, /src="mw-test-art-catalog\.js\?v=0517"/);
   const c=text('collection-ui-v2.1M1.js');
   assert.match(c, /v05-dynamic\.html\?card=/);
   const dynamic=text('v05-dynamic.html');
@@ -34,8 +34,10 @@ test('all 169 entries have honest test-art coverage: 99 available, 70 missing',(
   assert.equal(inventory.counts.withoutArt,70);
   assert.equal(inventory.counts.chrEmbedded,45);
   assert.equal(inventory.counts.otherFromDrive,47);
-  assert.equal(catalogue.count,99);
-  assert.deepEqual(new Set(catalogue.ids).size,99);
+  // Historical inventory remains 99; SYS-001 is one separately validated 2026-11-11 addition.
+  assert.equal(catalogue.count,100);
+  assert.deepEqual(new Set(catalogue.ids).size,100);
+  assert.equal(catalogue.get("SYS-001").status,"approved-test");
   assert.deepEqual(new Set(inventory.missing).size,70);
   for (const id of inventory.missing) assert.equal(catalogue.has(id),false,id);
   assert.equal(catalogue.has('TKN-001'),true);

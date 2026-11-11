@@ -30,7 +30,7 @@ test('inspector only holds complete rendered card, not enlarged standalone illus
  assert.match(html,/id="battleInspectTemplate"/);
  assert.doesNotMatch(html,/id="battleInspectArt"/);
  assert.match(renderer,/function hydrateInspect/);
- assert.match(renderer,/item\?\.cardId==="__coin__"/);
+ assert.match(renderer,/item\.cardId==="__coin__"\?global\.MW_SYS001_COIN\?\.definition\(\)/);
 });
 test('mulligan renders actual card images and keeps coin unreplaceable',()=>{
  const src=read('deckgame.js');

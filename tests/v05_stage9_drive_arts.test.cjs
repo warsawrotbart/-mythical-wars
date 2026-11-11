@@ -10,9 +10,11 @@ const inv=JSON.parse(fs.readFileSync(path.join(root,'test-art/test_art_inventory
 const tokens=Array.from({length:7},(_,i)=>`TKN-${String(i+1).padStart(3,'0')}`);
 const revised=['CHR-001','CHR-003','CHR-008','CHR-010','NEU-024','NEU-026','NEU-027'];
 test('v05.9 contains exactly 99 known-ID art mappings, 70 honest gaps',()=>{
-  assert.equal(cat.count,99);assert.equal(inv.counts.allLibrary,169);
+  assert.equal(cat.count,100);assert.equal(inv.counts.allLibrary,169);
+  assert.equal(cat.url('SYS-001'),'assets/SYS-001_art_v01.png');
   assert.equal(inv.counts.withTestArt,99);assert.equal(inv.missing.length,70);
-  assert.equal(new Set([...cat.ids,...inv.missing]).size,169);
+  // The archival pool is 169; the newly added service coin is outside that old snapshot.
+  assert.equal(new Set([...cat.ids,...inv.missing]).size,170);
   for(const id of inv.missing) assert.equal(cat.url(id),'');
 });
 test('all seven token image files and reference versions are bundled',()=>{

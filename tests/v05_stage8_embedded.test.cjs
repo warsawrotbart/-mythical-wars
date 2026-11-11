@@ -38,12 +38,12 @@ test('picker filters by checked built-in ID and counts coverage',()=>{
 });
 
 test('all built-in art URLs point only to shipped files, never remote data',()=>{
- assert.equal(catalog.count,99);
+ assert.equal(catalog.count,100); // 99 historical test art + SYS-001 approved test art
  const missing=inventory.missing;
  assert.equal(missing.length,70);
  for(const id of catalog.ids){
   const src=catalog.url(id);
-  assert.ok(src.startsWith('test-art/')||src.startsWith('v05/'),src);
+  assert.ok(src.startsWith('test-art/')||src.startsWith('v05/')||src==='assets/SYS-001_art_v01.png',src);
   assert.ok(!src.includes('..')&&!src.startsWith('/'),src);
   assert.ok(fs.statSync(path.join(root,src)).isFile(),id);
  }

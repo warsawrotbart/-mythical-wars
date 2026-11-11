@@ -1,0 +1,91 @@
+/* Mythical Wars v05.15 — show the actual cards, not extra UI frames.
+   Full card renderer is unchanged; this sheet affects presentation only. */
+#battleWorkspace:not(.mw3d-active) .mw14-hand-preview{
+  border:0!important;border-radius:0!important;background:transparent!important;
+  padding:0!important;box-shadow:none!important;overflow:visible!important;
+  display:block!important;filter:drop-shadow(0 15px 16px #000c);
+}
+#battleWorkspace:not(.mw3d-active) .mw14-hand-preview[hidden]{display:none!important}
+#battleWorkspace:not(.mw3d-active) .mw14-hand-preview img{
+  width:100%;height:100%;object-fit:contain!important;aspect-ratio:2/3;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;opacity:1!important;
+}
+#battleWorkspace:not(.mw3d-active) .mw14-hand-preview .mw14-preview-label{display:none!important}
+#battleWorkspace .battle-mulligan-panel{
+  width:min(1160px,97vw);max-height:95dvh;overflow:auto;padding:18px 22px;
+}
+#battleWorkspace .battle-mulligan-cards{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+  gap:18px;margin:18px auto;overflow:visible;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card{
+  position:relative;flex:0 1 clamp(172px,16vw,230px);width:clamp(172px,16vw,230px);
+  height:auto!important;aspect-ratio:2/3;padding:0!important;border:0!important;
+  border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  color:inherit;overflow:visible;transition:transform .18s ease,filter .18s ease!important;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card .mulligan-face{
+  display:block;width:100%;height:100%;aspect-ratio:2/3;padding:0!important;
+  border:0!important;border-radius:0!important;overflow:visible!important;
+  background:transparent!important;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card .mulligan-face img{
+  display:block;width:100%;height:100%;object-fit:contain!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  filter:drop-shadow(0 9px 9px #0009);
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card .mulligan-face img[hidden]{
+  display:none!important;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card .mulligan-choice{
+  display:none!important;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card:hover:not(:disabled),
+#battleWorkspace .battle-mulligan-cards button.mulligan-card:focus-visible{
+  transform:translateY(-8px) scale(1.045)!important;z-index:3;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card.replace{
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  filter:drop-shadow(0 0 10px #e9b865);
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card.replace::after{
+  content:"✓";display:grid;place-items:center;position:absolute;
+  right:-4px;top:5px;width:33px;height:33px;pointer-events:none;
+  border:2px solid #ffe1a2;border-radius:50%;
+  color:#15261e;background:#f5d087;font:bold 23px/1 Georgia,serif;
+  box-shadow:0 2px 8px #000b;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card:focus-visible{
+  outline:3px solid #f4d18a!important;outline-offset:5px;
+}
+#battleWorkspace .battle-mulligan-cards button.mulligan-card:disabled{
+  opacity:1!important;cursor:default;
+}
+#battleWorkspace .battle-mulligan-cards .mulligan-fallback{
+  border:1px solid #d3aa62;border-radius:10px;
+}
+/* The full inspect also shows the whole card at a useful reading size. */
+#battleWorkspace .battle-inspect-panel{
+  width:min(960px,96vw)!important;max-width:960px!important;
+  grid-template-columns:minmax(270px,400px) minmax(250px,1fr)!important;
+}
+#battleWorkspace .mw-inspect-template{max-height:calc(94dvh - 85px)}
+#battleWorkspace .mw-inspect-template img{
+  max-height:calc(94dvh - 85px);border-radius:0!important;
+}
+#battleWorkspace .battle-inspect-effect{
+  font-size:clamp(17px,1.35vw,22px)!important;line-height:1.5!important;
+}
+@media(max-width:780px){
+  #battleWorkspace .battle-inspect-panel{
+    grid-template-columns:1fr!important;width:min(460px,96vw)!important;
+  }
+  #battleWorkspace .mw-inspect-template{max-width:310px!important}
+  #battleWorkspace .battle-mulligan-cards button.mulligan-card{
+    flex-basis:clamp(140px,29vw,190px);width:clamp(140px,29vw,190px);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #battleWorkspace .battle-mulligan-cards button.mulligan-card{transition:none!important}
+}

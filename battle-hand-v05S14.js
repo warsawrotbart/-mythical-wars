@@ -20,7 +20,7 @@
       targetType:result?.targetType||null,choice:!!result?.choice};
   }
   function previewBounds(cardRect,mainRect){
-    const width=Math.max(115,Math.min(275,mainRect.width*.42,Math.max(115,(mainRect.height-18)*2/3)));
+    const width=Math.max(115,Math.min(355,mainRect.width*.52,Math.max(115,(mainRect.height-30)*2/3)));
     const height=width*1.5;
     const left=clamp(cardRect.left+cardRect.width/2-mainRect.left-width/2,6,Math.max(6,mainRect.width-width-6));
     const above=cardRect.top-mainRect.top-height-12;
@@ -32,14 +32,13 @@
     const workspace=doc.getElementById("battleWorkspace"),main=workspace?.querySelector(".battle-main");
     if(!workspace||!main)return null;
     let state=null,engine=win.MW_GAME_ENGINE,busy=false,previewUid=null,previewNode=null;
-    let portal=null,img=null,caption=null,generation=0,lastGame=null,boardKeys=null;
+    let portal=null,img=null,generation=0,lastGame=null,boardKeys=null;
     function ensurePreview(){
       if(portal)return;
       portal=doc.createElement("div");portal.id="mw14HandPreview";
       portal.className="mw14-hand-preview";portal.hidden=true;portal.setAttribute("aria-hidden","true");
       img=doc.createElement("img");img.alt="Полная карта";img.draggable=false;img.decoding="async";img.hidden=true;
-      caption=doc.createElement("span");caption.className="mw14-preview-label";
-      portal.append(img,caption);main.append(portal);
+      portal.append(img);main.append(portal);
     }
     function hide(){
       generation++;previewUid=null;previewNode=null;
@@ -64,9 +63,6 @@
       portal.style.width=dimensions.width+"px";portal.style.height=dimensions.height+"px";
       portal.style.left=dimensions.left+"px";portal.style.top=dimensions.top+"px";
       portal.hidden=false;img.hidden=true;img.removeAttribute("src");
-      const name=state.cards?.[hand.cardId]?.name|| (hand.cardId==="__coin__"?"Монетка":hand.cardId);
-      const action=statusFor(state,uid,engine,false);
-      caption.textContent=name+(action.ok?" · доступна":action.reason?" · "+action.reason:"");
       // The full card comes from the same renderer as the hand/inspect, not a duplicate UI drawing.
       const definition=state.cards?.[hand.cardId];
       const fallback=node.querySelector(":scope > .mw-template-face");

@@ -33,7 +33,7 @@ test("editor integration keeps original editable layout and valid scripts",()=>{
   const js=fs.readFileSync(path.join(root,"v05-dynamic.js"),"utf8");
   const html=fs.readFileSync(path.join(root,"v05-dynamic.html"),"utf8");
   assert.match(js,/polish\.drawCurvedTitle/);assert.match(js,/polish\.skipLayer/);
-  assert.match(js,/polish\.makeArtCrown/);assert.match(js,/Common_Outer_Gold_Trim/);
+  assert.doesNotMatch(js,/polish\.makeArtCrown/);assert.match(js,/Common_Outer_Gold_Trim/);
   assert.ok(html.indexOf("v05-card-visual-polish.js")<html.indexOf("v05-dynamic.js"));
   assert.match(js,/templateEditor\.compose/);
 });

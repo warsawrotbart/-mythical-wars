@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Мифические войны — v05.13.1 RC · Редактор слоёв шаблона</title>
+<title>Мифические войны — v05.15 · Редактор карт</title>
 <link rel="stylesheet" href="v05-dynamic.css?v=0512">
-<link rel="stylesheet" href="v05-template-editor.css?v=05121">
+<link rel="stylesheet" href="v05-template-editor.css?v=0515">
 <script src="v05-dynamic-manifest.js" defer></script>
-<script src="v05-dynamic-core.js" defer></script>
+<script src="v05-dynamic-core.js?v=0515" defer></script>
 <script src="deck-sheet-import.js" defer></script>
 <script src="v05-library-seed.js" defer></script>
 <script src="v05-library-core.js" defer></script>
@@ -16,41 +16,37 @@
 <script src="v05-template-editor.js?v=05121" defer></script>
 <script src="v05-card-visual-polish.js?v=05131" defer></script>
 <script src="mw-test-art-catalog.js" defer></script>
-<script src="v05-dynamic.js?v=05131" defer></script>
+<script src="v05-dynamic.js?v=0515" defer></script>
 <script src="v05-library-ui.js" defer></script>
 <script src="v05-sync-ui.js" defer></script>
 </head>
 <body>
 <header class="bar">
   <div class="wordmark"><div class="mark">✦</div><div><strong>МИФИЧЕСКИЕ ВОЙНЫ</strong><span>Редактор карт · утверждённый стандарт v05</span></div></div>
-  <nav aria-label="Навигация"><span class="stage">v05.13.1 RC · редактор шаблонов · встроенные арты</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><a href="index.html">← В игру</a></nav>
+  <nav aria-label="Навигация"><span class="stage">v05.15 · редактор карт</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><details class="editor-help"><summary>Справка</summary><div class="editor-help-content">
+<strong>Работа с картой</strong>
+<p>Выбери карту слева и выдели слой на карте или в списке. Редактируй положение и свойства справа.</p>
+<p><kbd>Ctrl+Z</kbd> — отмена, <kbd>Ctrl+Shift+Z</kbd> — повторить; стрелки двигают слой.</p>
+<p>Черновики сохраняются в браузере, не в GitHub. Шаблон применяется ко всем картам одного типа; игровой движок не меняется.</p>
+</div></details><a href="index.html">← В игру</a></nav>
 </header>
-<section class="heading">
-  <div><span class="eyebrow">КОМПОЗИТОР ИЗ ИСХОДНЫХ СЛОЁВ</span>
-    <h1>Один шаблон. Любая карта.</h1>
-    <p>Единственный редактор карт v05: настраивайте слои, расположение, размеры и иконки прямо на карте. Изменения сохраняются отдельно для существ, оружия и заклинаний. Исходный манифест и игровые данные остаются неизменными.</p>
-  </div>
-  <aside class="spec"><strong>MW · v05.13.1 RC</strong><span>Холст 1024 × 1536 RGBA</span><span>Оригинальный манифест и исходные слои</span><span>Локальный запуск без интернета</span></aside>
-</section>
 <div class="workspace">
   <aside class="panel left">
     <div class="top"><span class="eyebrow">01 / ДАННЫЕ КАРТЫ</span><h2>Примеры v05</h2></div>
-    <p class="muted">Выбери карту из библиотеки ниже или контрольный пример. Тестовый арт по ID подставляется автоматически, если он доступен.</p>
+    
     <div id="sampleCards" class="samples"></div>
     <div class="line"></div>
     <label for="jsonUpload" class="field-label">Импорт JSON карты</label>
     <input id="jsonUpload" type="file" accept=".json,application/json">
-    <p class="tip">Поля карты показываются справа только для чтения. Библиотека XLSX/CSV доступна ниже. Локальная библиотека работает без интернета; серверная синхронизация доступна отдельно после настройки сервера.</p>
+    
     <div class="line"></div>
     <label class="field-label" for="libSearch">Открыть карту из локальной библиотеки (162 + 7)</label>
     <input id="libSearch" type="search" placeholder="ID или название">
     <label class="lib-art-filter"><input id="libOnlyWithArt" type="checkbox"> Только карты со встроенным артом</label>
     <select id="libSelect" size="6" aria-label="Карты и токены локальной библиотеки"></select>
     <p id="builtinCoverage" class="tip" aria-live="polite">Загрузка встроенной библиотеки артов…</p>
-    <p class="tip">Отсутствующий арт не заменяется случайным изображением. Токены отделены от карт. Неутверждённые значки и шаблоны блокируют экспорт PNG.</p>
-    <section class="mini-callout"><strong>Защита утверждённого шаблона</strong>
-      <p>Оригиналы v05 не меняются. При ошибке данных или переполнении финальный экспорт блокируется.</p>
-    </section>
+    
+    
   </aside>
   <main class="panel main">
     <div class="preview-title">
@@ -67,15 +63,15 @@
       <div class="canvas-holder"><div class="canvas-interactive"><canvas id="cardCanvas" width="1024" height="1536" aria-label="Динамически собранная карта"></canvas><canvas id="templateSelectionCanvas" width="1024" height="1536" aria-label="Интерактивное выделение и перемещение элементов шаблона"></canvas></div></div>
       </div>
     <section class="template-workbench" id="templateWorkbench" aria-labelledby="tplTitle">
-      <header class="tpl-heading"><div><span class="eyebrow">03 / КОНСТРУКТОР ШАБЛОНА · v05.12</span><h3 id="tplTitle">Слои и расположение элементов</h3>
-      <p class="muted">Настройки действуют на <strong>все карты того же типа</strong> (существо / оружие / заклинание), а не изменяют боевые данные. На карте можно перетаскивать выделенное; квадратный угол меняет размер.</p><p class="tpl-shortcuts">Клавиши: <kbd>Ctrl+Z</kbd> отмена · <kbd>Ctrl+Shift+Z</kbd> / <kbd>Ctrl+Y</kbd> повтор · <kbd>Del</kbd> удалить свою иконку · <kbd>Esc</kbd> снять выделение · стрелки — перемещение</p></div>
+      <header class="tpl-heading"><div><span class="eyebrow">СЛОИ КАРТЫ</span><h3 id="tplTitle">Слои и расположение элементов</h3>
+      <p class="muted">Настройки для всех карт одного типа. Горячие клавиши — в справке наверху.</p></div>
       <label class="tpl-switch"><input type="checkbox" id="tplEditMode" checked> Перемещение на карте</label></header>
       <p id="tplStatus" class="tpl-status" role="status" aria-live="polite">Готово к настройке. Изменения сохраняются только в этом браузере.</p>
       <div class="tpl-columns">
         <section class="tpl-layers" aria-label="Порядок слоёв"><div class="tpl-subhead"><strong>Слои (верхний первым)</strong><span id="tplLayerCount">0 слоёв</span></div>
           <div id="tplLayerList" class="tpl-layer-list" role="group" aria-label="Элементы шаблона"></div>
           <div class="tpl-row-buttons"><button type="button" id="tplUp" disabled>↑ Выше</button><button type="button" id="tplDown" disabled>↓ Ниже</button></div>
-          <p class="tip">Значок ◉ — показать/скрыть. ♧ — блокировка. Оригинальные слои можно скрыть, но нельзя удалить из манифеста.</p>
+          
         </section>
         <section class="tpl-inspector" aria-label="Свойства выбранного слоя">
           <div class="tpl-selected"><strong id="tplSelected">Выберите слой</strong><span id="tplSelectedInfo" class="muted">Для редактирования выберите элемент в списке.</span></div>
@@ -89,13 +85,13 @@
           </div>
           <div class="tpl-toggles"><label><input id="tplKeepRatio" type="checkbox" checked> Сохранять пропорции</label><label><input id="tplSnap" type="checkbox" checked> Привязка к сетке (8 px)</label></div>
           <div class="tpl-row-buttons"><button id="tplHide" type="button" disabled>Скрыть</button><button id="tplLock" type="button" disabled>Заблокировать</button><button id="tplDelete" type="button" disabled>Удалить свою иконку</button></div>
-          <div class="tpl-upload"><label class="field-label" for="tplAddIcon">+ Добавить свою иконку (PNG / WebP / JPEG)</label><input id="tplAddIcon" type="file" accept="image/png,image/jpeg,image/webp"><p class="tip">Добавляемые иконки хранятся внутри отдельного черновика. До 24 на тип карты; исходные значки не удаляются.</p></div>
+          <div class="tpl-upload"><label class="field-label" for="tplAddIcon">+ Добавить свою иконку (PNG / WebP / JPEG)</label><input id="tplAddIcon" type="file" accept="image/png,image/jpeg,image/webp"></div>
         </section>
       </div>
       <div class="tpl-footer"><div class="tpl-row-buttons"><button id="tplUndo" type="button" disabled>↶ Отменить</button><button id="tplRedo" type="button" disabled>↷ Повторить</button><button id="tplResetTemplate" type="button">↺ Исходный шаблон</button></div>
         <div class="tpl-row-buttons"><button id="tplExport" type="button">↓ Скачать шаблон JSON</button><label class="tpl-import-button" for="tplImport">↑ Загрузить шаблон JSON</label><input id="tplImport" class="tpl-file-hidden" type="file" accept=".json,application/json"></div></div>
 
-      <p class="tip">Новая отделка: название дугой, верхние декоративные элементы приподняты, убраны лишние боковые линии у существ и усилен контур рамки. Часть иллюстрации мягко перекрывает верхний внутренний обод. Для полноценного вырезанного персонажа поверх внешней рамки требуется арт с прозрачным передним планом. Черновики хранятся локально; игра 2D/3D пока использует исходный рендер.</p>
+      
     </section>
     </div><!-- /.editor-stage -->
     <div class="render-footer">
@@ -103,7 +99,7 @@
       <span id="status" role="status" aria-live="polite">Загрузка...</span>
     </div>
     <section class="errors"><div class="errors-head"><h3>Проверка перед экспортом</h3><span>Без автоматического обрезания текста</span></div><div id="warnings"></div></section>
-    <div class="footline">v05: исходные материалы из <code>production/editor_manifest.json</code>, расположение из отдельного черновика v05.12. PNG содержит только карту, без маркеров выделения и интерфейса.</div>
+    
   </main>
   <aside class="panel right">
     <div class="top"><span class="eyebrow">02 / ОФОРМЛЕНИЕ</span><h2>Арт и кадрирование</h2></div>

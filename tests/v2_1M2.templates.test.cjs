@@ -90,12 +90,14 @@ test("Template draft module deliberately provides no apply-to-cards entrypoint",
   assert.ok(!src.includes("openCatalogCard("));
   assert.ok(!src.includes("saveLibraryCard("));
 });
-test("New template navigation is present and the previous Collection screen is preserved",()=>{
+test("Legacy tab is disconnected, while collection and live editor remain",()=>{
   const html=fs.readFileSync(path.join(__dirname,"../index.html"),"utf8");
-  for(const name of ["mwTemplatesNav","mwTemplatesWorkspace","mwCollectionNav","mwCollectionWorkspace"]){
-    assert.ok(html.includes(`id="${name}"`),name);
-  }
-  assert.ok(html.includes("template-lab-core-v2.1M2.js"));
-  assert.ok(html.includes("template-lab-ui-v2.1M2.js"));
+  assert.ok(!html.includes('id="mwTemplatesNav"'));
+  assert.ok(!html.includes('id="mwTemplatesWorkspace"'));
+  assert.ok(!html.includes('<script src="template-lab-ui-v2.1M2.js"'));
+  assert.ok(!html.includes('<script src="template-lab-core-v2.1M2.js"'));
+  assert.ok(html.includes('id="mwCollectionNav"'));
+  assert.ok(html.includes('id="mwCollectionWorkspace"'));
+  assert.ok(html.includes('href="v05-dynamic.html"'));
   assert.ok(html.includes("collection-ui-v2.1M1.js"));
 });

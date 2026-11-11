@@ -159,7 +159,7 @@ function analyzeText(card,manifest,ctx){
   const ti=chooseTextLayout(ctx,card.name||"",{fontName:"MW-DejaVu-Bold",maxPx:48,minPx:30,maxWidth:title[2]-title[0],maxHeight:title[3]-title[1],maxLines:1});
   if(ti.overflow)errors.push(issue("error","title-overflow","Название не помещается в одну строку (30–48 px)"));
   const r=regions.description_by_type[type];
-  const body=chooseTextLayout(ctx,card.description||"",{fontName:"MW-DejaVu-Regular",maxPx:42,minPx:32,
+  const body=chooseTextLayout(ctx,card.description||"",{fontName:"MW-DejaVu-Regular",maxPx:52,minPx:32,
     maxWidth:Math.min(manifest.text_anchors.description_wrap_width,r[2]-r[0]),
     maxHeight:r[3]-r[1],lineRatio:1.18});
   if(body.overflow)errors.push(issue("error","description-overflow","Описание не помещается; автоматическое сокращение запрещено"));

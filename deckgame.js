@@ -806,7 +806,6 @@ function selectMulligan(){
        <span>${coin?"🪙":"✦"}</span><span>${esc(title)}</span>
       </span>
     </span>
-    <span class="mulligan-choice">${coin?"Монетку не заменяем":chosen?"✓ Будет заменена":"Оставить карту"}</span>
    </button>`;
  }).join("");
  const renderer=window.MW_BATTLE_CARD_RENDERER;

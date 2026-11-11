@@ -6,7 +6,7 @@
 <title>Мифические войны v05.11 RC — игра и единый редактор v05</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="collection-ui-v2.1M1.css">
-<link rel="stylesheet" href="template-lab-ui-v2.1M2.css">
+
 <style>[hidden]{display:none!important}#editorWorkspace,.top-actions{display:none!important}.app-mode-nav .mw-v05-std-link{display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;padding:10px 14px;border-radius:8px;border:1px solid #ad8e57;color:#f1ddb1;background:#1b2a27;text-decoration:none}.app-mode-nav .mw-v05-std-link:hover{background:#32413b}</style>
 <link rel="stylesheet" href="editor-layout-v2.1F.css">
 <link rel="stylesheet" href="battle-visual-v1.8.css">
@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="arena-layout-v05S13.css?v=0513b">
 <link rel="stylesheet" href="battle-minion-v05S14.css?v=0514b">
 <link rel="stylesheet" href="battle-hand-v05S14.css?v=0514c">
+<link rel="stylesheet" href="card-readability-v05S15.css?v=0515">
 </head>
 <body>
 <div id="app">
@@ -47,14 +48,14 @@
 </header>
 <nav class="app-mode-nav" aria-label="Разделы приложения">
   <button type="button" id="mwCollectionNav">▦ Коллекция карт</button>
-  <button type="button" id="mwTemplatesNav">◈ Шаблоны карт</button>
-  <a href="v05-dynamic.html" class="mw-v05-std-link" title="Единственный редактор карт: библиотека, арт, экспорт PNG">✦ Редактор карт v05 · тестовые арты</a>
+  
+  <a href="v05-dynamic.html" class="mw-v05-std-link" title="Единственный редактор карт: библиотека, арт, экспорт PNG">✦ Редактор карт</a>
   <button data-app-mode="decks" class="active">▤ Конструктор колод</button>
   <button data-app-mode="battle">⚔ Тестовый бой</button>
   <span class="mode-caption">Автономный режим · данные из библиотеки карт</span>
 </nav>
 <section id="mwCollectionWorkspace" hidden aria-label="Коллекция карт"><div id="mwCollectionApp"></div></section>
-<section id="mwTemplatesWorkspace" hidden aria-label="Шаблоны карт"><div id="mwTemplatesApp"></div></section>
+
 <div class="workspace" id="editorWorkspace" hidden aria-hidden="true">
   <aside class="sidebar left-sidebar">
     <div class="sidebar-heading"><span class="section-eyebrow">ТЕКУЩАЯ КАРТА</span>
@@ -795,7 +796,7 @@
 <script src="card-workflow-v2.1G.js"></script>
 <script src="card-catalog.js"></script>
 <script src="collection-core-v2.1M1.js"></script>
-<script src="template-lab-core-v2.1M2.js"></script>
+
 <script src="warlock-card-art-v2.1I.js"></script>
 <script src="mw-test-art-catalog.js"></script>
 <script src="hero-art-v2.1K.js"></script>
@@ -815,16 +816,16 @@
 <script src="battle-minion-portrait-v05S14.js?v=0514a"></script>
 <script src="battle-minion-status-v05S14.js?v=0514b"></script>
 <script src="battle-v05-card-bridge.js?v=0514a"></script>
-<script src="battle-card-renderer-v2.1C.js?v=0514b"></script>
-<script src="battle-hand-v05S14.js?v=0514c"></script>
+<script src="battle-card-renderer-v2.1C.js?v=0515"></script>
+<script src="battle-hand-v05S14.js?v=0515"></script>
 <script src="arena-art-v2.1D.js"></script>
 <script src="arena-3d-math-v2.1H.js"></script>
 <script src="arena-3d-v2.1H.js?v=0510"></script>
 <script src="hero-hud-v05S11.js?v=0511"></script>
-<script src="deckgame.js?v=0514c"></script>
+<script src="deckgame.js?v=0515"></script>
 <script src="deck-sheet-ui.js"></script>
 <script src="collection-ui-v2.1M1.js"></script>
-<script src="template-lab-ui-v2.1M2.js"></script>
+
 <script src="arena-layout-v05S13.js?v=0513b"></script>
 </body>
 </html>

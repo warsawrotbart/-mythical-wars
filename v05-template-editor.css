@@ -88,3 +88,61 @@
   .editor-stage .tpl-columns{grid-template-columns:1fr}
   .editor-stage .tpl-layers{border-right:0;border-bottom:1px solid #3e574d}
 }
+
+/* MW v05.15 — clean editor and large persistent live card. */
+.bar{min-height:54px;padding:8px 18px;position:sticky;top:0;z-index:50}
+.bar nav{gap:8px}.bar nav a{padding:6px 10px}.bar .stage{font-size:12px}
+.editor-help{position:relative;order:10}
+.editor-help summary{cursor:pointer;list-style:none;background:#1c3434;border:1px solid #64766b;
+  padding:6px 12px;border-radius:8px;color:#f5dbab}
+.editor-help summary::-webkit-details-marker{display:none}
+.editor-help summary::before{content:"? ";font-weight:800}
+.editor-help-content{position:absolute;top:calc(100% + 8px);right:0;z-index:100;
+  width:min(410px,90vw);padding:16px;background:#132824;border:1px solid #bc975e;
+  border-radius:12px;box-shadow:0 15px 30px #000b;font-size:13px;line-height:1.6}
+.editor-help-content p{margin:10px 0 0}
+.editor-help-content kbd{background:#283d3b;border:1px solid #806f53;padding:2px 5px;border-radius:4px}
+.workspace{max-width:2000px;grid-template-columns:195px minmax(0,1fr) 255px;
+  gap:10px;padding:12px 12px 26px}
+.panel{padding:12px}.panel h2{font-size:20px}
+.left .samples{margin:8px 0;gap:5px}.left .sample-card{padding:5px}
+.left .line,.right .line{margin:10px 0}
+.panel.main{overflow:visible}
+.preview-title{margin-bottom:7px}.preview-title h2{font-size:23px}
+.editor-stage{grid-template-columns:minmax(0,1fr) minmax(315px,375px);gap:12px}
+.editor-stage .reference{display:none!important}
+.editor-stage .canvas-area{display:flex;justify-content:center;position:sticky;top:70px;
+  padding:12px;min-height:0;overflow:visible}
+.editor-stage .canvas-holder{flex:0 1 auto;width:min(100%,610px);max-width:100%}
+.editor-stage .canvas-interactive{width:min(100%,calc((100dvh - 120px)*2/3),610px)!important;
+  max-width:610px!important;margin:0 auto}
+.editor-stage .canvas-interactive canvas{width:100%!important;height:auto!important;
+  aspect-ratio:2/3;max-height:calc(100dvh - 120px)}
+.editor-stage .template-workbench{position:sticky;top:70px;max-height:calc(100dvh - 86px);overflow:auto}
+.editor-stage .tpl-heading{padding:12px}
+.editor-stage .tpl-heading h3{font-size:17px}
+.editor-stage .tpl-layer-list{max-height:27vh}
+.editor-stage .tpl-footer{position:sticky;bottom:0;background:#162b27;z-index:5;
+  border-top:1px solid #51694d}
+.right .control{margin:10px 0}
+@media(max-width:1580px){
+ .workspace{grid-template-columns:175px minmax(0,1fr) 240px}
+ .workspace>.main,.workspace>.right{grid-column:auto}
+ .editor-stage{grid-template-columns:minmax(0,1fr) minmax(290px,340px)}
+}
+@media(max-width:1250px){
+ .workspace{grid-template-columns:175px minmax(0,1fr)}
+ .workspace>.main{grid-column:2}.workspace>.right{grid-column:1/-1}
+ .editor-stage{grid-template-columns:minmax(0,1fr) minmax(290px,340px)}
+}
+@media(max-width:920px){
+ .editor-stage{grid-template-columns:minmax(0,1fr)}
+ .editor-stage .canvas-area{position:sticky;top:64px;background:#0d191a;z-index:5}
+ .editor-stage .canvas-interactive{width:min(100%,calc((100dvh - 150px)*2/3),485px)!important}
+ .editor-stage .template-workbench{position:relative;top:auto;max-height:none;overflow:visible}
+}
+@media(max-width:700px){
+ .bar{position:relative}.workspace{display:block;padding:8px}
+ .editor-stage .canvas-area{position:relative;top:auto}
+ .editor-stage .canvas-interactive{width:min(90vw,450px)!important}
+}

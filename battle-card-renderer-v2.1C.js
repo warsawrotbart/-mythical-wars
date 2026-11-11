@@ -113,7 +113,7 @@ function lineBreaks(ctx,string,maxWidth){
 function drawText(ctx,node,value){
  if(value===null||value===undefined||value==="")return;
  const w=Math.max(1,num(node.w,100)),h=Math.max(1,num(node.h,60));
- const maxSize=clamp(num(node.fontSize,40),12,180);
+ const maxSize=clamp(num(node.fontSize,40)*(node.binding==="ability"||node.binding==="description"?1.18:1),12,180);
  const minSize=clamp(num(node.minFontSize,14),12,maxSize);
  const family=node.fontFamily||"Georgia, serif";
  const weight=node.fontWeight==="bold"?"700 ":"400 ";

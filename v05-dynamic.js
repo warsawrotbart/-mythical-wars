@@ -142,7 +142,7 @@ async function paint(){
   if(!state.card)return;
   const current=++state.epoch;
   state.loading=true;$("exportBtn").disabled=true;
-  note("Сборка карты с настройками шаблона v05.12…");
+  note("Сборка карты v05.15…");
   const canvas=$("cardCanvas");const ctx=canvas.getContext("2d",{willReadFrequently:false});
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   try{
@@ -159,7 +159,6 @@ async function paint(){
     if(current!==state.epoch)return;
     const model=core.analyzeText(state.card,manifest,ctx);
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    let artCrown=null;
     for(const layer of layers){
       if(!layer.transform.visible)continue;
       ctx.save();
@@ -183,7 +182,6 @@ async function paint(){
           z.drawImage(img,loc.dx,loc.dy,loc.dw,loc.dh);
           z.globalCompositeOperation="destination-in";z.drawImage(await mask(part.mask),0,0);
           z.globalCompositeOperation="source-over";ctx.drawImage(tmp,0,0);
-          if(state.card.type==="Creature")artCrown={canvas:polish.makeArtCrown(document,tmp),layer};
         }else if(layer.kind==='text'){
           renderText(ctx,model,layer.subtype);
         }else if(layer.kind==='number'){
@@ -193,10 +191,7 @@ async function paint(){
           ctx.drawImage(pic,layer.box.x,layer.box.y,layer.box.w,layer.box.h);
         }
       }finally{ctx.restore()}
-      if(state.card.type==="Creature"&&layer.id==="base:Creature_Inner_Art_Frame"&&artCrown){
-        ctx.save();tplCore.applyCanvasTransform(ctx,artCrown.layer);
-        ctx.globalAlpha*=.92;ctx.drawImage(artCrown.canvas,0,0);ctx.restore();
-      }
+
     }
     if(state.card.type==="Creature"){
       ctx.save();ctx.globalAlpha=.25;ctx.globalCompositeOperation="screen";

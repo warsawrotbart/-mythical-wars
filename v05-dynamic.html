@@ -3,30 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Мифические войны — v05.11 RC · Встроенные арты и единый редактор</title>
-<link rel="stylesheet" href="v05-dynamic.css">
+<title>Мифические войны — v05.12 RC · Редактор слоёв шаблона</title>
+<link rel="stylesheet" href="v05-dynamic.css?v=0512">
+<link rel="stylesheet" href="v05-template-editor.css?v=0512">
 <script src="v05-dynamic-manifest.js" defer></script>
 <script src="v05-dynamic-core.js" defer></script>
 <script src="deck-sheet-import.js" defer></script>
 <script src="v05-library-seed.js" defer></script>
 <script src="v05-library-core.js" defer></script>
 <script src="v05-art-store.js" defer></script>
+<script src="v05-template-core.js?v=0512" defer></script>
+<script src="v05-template-editor.js?v=0512" defer></script>
 <script src="mw-test-art-catalog.js" defer></script>
-<script src="v05-dynamic.js?v=0510" defer></script>
+<script src="v05-dynamic.js?v=0512" defer></script>
 <script src="v05-library-ui.js" defer></script>
 <script src="v05-sync-ui.js" defer></script>
 </head>
 <body>
 <header class="bar">
   <div class="wordmark"><div class="mark">✦</div><div><strong>МИФИЧЕСКИЕ ВОЙНЫ</strong><span>Редактор карт · утверждённый стандарт v05</span></div></div>
-  <nav aria-label="Навигация"><span class="stage">v05.11 RC · один редактор · встроенные арты</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><a href="index.html">← В игру</a></nav>
+  <nav aria-label="Навигация"><span class="stage">v05.12 RC · редактор шаблонов · встроенные арты</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><a href="index.html">← В игру</a></nav>
 </header>
 <section class="heading">
   <div><span class="eyebrow">КОМПОЗИТОР ИЗ ИСХОДНЫХ СЛОЁВ</span>
     <h1>Один шаблон. Любая карта.</h1>
-    <p>Единственный редактор карт v05. Доступные тестовые арты встроены в архив и автоматически привязываются к ID. Персональный арт и кадрирование сохраняются отдельно; данные боя и исходные слои не меняются.</p>
+    <p>Единственный редактор карт v05: настраивайте слои, расположение, размеры и иконки прямо на карте. Изменения сохраняются отдельно для существ, оружия и заклинаний. Исходный манифест и игровые данные остаются неизменными.</p>
   </div>
-  <aside class="spec"><strong>MW · v05.11 RC</strong><span>Холст 1024 × 1536 RGBA</span><span>Оригинальный манифест и исходные слои</span><span>Локальный запуск без интернета</span></aside>
+  <aside class="spec"><strong>MW · v05.12 RC</strong><span>Холст 1024 × 1536 RGBA</span><span>Оригинальный манифест и исходные слои</span><span>Локальный запуск без интернета</span></aside>
 </section>
 <div class="workspace">
   <aside class="panel left">
@@ -54,19 +57,49 @@
       <button id="exportBtn" class="primary" type="button" disabled>↓ Экспорт PNG</button>
     </div>
     <div class="canvas-area">
-      <div class="canvas-holder"><canvas id="cardCanvas" width="1024" height="1536" aria-label="Динамически собранная карта"></canvas></div>
+      <div class="canvas-holder"><div class="canvas-interactive"><canvas id="cardCanvas" width="1024" height="1536" aria-label="Динамически собранная карта"></canvas><canvas id="templateSelectionCanvas" width="1024" height="1536" aria-label="Интерактивное выделение и перемещение элементов шаблона"></canvas></div></div>
       <div id="referenceWrap" class="reference">
         <div class="reference-title">Эталон v05 <span>Для сверки</span></div>
         <img id="referenceImg" alt="Утверждённая контрольная карта v05">
         <p class="muted">Эталон собран из оригинальных слоёв. Динамический холст слева использует текст Canvas — небольшие отличия сглаживания допустимы.</p>
       </div>
     </div>
+    <section class="template-workbench" id="templateWorkbench" aria-labelledby="tplTitle">
+      <header class="tpl-heading"><div><span class="eyebrow">03 / КОНСТРУКТОР ШАБЛОНА · v05.12</span><h3 id="tplTitle">Слои и расположение элементов</h3>
+      <p class="muted">Настройки действуют на <strong>все карты того же типа</strong> (существо / оружие / заклинание), а не изменяют боевые данные. На карте можно перетаскивать выделенное; квадратный угол меняет размер.</p></div>
+      <label class="tpl-switch"><input type="checkbox" id="tplEditMode" checked> Перемещение на карте</label></header>
+      <div class="tpl-columns">
+        <section class="tpl-layers" aria-label="Порядок слоёв"><div class="tpl-subhead"><strong>Слои (верхний первым)</strong><span id="tplLayerCount">0 слоёв</span></div>
+          <div id="tplLayerList" class="tpl-layer-list" role="group" aria-label="Элементы шаблона"></div>
+          <div class="tpl-row-buttons"><button type="button" id="tplUp" disabled>↑ Выше</button><button type="button" id="tplDown" disabled>↓ Ниже</button></div>
+          <p class="tip">Значок ◉ — показать/скрыть. ♧ — блокировка. Оригинальные слои можно скрыть, но нельзя удалить из манифеста.</p>
+        </section>
+        <section class="tpl-inspector" aria-label="Свойства выбранного слоя">
+          <div class="tpl-selected"><strong id="tplSelected">Выберите слой</strong><span id="tplSelectedInfo" class="muted">Для редактирования выберите элемент в списке.</span></div>
+          <div class="tpl-fields">
+            <label>X, px<input id="tplX" type="number" min="-2048" max="3072" step="1" disabled></label>
+            <label>Y, px<input id="tplY" type="number" min="-2048" max="3584" step="1" disabled></label>
+            <label>Ширина, %<input id="tplScaleX" type="number" min="10" max="500" step="1" disabled></label>
+            <label>Высота, %<input id="tplScaleY" type="number" min="10" max="500" step="1" disabled></label>
+            <label>Поворот, °<input id="tplRotate" type="number" min="-180" max="180" step="1" disabled></label>
+            <label>Непрозрачность, %<input id="tplOpacity" type="number" min="0" max="100" step="1" disabled></label>
+          </div>
+          <div class="tpl-toggles"><label><input id="tplKeepRatio" type="checkbox" checked> Сохранять пропорции</label><label><input id="tplSnap" type="checkbox" checked> Привязка к сетке (8 px)</label></div>
+          <div class="tpl-row-buttons"><button id="tplHide" type="button" disabled>Скрыть</button><button id="tplLock" type="button" disabled>Заблокировать</button><button id="tplDelete" type="button" disabled>Удалить свою иконку</button></div>
+          <div class="tpl-upload"><label class="field-label" for="tplAddIcon">+ Добавить свою иконку (PNG / WebP / JPEG)</label><input id="tplAddIcon" type="file" accept="image/png,image/jpeg,image/webp"><p class="tip">Добавляемые иконки хранятся внутри отдельного черновика. До 24 на тип карты; исходные значки не удаляются.</p></div>
+        </section>
+      </div>
+      <div class="tpl-footer"><div class="tpl-row-buttons"><button id="tplUndo" type="button" disabled>↶ Отменить</button><button id="tplRedo" type="button" disabled>↷ Повторить</button><button id="tplResetTemplate" type="button">↺ Исходный шаблон</button></div>
+        <div class="tpl-row-buttons"><button id="tplExport" type="button">↓ Скачать шаблон JSON</button><label class="tpl-import-button" for="tplImport">↑ Загрузить шаблон JSON</label><input id="tplImport" class="tpl-file-hidden" type="file" accept=".json,application/json"></div></div>
+      <p id="tplStatus" class="tpl-status" role="status" aria-live="polite">Готово к настройке.</p>
+      <p class="tip">Черновики сохраняются локально в IndexedDB. Экспорт PNG учитывает настройки редактора; 2D/3D игры не получают эти изменения автоматически, пока шаблон не утверждён и не интегрирован отдельно.</p>
+    </section>
     <div class="render-footer">
       <span id="sizeBadge">1024 × 1536</span>
       <span id="status" role="status" aria-live="polite">Загрузка...</span>
     </div>
     <section class="errors"><div class="errors-head"><h3>Проверка перед экспортом</h3><span>Без автоматического обрезания текста</span></div><div id="warnings"></div></section>
-    <div class="footline">v05: структура и геометрия из <code>production/editor_manifest.json</code>. PNG содержит только карту, без редакторского интерфейса.</div>
+    <div class="footline">v05: исходные материалы из <code>production/editor_manifest.json</code>, расположение из отдельного черновика v05.12. PNG содержит только карту, без маркеров выделения и интерфейса.</div>
   </main>
   <aside class="panel right">
     <div class="top"><span class="eyebrow">02 / ОФОРМЛЕНИЕ</span><h2>Арт и кадрирование</h2></div>

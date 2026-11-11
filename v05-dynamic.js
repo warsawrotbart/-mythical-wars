@@ -8,6 +8,10 @@ const state={card:null,art:null,artSource:"",artBlob:null,artLabel:"",sampleInde
   crop:{x:.48,y:.4,zoom:1},epoch:0,selectionEpoch:0,renderIssues:[],loading:false,
   profiles:new Map(),profileReady:false};
 const artStore=window.MW_V05_ART_STORE;
+const tplCore=window.MW_V05_TEMPLATE_CORE;
+const templateEditor=window.MW_V05_TEMPLATE_EDITOR?.create({manifest,requestPaint:()=>paint()});
+if(!tplCore||!templateEditor){$("status").textContent="Не загружен редактор слоёв v05.12";return}
+
 const builtinTestArt=id=>window.MW_TEST_ART_CATALOG?.url(id)||"";
 const selectedBuiltinArt=()=>builtinTestArt(state.card?.id);
 function updateBuiltinArtUI(){
@@ -89,34 +93,38 @@ function renderNumber(ctx,value,bind){
   ctx.strokeText(s,x,baseline);ctx.fillText(s,x,baseline);
   ctx.restore()
 }
-function renderText(ctx,textModel){
+function renderText(ctx,textModel,only=null){
   const card=state.card;
   ctx.save();ctx.textAlign="center";ctx.textBaseline="middle";
-  // Gold-on-color title contrast for every class ribbon, same as the battle compositor.
-  ctx.fillStyle="#ffdf9c";ctx.strokeStyle="#351920";ctx.lineWidth=3.5;ctx.lineJoin="round";
-  ctx.font=`bold ${textModel.title.px}px "DejaVu Serif", Georgia, serif`;
-  ctx.strokeText(card.name||"",...manifest.text_anchors.title);
-  ctx.fillText(card.name||"",...manifest.text_anchors.title);
-  ctx.fillStyle="#2b2119";
-  const body=textModel.description;
-  const pos=manifest.text_anchors.description_center_by_type[card.type];
-  ctx.font=`${body.px}px "DejaVu Serif", Georgia, serif`;
-  const step=body.px*1.18,top=pos[1]-(body.lines.length-1)*step/2;
-  body.lines.forEach((t,i)=>ctx.fillText(t,pos[0],top+i*step));
-  if(textModel.flavor){
-    const f=textModel.flavor;ctx.font=`italic ${f.px}px "DejaVu Serif", Georgia, serif`;
+  if(!only||only==="title"){
+    ctx.fillStyle="#ffdf9c";ctx.strokeStyle="#351920";ctx.lineWidth=3.5;ctx.lineJoin="round";
+    ctx.font=`bold ${textModel.title.px}px "DejaVu Serif", Georgia, serif`;
+    ctx.strokeText(card.name||"",...manifest.text_anchors.title);
+    ctx.fillText(card.name||"",...manifest.text_anchors.title);
+  }
+  if(!only||only==="description"){
+    ctx.fillStyle="#2b2119";const body=textModel.description;
+    const pos=manifest.text_anchors.description_center_by_type[card.type];
+    ctx.font=`${body.px}px "DejaVu Serif", Georgia, serif`;
+    const step=body.px*1.18,top=pos[1]-(body.lines.length-1)*step/2;
+    body.lines.forEach((t,i)=>ctx.fillText(t,pos[0],top+i*step));
+  }
+  if((!only||only==="flavor")&&textModel.flavor){
+    ctx.fillStyle="#2b2119";const f=textModel.flavor;
+    ctx.font=`italic ${f.px}px "DejaVu Serif", Georgia, serif`;
     const fy=manifest.text_anchors.flavor_first_line_center[1];
     f.lines.forEach((t,i)=>ctx.fillText(t,manifest.text_anchors.flavor_first_line_center[0],
       fy+i*manifest.text_anchors.flavor_line_step));
   }
   ctx.restore();
   for(const b of manifest.number_bindings){
-    if(b.types.includes(card.type)){
+    if((!only||only==="number:"+b.field)&&b.types.includes(card.type)){
       const v=core.maybe(card[b.field]);
       if(Number.isSafeInteger(v)&&v>=0)renderNumber(ctx,v,b)
     }
   }
 }
+
 function formatIssues(issues){
   $("warnings").replaceChildren();
   if(!issues.length){
@@ -133,52 +141,63 @@ async function paint(){
   if(!state.card)return;
   const current=++state.epoch;
   state.loading=true;$("exportBtn").disabled=true;
-  note("Сборка карты из оригинальных слоёв v05…");
+  note("Сборка карты с настройками шаблона v05.12…");
   const canvas=$("cardCanvas");const ctx=canvas.getContext("2d",{willReadFrequently:false});
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   try{
     const plan=core.drawPlan(state.card,manifest);
+    const layers=templateEditor.compose(plan,state.card);
     const palette=paletteKey();
     if(!manifest.class_palettes[palette])throw Error("Класс не найден в палитрах v05");
     const required=plan.filter(t=>t.kind==="asset").map(t=>asset(t.key));
     required.push(mask(manifest.templates[state.card.type].art_mask));
     if(state.artSource)required.push(imgLoad(state.artSource));
+    required.push(...layers.filter(x=>x.kind==='custom'&&x.transform.visible).map(x=>imgLoad(x.src)));
     await Promise.all(required);
     if(document.fonts&&document.fonts.ready)await document.fonts.ready;
     if(current!==state.epoch)return;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    for(const part of plan){
-      if(part.kind==="asset"){
-        const pic=await asset(part.key);
-        const visible=part.tint?colored(pic,part.key,palette):pic;
-        if(part.fullCanvas)ctx.drawImage(visible,0,0);
-        else contain(ctx,visible,part.slot);
-      }else if(part.kind==="art"&&state.artSource){
-        const img=await imgLoad(state.artSource);
-        const tmp=document.createElement("canvas");
-        tmp.width=canvas.width;tmp.height=canvas.height;
-        const z=tmp.getContext("2d");z.imageSmoothingEnabled=true;z.imageSmoothingQuality="high";
-        const loc=core.imagePlacement(img.width,img.height,part.viewport,state.crop);
-        z.drawImage(img,loc.dx,loc.dy,loc.dw,loc.dh);
-        z.globalCompositeOperation="destination-in";
-        z.drawImage(await mask(part.mask),0,0);
-        z.globalCompositeOperation="source-over";
-        ctx.drawImage(tmp,0,0)
-      }else if(part.kind==="dynamic_text"){
-        // rendered after the structural and component layers, per the manifest
-        // (text and numbers are always independent from the illustration).
-      }
-    }
     const model=core.analyzeText(state.card,manifest,ctx);
-    renderText(ctx,model);
-    const issues=core.validateCard(state.card,manifest,{hasArt:!!state.artSource}).concat(model.issues);
-    state.renderIssues=issues;
-    formatIssues(issues);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(const layer of layers){
+      if(!layer.transform.visible)continue;
+      ctx.save();
+      try{
+        tplCore.applyCanvasTransform(ctx,layer);
+        if(layer.kind==='asset'||layer.kind==='component'){
+          for(const part of layer.parts){
+            const pic=await asset(part.key);
+            const visible=part.tint?colored(pic,part.key,palette):pic;
+            if(part.fullCanvas)ctx.drawImage(visible,0,0);
+            else contain(ctx,visible,part.slot);
+          }
+        }else if(layer.kind==='art'&&state.artSource){
+          const part=layer.parts[0];const img=await imgLoad(state.artSource);
+          const tmp=document.createElement("canvas");tmp.width=canvas.width;tmp.height=canvas.height;
+          const z=tmp.getContext("2d");z.imageSmoothingEnabled=true;z.imageSmoothingQuality="high";
+          const loc=core.imagePlacement(img.width,img.height,part.viewport,state.crop);
+          z.drawImage(img,loc.dx,loc.dy,loc.dw,loc.dh);
+          z.globalCompositeOperation="destination-in";z.drawImage(await mask(part.mask),0,0);
+          z.globalCompositeOperation="source-over";ctx.drawImage(tmp,0,0);
+        }else if(layer.kind==='text'){
+          renderText(ctx,model,layer.subtype);
+        }else if(layer.kind==='number'){
+          renderText(ctx,model,'number:'+layer.field);
+        }else if(layer.kind==='custom'){
+          const pic=await imgLoad(layer.src);
+          ctx.drawImage(pic,layer.box.x,layer.box.y,layer.box.w,layer.box.h);
+        }
+      }finally{ctx.restore()}
+    }
+    if(current!==state.epoch)return;
+    const issues=core.validateCard(state.card,manifest,{hasArt:!!state.artSource})
+      .concat(model.issues,templateEditor.validation());
+    state.renderIssues=issues;formatIssues(issues);
     const blockers=issues.filter(i=>i.severity==="error");
     $("exportBtn").disabled=blockers.length>0;
-    $("sizeBadge").textContent=`1024 × 1536 · ${plan.filter(i=>i.kind==="asset").length} слоя/компонента`;
+    $("sizeBadge").textContent=`1024 × 1536 · ${layers.length} управляемых слоёв`;
     note(blockers.length?`Предпросмотр готов · блокирующих ошибок: ${blockers.length}`:
-      "Предпросмотр готов · PNG можно экспортировать",blockers.length>0)
+      "Предпросмотр готов · PNG можно экспортировать",blockers.length>0);
+    templateEditor.drawOverlay();
   }catch(e){
     if(current!==state.epoch)return;
     state.renderIssues=[{severity:"error",code:"render",message:e.message}];
@@ -259,6 +278,7 @@ function setCard(card,sampleIndex,options={}){
   $("paletteNotice").textContent="Перекраска только для предпросмотра; данные карты не меняются.";
   $("referenceWrap").hidden=sampleIndex==null;
   if(sampleIndex!=null)$("referenceImg").src=`v05/${card.id}/${card.id}_card_v05.png`;
+  templateEditor.onCard(card);
   showData();updateCropUI();paint();
   if(!cached&&artStore){
     artStore.read(card.id).then(saved=>{

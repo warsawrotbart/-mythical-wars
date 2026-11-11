@@ -113,6 +113,8 @@ def check(root):
         errors.append('Development-only template studio exposed in deployment')
     for path in root.rglob('*'):
         if not path.is_file() or '_site' in path.parts:continue
+        # Ignore checkout metadata in the source tree; deploy artifacts still reject it.
+        if root.name!='_site' and path.relative_to(root).parts[0]=='.git':continue
         if any(part in ('server','reference_docs','node_modules','.git') for part in path.relative_to(root).parts):
             errors.append(f'Non-static/private directory: {path.relative_to(root)}')
         if re.search(r'(service.?account|credentials|secret|private.?key)',path.name,re.I) and path.suffix=='.json':

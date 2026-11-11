@@ -9,8 +9,9 @@ const state={card:null,art:null,artSource:"",artBlob:null,artLabel:"",sampleInde
   profiles:new Map(),profileReady:false};
 const artStore=window.MW_V05_ART_STORE;
 const tplCore=window.MW_V05_TEMPLATE_CORE;
+const polish=window.MW_V05_CARD_POLISH;
 const templateEditor=window.MW_V05_TEMPLATE_EDITOR?.create({manifest,requestPaint:()=>paint()});
-if(!tplCore||!templateEditor){$("status").textContent="Не загружен редактор слоёв v05.12";return}
+if(!tplCore||!templateEditor||!polish){$("status").textContent="Не загружен редактор оформления v05.13.1";return}
 
 const builtinTestArt=id=>window.MW_TEST_ART_CATALOG?.url(id)||"";
 const selectedBuiltinArt=()=>builtinTestArt(state.card?.id);
@@ -99,8 +100,8 @@ function renderText(ctx,textModel,only=null){
   if(!only||only==="title"){
     ctx.fillStyle="#ffdf9c";ctx.strokeStyle="#351920";ctx.lineWidth=3.5;ctx.lineJoin="round";
     ctx.font=`bold ${textModel.title.px}px "DejaVu Serif", Georgia, serif`;
-    ctx.strokeText(card.name||"",...manifest.text_anchors.title);
-    ctx.fillText(card.name||"",...manifest.text_anchors.title);
+    polish.drawCurvedTitle(ctx,card.name||"",manifest.text_anchors.title,
+      manifest.text_regions.title[2]-manifest.text_regions.title[0]);
   }
   if(!only||only==="description"){
     ctx.fillStyle="#2b2119";const body=textModel.description;
@@ -145,7 +146,7 @@ async function paint(){
   const canvas=$("cardCanvas");const ctx=canvas.getContext("2d",{willReadFrequently:false});
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   try{
-    const plan=core.drawPlan(state.card,manifest);
+    const plan=core.drawPlan(state.card,manifest).filter(part=>!polish.skipLayer(part,state.card.type));
     const layers=templateEditor.compose(plan,state.card);
     const palette=paletteKey();
     if(!manifest.class_palettes[palette])throw Error("Класс не найден в палитрах v05");
@@ -158,6 +159,7 @@ async function paint(){
     if(current!==state.epoch)return;
     const model=core.analyzeText(state.card,manifest,ctx);
     ctx.clearRect(0,0,canvas.width,canvas.height);
+    let artCrown=null;
     for(const layer of layers){
       if(!layer.transform.visible)continue;
       ctx.save();
@@ -167,8 +169,11 @@ async function paint(){
           for(const part of layer.parts){
             const pic=await asset(part.key);
             const visible=part.tint?colored(pic,part.key,palette):pic;
-            if(part.fullCanvas)ctx.drawImage(visible,0,0);
-            else contain(ctx,visible,part.slot);
+            if(part.fullCanvas){
+              const lift=polish.liftTop(part,state.card.type);
+              if(lift)ctx.drawImage(visible,0,lift,canvas.width,canvas.height);
+              else ctx.drawImage(visible,0,0);
+            }else contain(ctx,visible,part.slot);
           }
         }else if(layer.kind==='art'&&state.artSource){
           const part=layer.parts[0];const img=await imgLoad(state.artSource);
@@ -178,6 +183,7 @@ async function paint(){
           z.drawImage(img,loc.dx,loc.dy,loc.dw,loc.dh);
           z.globalCompositeOperation="destination-in";z.drawImage(await mask(part.mask),0,0);
           z.globalCompositeOperation="source-over";ctx.drawImage(tmp,0,0);
+          if(state.card.type==="Creature")artCrown={canvas:polish.makeArtCrown(document,tmp),layer};
         }else if(layer.kind==='text'){
           renderText(ctx,model,layer.subtype);
         }else if(layer.kind==='number'){
@@ -187,6 +193,14 @@ async function paint(){
           ctx.drawImage(pic,layer.box.x,layer.box.y,layer.box.w,layer.box.h);
         }
       }finally{ctx.restore()}
+      if(state.card.type==="Creature"&&layer.id==="base:Creature_Inner_Art_Frame"&&artCrown){
+        ctx.save();tplCore.applyCanvasTransform(ctx,artCrown.layer);
+        ctx.globalAlpha*=.92;ctx.drawImage(artCrown.canvas,0,0);ctx.restore();
+      }
+    }
+    if(state.card.type==="Creature"){
+      ctx.save();ctx.globalAlpha=.25;ctx.globalCompositeOperation="screen";
+      ctx.drawImage(await asset("Common_Outer_Gold_Trim"),0,0);ctx.restore();
     }
     if(current!==state.epoch)return;
     const issues=core.validateCard(state.card,manifest,{hasArt:!!state.artSource})

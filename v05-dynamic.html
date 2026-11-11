@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Мифические войны — v05.12.1 RC · Редактор слоёв шаблона</title>
+<title>Мифические войны — v05.13.1 RC · Редактор слоёв шаблона</title>
 <link rel="stylesheet" href="v05-dynamic.css?v=0512">
 <link rel="stylesheet" href="v05-template-editor.css?v=05121">
 <script src="v05-dynamic-manifest.js" defer></script>
@@ -14,22 +14,23 @@
 <script src="v05-art-store.js" defer></script>
 <script src="v05-template-core.js?v=0512" defer></script>
 <script src="v05-template-editor.js?v=05121" defer></script>
+<script src="v05-card-visual-polish.js?v=05131" defer></script>
 <script src="mw-test-art-catalog.js" defer></script>
-<script src="v05-dynamic.js?v=0512" defer></script>
+<script src="v05-dynamic.js?v=05131" defer></script>
 <script src="v05-library-ui.js" defer></script>
 <script src="v05-sync-ui.js" defer></script>
 </head>
 <body>
 <header class="bar">
   <div class="wordmark"><div class="mark">✦</div><div><strong>МИФИЧЕСКИЕ ВОЙНЫ</strong><span>Редактор карт · утверждённый стандарт v05</span></div></div>
-  <nav aria-label="Навигация"><span class="stage">v05.12.1 RC · редактор шаблонов · встроенные арты</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><a href="index.html">← В игру</a></nav>
+  <nav aria-label="Навигация"><span class="stage">v05.13.1 RC · редактор шаблонов · встроенные арты</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><a href="index.html">← В игру</a></nav>
 </header>
 <section class="heading">
   <div><span class="eyebrow">КОМПОЗИТОР ИЗ ИСХОДНЫХ СЛОЁВ</span>
     <h1>Один шаблон. Любая карта.</h1>
     <p>Единственный редактор карт v05: настраивайте слои, расположение, размеры и иконки прямо на карте. Изменения сохраняются отдельно для существ, оружия и заклинаний. Исходный манифест и игровые данные остаются неизменными.</p>
   </div>
-  <aside class="spec"><strong>MW · v05.12.1 RC</strong><span>Холст 1024 × 1536 RGBA</span><span>Оригинальный манифест и исходные слои</span><span>Локальный запуск без интернета</span></aside>
+  <aside class="spec"><strong>MW · v05.13.1 RC</strong><span>Холст 1024 × 1536 RGBA</span><span>Оригинальный манифест и исходные слои</span><span>Локальный запуск без интернета</span></aside>
 </section>
 <div class="workspace">
   <aside class="panel left">
@@ -94,7 +95,7 @@
       <div class="tpl-footer"><div class="tpl-row-buttons"><button id="tplUndo" type="button" disabled>↶ Отменить</button><button id="tplRedo" type="button" disabled>↷ Повторить</button><button id="tplResetTemplate" type="button">↺ Исходный шаблон</button></div>
         <div class="tpl-row-buttons"><button id="tplExport" type="button">↓ Скачать шаблон JSON</button><label class="tpl-import-button" for="tplImport">↑ Загрузить шаблон JSON</label><input id="tplImport" class="tpl-file-hidden" type="file" accept=".json,application/json"></div></div>
 
-      <p class="tip">Черновики сохраняются локально в IndexedDB. Экспорт PNG учитывает настройки редактора; 2D/3D игры не получают эти изменения автоматически, пока шаблон не утверждён и не интегрирован отдельно.</p>
+      <p class="tip">Новая отделка: название дугой, верхние декоративные элементы приподняты, убраны лишние боковые линии у существ и усилен контур рамки. Часть иллюстрации мягко перекрывает верхний внутренний обод. Для полноценного вырезанного персонажа поверх внешней рамки требуется арт с прозрачным передним планом. Черновики хранятся локально; игра 2D/3D пока использует исходный рендер.</p>
     </section>
     </div><!-- /.editor-stage -->
     <div class="render-footer">

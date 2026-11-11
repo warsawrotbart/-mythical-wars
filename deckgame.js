@@ -438,7 +438,11 @@ function battleCard(h,owner,kind){
    (notSupported?" · "+status.reason:"");
  const type=coin?"coin":c?.cardType||"creature";
  const rarityClass=/^(common|standard|rare|epic|legendary)$/.test(c?.rarityId)?c.rarityId:"common";
- const theme=c?.timeAffinityId==="Ноч"?"moon":c?.timeAffinityId==="Дзень"?"sun":"neutral";
+ const affinity=kind==="minion"?(h.affinity||c?.timeAffinityId):c?.timeAffinityId;
+ const theme=affinity==="Ноч"?"moon":affinity==="Дзень"?"sun":"neutral";
+ const frozen=kind==="minion"&&h.timed?.some(t=>t.kind==="frozen");
+ const affinityMark=kind==="minion"&&["Ноч","Дзень"].includes(affinity)?
+   '<span class="mw14-affinity" title="'+esc(affinity)+'" aria-hidden="true">'+(affinity==="Ноч"?"☾":"☀")+"</span>":"";
  // Prefer original card artwork over a potentially stale cached thumbnail.
  const thumbnail=c?.thumbnail,art=safeDataImage(c?.artImage)||
    safeDataImage(window.MW_TEST_ART_CATALOG?.url(h.cardId))||
@@ -450,14 +454,15 @@ function battleCard(h,owner,kind){
  const dragEnabled=owner===0&&["hand","minion"].includes(kind)&&game.phase==="battle"&&game.turn===0;
  const burn=kind==="hand"&&h.burnTurnsLeft!=null;
  return `<div class="battle-card ${kind==="minion"?"minion":"hand"} ${notSupported?"disabled":""} ${active?"selected":""}
-  ${ready?"ready":""} theme-${theme} rarity-${rarityClass} cardtype-${type}${burn?" burning":""}${kind==="minion"?targetClass(owner,"minion",h.uid):""}"
-  role="button" tabindex="0" ${dragEnabled?'draggable="true"':""} title="${esc(label)}" data-battle-${kind}="${esc(pick)}" data-mw-card-id="${esc(h.cardId)}" data-mw-template-type="${esc(type)}" data-mw-cost="${esc(cost)}">
+  ${ready?"ready":""} ${taunt?"mw14-taunt":""} ${frozen?"mw14-frozen":""} theme-${theme} rarity-${rarityClass} cardtype-${type}${burn?" burning":""}${kind==="minion"?targetClass(owner,"minion",h.uid):""}"
+  role="button" tabindex="0" ${dragEnabled?'draggable="true"':""} title="${esc(kind==="minion"?name+" · атака "+atk+", здоровье "+hp+(taunt?" · Провокация":"")+(affinity?" · "+affinity:"")+(label?" · "+label:""):label)}" data-battle-${kind}="${esc(pick)}" data-mw-card-id="${esc(h.cardId)}" data-mw-template-type="${esc(type)}" data-mw-cost="${esc(cost)}">
   <button type="button" class="bc-inspect" data-preview-card="${esc(owner+"|"+kind+"|"+h.uid)}" title="Полный просмотр карты и арта" aria-label="Увеличить карту ${esc(name)}">⛶</button>
   ${burn?`<span class="bc-burn" title="Падпал: оставшиеся собственные ходы">🔥 ${h.burnTurnsLeft}</span>`:""}
   <span class="bc-top"><b>${esc(cost)}</b><span>${taunt?"🛡":coin?"✦":esc(rarity.slice(0,4))}</span></span>
   <span class="bc-art">${art?`<img src="${esc(art)}" alt="" loading="lazy" draggable="false">`:
      `<span class="bc-fallback" aria-hidden="true">${icon}</span>`}</span>
   <span class="bc-name">${esc(kind==="minion"?h.name:name)}</span>
+  ${affinityMark}
   <span class="bc-stats">${coin?"":`<span class="bc-attack">${atk??"—"} ⚔</span><span class="bc-health">${hp??(c?.durability??"—")} ♥</span>`}</span>
   <span class="bc-status">${esc(more)}</span></div>`;
 }

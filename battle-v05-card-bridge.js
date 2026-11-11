@@ -186,6 +186,17 @@ async function render(card,view="full",opt={}){
  const override=validArt(card.artImage)||validArt(root.MW_CARD_BRIDGE?.getSavedCards?.()?.find(e=>e.cardId===c.id)?.project?.assets?.customArtData);
  const artSource=override||(saved?.blob?URL.createObjectURL(saved.blob):"" )||validArt(root.MW_TEST_ART_CATALOG?.url(c.id));
  const crop=saved?.crop||{x:.48,y:.4,zoom:1};
+ if(view==="boardPortrait"){
+  // Only 2D boards request the separate portrait; hand and 3D stay unchanged.
+  if(!root.MW14_BOARD_PORTRAIT)throw Error("MW14 portrait module missing");
+  try{
+   const [photo,rim]=await Promise.all([
+    artSource?image(artSource):Promise.resolve(null),
+    asset("Creature_Inner_Art_Frame").catch(()=>null)
+   ]);
+   return root.MW14_BOARD_PORTRAIT.render(document,photo,crop,rim).toDataURL("image/png");
+  }finally{if(artSource.startsWith("blob:"))URL.revokeObjectURL(artSource);}
+ }
  await fonts();
  const plan=core.drawPlan(c,manifest);
  const fileKeys=[...new Set(plan.filter(p=>p.kind==="asset").map(p=>p.key))];
@@ -245,6 +256,8 @@ function request(card,view="full",opt={}){
  if(faces.has(key)){stats.hit++;return faces.get(key);}
  const promise=render(card,view,opt).then(data=>{if(data)stats.drawn++;return data;}).catch(e=>{
   stats.failed++;console.warn("MW v05 battle card fallback:",card.cardId,e);
+  if(view==="boardPortrait"&&root.MW14_BOARD_PORTRAIT)
+   return root.MW14_BOARD_PORTRAIT.render(document,null,null,null).toDataURL("image/png");
   return safeCardFallback(card,view);
  });
  faces.set(key,promise);

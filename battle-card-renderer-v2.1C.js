@@ -284,6 +284,11 @@ async function renderWeapon(ctxObj){
  return can.toDataURL("image/png");
 }
 function request(card,view,options={}){
+ if(view==="boardPortrait"){
+  if(global.MW_V05_BATTLE_CARD?.request)
+   return global.MW_V05_BATTLE_CARD.request(card,view,options).then(url=>url||requestLegacy(card,"compact",options));
+  return requestLegacy(card,"compact",options);
+ }
  // One visual source of truth for game / initial hand / 3D / editor.
  // Legacy hybrid is retained only as a guarded technical fallback.
  if(global.MW_V05_BATTLE_CARD?.request){
@@ -314,7 +319,7 @@ function addFace(node,source,view,params){
  node.dataset.mwRenderPending="1";
  const renderToken=String((Number(node.dataset.mwRenderToken)||0)+1);
  node.dataset.mwRenderToken=renderToken;
- request(source,view,params).then(url=>{
+ request(source,view==="compact"&&params.boardPortrait2d?"boardPortrait":view,params).then(url=>{
   if(!url||!node.isConnected||node.dataset.mwRenderToken!==renderToken)return;
   let image=node.querySelector(":scope > .mw-template-face");
   if(!image){image=document.createElement("img");image.className="mw-template-face";
@@ -322,6 +327,7 @@ function addFace(node,source,view,params){
   image.src=url;
   node.classList.toggle("mw-hybrid-hand",view==="full");
   node.classList.toggle("mw-hybrid-minion",view==="compact");
+  node.classList.toggle("mw14-board-portrait",view==="compact"&&!!params.boardPortrait2d);
   node.classList.add("mw-hybrid-ready");
  }).catch(err=>{console.warn("MW battle face:",err);}).finally(()=>{
    // Failed promises or a detached DOM node must never permanently lock hydration.
@@ -338,8 +344,10 @@ function hydrate(game,root=document){
   if(!card)return;
   const kind=node.classList.contains("minion")?"compact":"full";
   const cost=node.dataset.mwCost;
-  const artFit=global.document.getElementById("battleWorkspace")?.dataset.artFit||"contain";
-  addFace(node,card,kind,{cost:kind==="full"?cost:null,fit:kind==="compact"?artFit:"editor"});
+  const workspace=global.document.getElementById("battleWorkspace");
+  const artFit=workspace?.dataset.artFit||"contain";
+  const boardPortrait2d=kind==="compact"&&type==="creature"&&!workspace?.classList.contains("mw3d-active");
+  addFace(node,card,kind,{cost:kind==="full"?cost:null,fit:kind==="compact"?artFit:"editor",boardPortrait2d});
  });
  for(let o=0;o<2;o++)hydrateWeapon(game,o);
  observePlay(game);

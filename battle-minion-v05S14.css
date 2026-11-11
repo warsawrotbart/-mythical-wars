@@ -1,0 +1,65 @@
+/* MW v05.14 Stage 1 — portraits only in live 2D board; never change 3D or hand. */
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait{
+  border:0!important;border-radius:50% 50% 45% 45% / 46% 46% 43% 43%!important;
+  background:transparent!important;overflow:visible!important;
+  isolation:isolate;box-shadow:none!important;padding:0!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait::before{
+  content:"";position:absolute;inset:3px 5px 8px;pointer-events:none;
+  border:0;border-radius:50%;box-shadow:inset 0 0 13px #0009;z-index:2;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait>.mw-template-face{
+  width:100%;height:100%;inset:0;object-fit:fill!important;
+  border-radius:0!important;z-index:1;filter:drop-shadow(0 4px 4px #000b);
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait :is(.bc-top,.bc-art,.bc-name,.bc-status){
+  display:none!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .bc-stats{
+  position:absolute!important;display:flex!important;
+  left:-3px!important;right:-3px!important;bottom:-4px!important;
+  justify-content:space-between!important;align-items:end;
+  z-index:7!important;pointer-events:none;
+  font:bold clamp(13px,1.12vw,18px)/1 Georgia,serif!important;text-shadow:0 2px 3px #000;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .bc-stats span{
+  display:inline-flex;justify-content:center;align-items:center;
+  min-width:24px;height:27px;padding:2px 4px!important;
+  border-radius:48% 48% 42% 42%;border:2px solid #e9c37e!important;
+  background:radial-gradient(circle at 35% 20%,#ca922e,#53301d 75%)!important;
+  box-shadow:0 2px 7px #000c,inset 0 1px 3px #f6d78a88;color:#fff5da;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .bc-stats .bc-health{
+  background:radial-gradient(circle at 33% 20%,#bf4b48,#5a1725 80%)!important;
+  border-color:#f0b5a1!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .mw14-affinity{
+  position:absolute;z-index:7;top:9px;left:-4px;
+  display:grid;place-items:center;width:23px;height:23px;border-radius:50%;
+  border:1.5px solid #e4cb89;color:#ffdfa1;font:bold 16px/1 Georgia,serif;
+  background:#302824f5;text-shadow:0 1px 3px #000;
+  box-shadow:0 2px 5px #0009;pointer-events:none;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait.theme-moon .mw14-affinity{
+  color:#bedaff;background:#203148f5;border-color:#9bc0f2;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait.mw14-taunt{
+  filter:drop-shadow(0 0 3px #e7be66);
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait.mw14-taunt::before{
+  inset:1px 3px 7px;border:4px double #f2d08a;
+  box-shadow:inset 0 0 10px #0008,0 0 7px #a87d34b0;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait.mw14-frozen>.mw-template-face{
+  filter:drop-shadow(0 2px 6px #82c8ff) saturate(.75);
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .bc-inspect{
+  opacity:0;transition:opacity .12s;top:1px!important;right:-2px!important;
+}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait:is(:hover,:focus-visible) .bc-inspect,
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait .bc-inspect:focus-visible{opacity:1;}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait.ready{filter:drop-shadow(0 0 6px #7ad29c);}
+#battleWorkspace:not(.mw3d-active) .battle-board .battle-card.mw14-board-portrait.selected{outline:3px solid #f7d27c;outline-offset:2px;}
+@media(prefers-reduced-motion:reduce){
+ #battleWorkspace:not(.mw3d-active) .battle-card.mw14-board-portrait .bc-inspect{transition:none;}
+}

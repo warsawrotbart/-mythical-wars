@@ -789,6 +789,7 @@ function renderGame(options={}){
  window.MW_BATTLE_CARD_RENDERER?.hydrate(game,$("battleWorkspace"));
  window.MW14_HAND_UI?.live?.render(game,{busy:gameRunningAI,pendingChoice:!!pendingChoice,pending:!!pending});
  window.MW_HERO_HUD_V0511?.render2D(game);
+ window.MW_BATTLEFIELD_V02?.render(game);
  refreshDeveloperControls();
  updateReplayUI();
  if(options.save!==false)persistBattleSession();

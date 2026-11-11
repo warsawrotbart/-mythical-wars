@@ -38,7 +38,7 @@ test("hero mana counter uses live game data and the 2D layer can move it",()=>{
  assert.match(read("arena-v05S16.css"),/\.mw16-mana-counter/);
 });
 test("stepwise bot and synchronous bot produce identical deterministic state",()=>{
- const definition={cardId:"KNZ-019",name:"ФАКЕЛЬШЧЫК ДРУЖЫНЫ",cardType:"creature",costValue:2,attack:2,health:3,classId:"Воин",rarityId:"common",timeAffinityId:"Дзень",creatureTypeId:"Чалавек",subtype:"Дружыннік",ability:""};
+ const definition={cardId:"KNZ-019",name:"ФАКЕЛЬШЧЫК ДРУЖЫНЫ",cardType:"creature",costType:"mana",costValue:2,attack:2,health:3,classId:"Воин",rarityId:"common",timeAffinityId:"Дзень",creatureTypeId:"Чалавек",subtype:"Дружыннік",ability:""};
  const deck={classId:"Воин",name:"Проверка",counts:{"KNZ-019":10}};
  const source=eng.makeGame(deck,deck,{"KNZ-019":definition},{firstPlayer:1,seed:12345,hour:12,timeMode:"off"});
  source.phase="battle";source.turn=1;source.players[1].mana=7;source.players[1].maxMana=7;

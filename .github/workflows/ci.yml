@@ -13,6 +13,8 @@ jobs:
           node-version: '22'
       - name: Run client-side Node tests
         run: node --test tests/*.test.cjs tests/*.test.js
+      - name: Materialize approved battlefield v02 art
+        run: python3 tools/unpack_battlefield.py --dest battlefield-v02
       - name: Check static site and v05 asset integrity
         run: python3 tools/check_static_site.py
       - name: Build GitHub Pages

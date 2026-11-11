@@ -21,6 +21,8 @@ jobs:
       - uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Materialize approved battlefield v02 art
+        run: python3 tools/unpack_battlefield.py --dest battlefield-v02
       - name: Validate static site
         run: python3 tools/check_static_site.py
       - name: Assemble deploy artifact

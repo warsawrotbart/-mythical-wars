@@ -1,0 +1,233 @@
+/* BF-01..BF-11: approved battlefield v02 layout corrections (12 November 2026).
+   Display only: never changes battlefield capacity, card definitions, or combat rules.
+   Original files are retained as engine/UI dependencies, not selectable 2D modes. */
+#battleWorkspace.mw02-field:not(.mw3d-active):not([hidden]){
+  overflow:hidden!important;max-width:100vw!important;max-height:100dvh!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-layout,
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main{box-sizing:border-box!important}
+/* BF-02: no painted seating positions, even when legacy selector wins specificity. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #botBoard,
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #myBoard,
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #botBoard.board-empty,
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #myBoard.board-empty{
+ background:none!important;background-image:none!important;box-shadow:none!important;
+ border:0!important;outline:0!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #botBoard::before,
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #botBoard::after,
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #myBoard::before,
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #myBoard::after{
+ display:none!important;content:none!important;
+}
+/* BF-03/04: hero identity fills portrait anchoring box, not an auto-sized flex child. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw11-hero-core .hero-identity{
+ box-sizing:border-box!important;display:block!important;position:absolute!important;
+ left:0!important;top:0!important;right:auto!important;bottom:auto!important;
+ width:211.2px!important;height:211.2px!important;min-width:211.2px!important;
+ min-height:211.2px!important;max-height:211.2px!important;margin:0!important;
+ padding:0!important;transform:none!important;pointer-events:none!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw11-hero-core .hero-identity b{
+ top:158.4px!important;left:14.4px!important;white-space:nowrap!important;
+ pointer-events:auto!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw11-hero-core .mw11-armor:not([hidden]){
+ left:144px!important;top:158.4px!important;display:grid!important;
+ place-items:center!important;padding:6px 0 0!important;color:#f4f0ea!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw11-hero-core .hero-portrait{
+ font-size:0!important;color:transparent!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw11-hero-core .hero-portrait img{
+ width:100%!important;height:100%!important;object-fit:cover!important;
+ object-position:center 28%!important;
+}
+/* BF-05: equip picture is below the approved weapon frame; empty cavity is opaque. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw11-chassis .mw11-weapon-slot{
+ background:radial-gradient(circle at 50% 45%,#273a41 0%,#1b2d35 61%,#12202b 74%)!important;
+ isolation:isolate!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw11-weapon-slot::after{
+ content:""!important;display:block!important;position:absolute!important;inset:0!important;
+ z-index:3!important;background:url('battlefield-v02/hero/layers/weapon_frame.png') center/contain no-repeat!important;
+ border:0!important;pointer-events:none!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw11-weapon-slot .mw02-equipped-art{
+ z-index:2!important;inset:12% !important;width:76%!important;height:76%!important;
+ border-radius:50%!important;clip-path:circle(49%)!important;object-fit:cover!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw11-weapon-slot .mw02-weapon-number{z-index:4!important}
+/* BF-06: legacy action-button height (42/57px) must not flatten the 134px disk. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-power-group #myHeroPower,
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-power-group #botHeroPower{
+ box-sizing:border-box!important;display:block!important;width:134.4px!important;
+ height:134.4px!important;min-height:134.4px!important;max-height:134.4px!important;
+ min-width:134.4px!important;max-width:134.4px!important;
+ padding:0!important;margin:0!important;border:0!important;border-radius:50%!important;
+ background-color:transparent!important;background-size:contain!important;
+ background-position:center!important;background-repeat:no-repeat!important;
+ text-indent:0!important;overflow:visible!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-power-group .mw11-ability-title{
+ position:absolute!important;left:-9999px!important;top:0!important;
+ width:1px!important;height:1px!important;overflow:hidden!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-power-group .mw11-ability-cost{
+ box-sizing:border-box!important;position:absolute!important;left:44.7px!important;
+ top:-20px!important;width:45px!important;height:48px!important;transform:none!important;
+ border:0!important;border-radius:0!important;clip-path:none!important;
+ display:grid!important;place-items:center!important;padding:6px 0 0!important;
+ background:url('battlefield-v02/hero/layers/power_cost.png') center/contain no-repeat!important;
+ font:800 22px/1 Georgia,serif!important;text-indent:0!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis[data-mw02-class="Некромант"][data-mw02-phase="day"] .battle-hero-power{
+ background-image:url('assets/hero-art-v2.1K/necro_power_day_test_v01.png')!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis[data-mw02-class="Некромант"][data-mw02-phase="night"] .battle-hero-power{
+ background-image:url('assets/hero-art-v2.1K/necro_power_night_test_v01.png')!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis[data-mw02-class="Чернокнижник"][data-mw02-phase="day"] .battle-hero-power,
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis[data-mw02-class="Чернокнижник"][data-mw02-phase="night"] .battle-hero-power{
+ background-image:url('battlefield-v02/hero/layers/power_frame_day.png'),url('assets/hero-art-v2.1K/warlock_ability_void_test.webp')!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-power-group>small:not(.mw11-ability-state){
+ display:none!important;position:absolute!important;left:50%!important;top:auto!important;
+ bottom:100%!important;transform:translateX(-50%)!important;max-width:280px!important;
+ z-index:90!important;white-space:normal!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-power-group:is(:hover,:focus-within)>small:not(.mw11-ability-state){display:block!important}
+/* BF-07: clock is reparented to stage; all transforms inherited from v1 are reset. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main > .battle-time-dial{
+ box-sizing:border-box!important;position:absolute!important;left:8px!important;top:347px!important;
+ width:336px!important;height:336px!important;min-width:336px!important;max-width:336px!important;
+ min-height:336px!important;max-height:336px!important;margin:0!important;padding:0!important;
+ transform:none!important;display:block!important;z-index:45!important;background:none!important;
+ pointer-events:none!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main > .battle-time-dial .mw02-clock-face{
+ position:relative!important;left:0!important;top:0!important;right:auto!important;bottom:auto!important;
+ display:block!important;transform:none!important;width:336px!important;height:336px!important;
+ min-width:336px!important;max-width:336px!important;min-height:336px!important;max-height:336px!important;
+ margin:0!important;padding:0!important;background:none!important;pointer-events:none!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main > .battle-time-dial #battleClock{
+ left:112px!important;top:226px!important;width:112px!important;height:26px!important;
+ transform:none!important;position:absolute!important;display:grid!important;
+}
+/* BF-08: values and eleven potential gems fit within one 336px mana bar. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main .mw02-mana{
+ padding:2px 10px!important;align-items:center!important;overflow:hidden!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main .mw02-mana .mw02-mana-value{
+ left:13px!important;top:14px!important;width:48px!important;min-width:48px!important;
+ max-width:48px!important;text-align:center!important;padding:0!important;
+ font:800 16px/1.2 Georgia,serif!important;white-space:nowrap!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main .mw02-mana .mw02-mana-gems{
+ display:flex!important;align-items:center!important;flex:none!important;margin:0 0 0 57px!important;
+ padding:0!important;gap:3px!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main .mw02-mana .mw02-mana-gem{
+ display:block!important;flex:0 0 19px!important;width:19px!important;height:23px!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main .mw02-mana .mw02-mana-gem[hidden]{display:none!important}
+/* BF-09: test card backs are temporary — never disclose opponent's faces. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #mwArtBotDeck{top:40px!important}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #mwArtMyDeck{top:800px!important}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main .mw-art-deck .mw02-deck-card{
+ position:absolute!important;left:28px!important;top:26px!important;width:88px!important;height:135px!important;
+ border:4px double #cca56a!important;border-radius:10px!important;box-shadow:0 2px 13px #000a!important;
+ background:radial-gradient(circle at 50% 44%,#c1a36e 0 9%,#273d49 10% 34%,#182c36 35% 65%,#5f4a35 67% 69%,#132532 71%)!important;
+ opacity:.98!important;transform:rotate(-3deg)!important;pointer-events:none!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main .mw-art-deck[data-empty="true"] .mw02-deck-card{display:none!important}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #botHand > span{
+ background:radial-gradient(circle at center,#c1a36e 0 11%,#304958 12% 33%,#1a2c38 34% 64%,#94714a 66% 68%,#172935 71%)!important;
+ border:4px double #c2a16b!important;border-radius:10px!important;
+ color:transparent!important;box-shadow:0 3px 10px #0008!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #botHand > span::after{content:none!important}
+/* BF-10: technical menus collapse; turn state remains compact. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #battleTurnInfo{
+ left:502px!important;top:-18px!important;width:216px!important;max-width:216px!important;
+ font:700 13px/1.2 Georgia,serif!important;padding:3px 10px!important;
+ border:1px solid #9374508c!important;background:#122b31dc!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-topbar{
+ right:9px!important;top:8px!important;max-width:calc(100vw - 18px)!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-topbar .battle-quick-actions{
+ padding:4px!important;gap:5px!important;background:#0b1f2dc9!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-menu{
+ position:relative!important;display:block!important;z-index:1000!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-menu>summary{
+ list-style:none;cursor:pointer;padding:7px 10px!important;border:1px solid #b69865;
+ border-radius:6px!important;color:#ffefd3!important;background:#142e3ddc;
+ font:750 12px/1 Arial,sans-serif!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-menu>summary::-webkit-details-marker{display:none}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items{
+ position:absolute!important;right:0!important;top:calc(100% + 9px)!important;
+ display:flex!important;flex-direction:column!important;gap:8px!important;
+ padding:12px!important;width:250px!important;max-height:calc(100dvh - 85px)!important;
+ overflow-y:auto!important;background:#142633f6!important;
+ border:1px solid #d8bb81!important;border-radius:9px!important;
+ box-shadow:0 14px 40px #000c!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-menu:not([open]) .mw02-tools-items{display:none!important}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items>button{width:100%!important}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .battle-settings-drawer,
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .battle-info-drawer{
+ position:relative!important;left:auto!important;top:auto!important;right:auto!important;
+ width:100%!important;max-width:100%!important;min-width:0!important;display:block!important;
+ order:0!important;margin:0!important;background:none!important;border:0!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .battle-settings-drawer[open] .battle-top-controls{
+ position:relative!important;left:auto!important;top:auto!important;right:auto!important;
+ width:100%!important;max-width:100%!important;max-height:50dvh!important;
+ padding:9px!important;overflow:auto!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .battle-info-drawer[open] .battle-notice{
+ width:100%!important;max-width:100%!important;max-height:42dvh!important;overflow:auto!important;
+}
+/* BF-11: only the visible hand remains interactive; overlay surfaces stay permeable. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis,
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis .hero-avatar-ability,
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-clock-face{pointer-events:none!important}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis button.hero-portrait,
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis .hero-power-group,
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis button.battle-hero-power,
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis .hero-identity b,
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-resources button{pointer-events:auto!important}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main #myHand .battle-card.hand{
+ pointer-events:auto!important;
+}
+/* BF-10 final cleanup: remove border/outline left by pre-v02 clock panel. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main > .battle-time-dial{
+  border:0!important;outline:0!important;border-radius:0!important;box-shadow:none!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .mw02-grave-row{
+  display:flex!important;gap:8px!important;align-items:center!important;justify-content:space-between!important;
+  font:700 12px/1.2 Arial,sans-serif!important;color:#d7c49f!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .mw02-grave-row .battle-grave-button{
+  flex:none!important;display:inline-flex!important;align-items:center!important;
+  border:1px solid #b49b68!important;border-radius:6px!important;
+  padding:6px 10px!important;background:#142c39!important;color:#f5e6bd!important;
+  pointer-events:auto!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main > .battle-time-dial .mw02-clock-face{
+  border:0!important;outline:0!important;border-radius:0!important;box-shadow:none!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis[data-mw02-power-state="no-mana"] .battle-hero-power{
+  filter:grayscale(.44) brightness(.74)!important;cursor:not-allowed!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis[data-mw02-power-state="no-target"] .battle-hero-power{
+  filter:grayscale(.48) brightness(.73)!important;cursor:not-allowed!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis[data-mw02-power-state="used"] .battle-hero-power{
+  filter:grayscale(.65) brightness(.69)!important;cursor:not-allowed!important;
+}

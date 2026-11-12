@@ -222,6 +222,36 @@
 #battleWorkspace.mw02-field:not(.mw3d-active) .battle-main > .battle-time-dial .mw02-clock-face{
   border:0!important;outline:0!important;border-radius:0!important;box-shadow:none!important;
 }
+/* BF-01/11: intentional hand cropping belongs to the reference canvas, not
+   the viewport. Letterboxing must not expose or hit-test off-canvas cards. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .battle-main{
+  overflow:hidden!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw14-hand-preview{
+  box-sizing:border-box!important;
+}
+/* BF-10: old control min-widths must not force a horizontal scrollbar inside
+   the nested tools drawer. Keep every setting and action accessible. */
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items{
+  box-sizing:border-box!important;width:min(340px,calc(100vw - 18px))!important;
+  overflow-x:hidden!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .battle-top-controls{
+  box-sizing:border-box!important;display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;
+  min-width:0!important;overflow-x:hidden!important;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .battle-top-controls>label,
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .battle-top-controls>button,
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .battle-top-controls select{
+  box-sizing:border-box!important;min-width:0!important;width:100%!important;
+  max-width:100%!important;white-space:normal!important;
+}
+@media(max-width:400px){
+  #battleWorkspace.mw02-field:not(.mw3d-active) .mw02-tools-items .battle-top-controls{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+}
 #battleWorkspace.mw02-field:not(.mw3d-active) .hero-chassis[data-mw02-power-state="no-mana"] .battle-hero-power{
   filter:grayscale(.44) brightness(.74)!important;cursor:not-allowed!important;
 }

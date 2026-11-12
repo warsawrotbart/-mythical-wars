@@ -27,6 +27,14 @@
     const top=clamp(above,6,Math.max(6,mainRect.height-height-6));
     return {width,height,left,top};
   }
+  // DOMRects are screen pixels; the preview is a child of the scaled canvas.
+  // Convert once to CSS-local coordinates to avoid scaling its placement twice.
+  function previewLocalBounds(cardRect,mainRect,localWidth,localHeight){
+    const bounds=previewBounds(cardRect,mainRect);
+    const sx=mainRect.width>0&&localWidth>0?localWidth/mainRect.width:1;
+    const sy=mainRect.height>0&&localHeight>0?localHeight/mainRect.height:1;
+    return {width:bounds.width*sx,height:bounds.height*sy,left:bounds.left*sx,top:bounds.top*sy};
+  }
   function init(doc,win){
     if(!doc||!win)return null;
     const workspace=doc.getElementById("battleWorkspace"),main=workspace?.querySelector(".battle-main");
@@ -59,7 +67,7 @@
       if(previewUid===String(uid)&&previewNode===node&&!portal.hidden)return;
       hide();previewUid=String(uid);previewNode=node;
       node.classList.add("mw14-hovered");
-      const dimensions=previewBounds(node.getBoundingClientRect(),main.getBoundingClientRect());
+      const dimensions=previewLocalBounds(node.getBoundingClientRect(),main.getBoundingClientRect(),main.offsetWidth,main.offsetHeight);
       portal.style.width=dimensions.width+"px";portal.style.height=dimensions.height+"px";
       portal.style.left=dimensions.left+"px";portal.style.top=dimensions.top+"px";
       portal.hidden=false;img.hidden=true;img.removeAttribute("src");
@@ -143,7 +151,7 @@
     }
     return {render,hide,dragStarted,previewBounds,dispose:hide};
   }
-  const api={statusFor,previewBounds,init};
+  const api={statusFor,previewBounds,previewLocalBounds,init};
   if(typeof window!=="undefined"&&window.document){
     const start=()=>{if(!api.live)api.live=init(window.document,window);};
     if(window.document.readyState==="loading")window.document.addEventListener("DOMContentLoaded",start,{once:true});

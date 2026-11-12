@@ -28,8 +28,22 @@ test('hero art paths are safe local WebP assets, with no ZIP in art directory',(
     const stat=fs.statSync(path.join(root,p));
     assert.ok(stat.size>1000&&stat.size<1_000_000,p);
   }
-  const names=fs.readdirSync(path.join(root,'assets/hero-art-v2.1K'));
-  assert.deepEqual(names.slice().sort(),assets.map(x=>path.basename(x)).sort());
+  // BF-03 added three approved-for-testing Necromancer PNG sources.
+  // They are not part of the older v2.1K WebP manifest and remain test art.
+  const necroTestLayers=[
+    'necro_portrait_test_v01.png',
+    'necro_power_day_test_v01.png',
+    'necro_power_night_test_v01.png'
+  ];
+  const folder=path.join(root,'assets/hero-art-v2.1K');
+  for(const name of necroTestLayers){
+    const stat=fs.statSync(path.join(folder,name));
+    assert.ok(stat.isFile()&&stat.size>1000&&stat.size<4_000_000,name);
+  }
+  const names=fs.readdirSync(folder);
+  // No untracked assets or ZIP files: exactly 5 original WebPs plus 3 test PNGs.
+  assert.deepEqual(names.slice().sort(),
+    [...assets.map(x=>path.basename(x)),...necroTestLayers].sort());
 });
 
 test('both 2D and 3D load shared hero art manifest and distinct ability image',()=>{

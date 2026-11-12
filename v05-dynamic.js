@@ -274,7 +274,7 @@ function setCard(card,sampleIndex,options={}){
   const token=++state.selectionEpoch;
   const tpl=manifest.templates[card.type];
   const cached=state.profiles.get(card.id);
-  state.crop=cached?{...cached.crop}:{x:tpl.art_crop_center[0],y:tpl.art_crop_center[1],zoom:1};
+  state.crop=cached?{...cached.crop}:(window.MW_READY_ART?.cropFor(card.id)||{x:tpl.art_crop_center[0],y:tpl.art_crop_center[1],zoom:1});
   state.profileReady=!!cached||!artStore;
   state.artBlob=cached?.blob||null;state.artLabel=cached?.fileName||"";
   const bundledArt=builtinTestArt(card.id)||(sampleIndex==null?"":`v05/${card.id}/${card.id}_art_source.png`);

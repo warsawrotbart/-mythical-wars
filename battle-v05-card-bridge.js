@@ -197,7 +197,7 @@ async function render(card,view="full",opt={}){
  const saved=await profileFor(c.id);
  const override=validArt(card.artImage)||validArt(root.MW_CARD_BRIDGE?.getSavedCards?.()?.find(e=>e.cardId===c.id)?.project?.assets?.customArtData);
  const artSource=override||(saved?.blob?URL.createObjectURL(saved.blob):"" )||validArt(root.MW_TEST_ART_CATALOG?.url(c.id));
- const crop=saved?.crop||{x:.48,y:.4,zoom:1};
+ const crop=saved?.crop||(!override ? root.MW_READY_ART?.cropFor(c.id) : null)||{x:.48,y:.4,zoom:1};
  if(view==="boardPortrait"){
   // Only 2D boards request the separate portrait; hand and 3D stay unchanged.
   if(!root.MW14_BOARD_PORTRAIT)throw Error("MW14 portrait module missing");

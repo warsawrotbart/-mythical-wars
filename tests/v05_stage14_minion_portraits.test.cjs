@@ -32,8 +32,8 @@ test("only 2D battlefield uses new face; existing 3D and full cards retained",()
 });
 test("live battle values and taunt affinity come from engine model",()=>{
  const deck=read("deckgame.js"),css=read("battle-minion-v05S14.css");
- assert.match(deck,/eng\.effectiveAttack\(game,h\)/);
- assert.match(deck,/kind==="minion"\?h\.health/);
+ assert.match(deck,/eng\.effectiveAttack\(state,h\)/);
+ assert.match(deck,/kind==="minion"\?Math\.max\(0,h\.health\)/);
  assert.match(deck,/mw14-taunt/);assert.match(deck,/h\.affinity/);
  assert.match(css,/\.mw14-board-portrait \.bc-stats/);
  assert.match(css,/\.mw14-affinity/);

@@ -52,10 +52,11 @@ test("stepwise bot and synchronous bot produce identical deterministic state",()
  assert.deepEqual(paced,regular);
  assert.ok(actions.some(x=>x.type==="play"));
 });
-test("bot animation is paced without autosaving on each frame",()=>{
+test("bot waits for the presentation queue before the next strategic frame",()=>{
  const deck=read("deckgame.js"),css=read("arena-v05S16.css");
  assert.match(deck,/eng\.botTurnFrames\?\.\(snapshot,1\)/);
- assert.match(deck,/await pause\(1350\)/);
+ assert.match(deck,/await presentationDone/);
+ assert.doesNotMatch(deck,/await pause\(1350\)/);
  assert.match(deck,/renderGame\(\{save:false\}\)/);
  assert.match(deck,/snapshot===game/);
  assert.match(css,/mw16-bot-action/);

@@ -27,13 +27,21 @@
     const top=clamp(above,6,Math.max(6,mainRect.height-height-6));
     return {width,height,left,top};
   }
-  // DOMRects are screen pixels; the preview is a child of the scaled canvas.
-  // Convert once to CSS-local coordinates to avoid scaling its placement twice.
+  // Legacy local-coordinate helper retained for callers/tests.
+  // The live preview uses a fixed body portal in screen pixels.
   function previewLocalBounds(cardRect,mainRect,localWidth,localHeight){
     const bounds=previewBounds(cardRect,mainRect);
     const sx=mainRect.width>0&&localWidth>0?localWidth/mainRect.width:1;
     const sy=mainRect.height>0&&localHeight>0?localHeight/mainRect.height:1;
     return {width:bounds.width*sx,height:bounds.height*sy,left:bounds.left*sx,top:bounds.top*sy};
+  }
+  function avoidHeroes(bounds,heroes,viewportWidth){
+    const overlap=(a,b)=>Math.max(0,Math.min(a.left+a.width,b.right)-Math.max(a.left,b.left))*
+      Math.max(0,Math.min(a.top+a.height,b.bottom)-Math.max(a.top,b.top));
+    const candidates=[bounds.left,...heroes.flatMap(h=>[h.left-bounds.width-12,h.right+12])]
+      .map(left=>({...bounds,left:clamp(left,6,Math.max(6,viewportWidth-bounds.width-6))}));
+    candidates.sort((a,b)=>heroes.reduce((n,h)=>n+overlap(a,h)-overlap(b,h),0)||Math.abs(a.left-bounds.left)-Math.abs(b.left-bounds.left));
+    return candidates[0];
   }
   function init(doc,win){
     if(!doc||!win)return null;
@@ -46,7 +54,7 @@
       portal=doc.createElement("div");portal.id="mw14HandPreview";
       portal.className="mw14-hand-preview";portal.hidden=true;portal.setAttribute("aria-hidden","true");
       img=doc.createElement("img");img.alt="Полная карта";img.draggable=false;img.decoding="async";img.hidden=true;
-      portal.append(img);main.append(portal);
+      portal.append(img);doc.body.append(portal);
     }
     function hide(){
       generation++;previewUid=null;previewNode=null;
@@ -67,7 +75,9 @@
       if(previewUid===String(uid)&&previewNode===node&&!portal.hidden)return;
       hide();previewUid=String(uid);previewNode=node;
       node.classList.add("mw14-hovered");
-      const dimensions=previewLocalBounds(node.getBoundingClientRect(),main.getBoundingClientRect(),main.offsetWidth,main.offsetHeight);
+      let dimensions=avoidHeroes(previewBounds(node.getBoundingClientRect(),{left:0,top:0,width:win.innerWidth,height:Math.max(210,node.getBoundingClientRect().top-10)}),
+        [...workspace.querySelectorAll(".hero-portrait")].map(n=>n.getBoundingClientRect()),win.innerWidth);
+      dimensions=win.MW_MOTION_RUNTIME.fitRect(dimensions,win.innerWidth,win.innerHeight);
       portal.style.width=dimensions.width+"px";portal.style.height=dimensions.height+"px";
       portal.style.left=dimensions.left+"px";portal.style.top=dimensions.top+"px";
       portal.hidden=false;img.hidden=true;img.removeAttribute("src");
@@ -121,15 +131,17 @@
     });
     workspace.addEventListener("pointerout",e=>{
       const card=findHand(e.target);
-      if(card&&previewNode===card&&!card.contains(e.relatedTarget))hide();
+      if(card&&previewNode===card&&!card.contains(e.relatedTarget)&&!card.contains(doc.activeElement))hide();
     });
     workspace.addEventListener("focusin",e=>{const card=findHand(e.target);if(card)show(card);});
     workspace.addEventListener("focusout",e=>{
       const card=findHand(e.target);
       if(card&&previewNode===card&&!card.contains(e.relatedTarget))hide();
     });
-    win.addEventListener?.("resize",hide,{passive:true});
-    function dragStarted(card,dataTransfer){
+    const repositionPreview=()=>{const focused=findHand(doc.activeElement);hide();if(focused)show(focused);};
+    win.addEventListener?.("resize",repositionPreview,{passive:true});
+    doc.addEventListener?.("scroll",repositionPreview,{passive:true,capture:true});
+    function dragStarted(card,dataTransfer,point){
       hide();
       // Opaque, readable card face follows the pointer in native HTML5 DnD.
       if(!card||!dataTransfer?.setDragImage)return;
@@ -142,16 +154,18 @@
           ctx.drawImage(source,0,0,190,285);
           canvas.className="mw14-drag-image";
           doc.body.append(canvas);
-          dataTransfer.setDragImage(canvas,95,140);
+          const offset=win.MW_HAND_MOTION.grabOffset(card.getBoundingClientRect(),point,190,285);
+          dataTransfer.setDragImage(canvas,offset.x,offset.y);
           win.setTimeout?.(()=>canvas.remove(),0);
           return;
         }
       }
-      dataTransfer.setDragImage(card,card.clientWidth/2,card.clientHeight/2);
+      const offset=win.MW_HAND_MOTION.grabOffset(card.getBoundingClientRect(),point,card.clientWidth,card.clientHeight);
+      dataTransfer.setDragImage(card,offset.x,offset.y);
     }
     return {render,hide,dragStarted,previewBounds,dispose:hide};
   }
-  const api={statusFor,previewBounds,previewLocalBounds,init};
+  const api={statusFor,previewBounds,previewLocalBounds,avoidHeroes,init};
   if(typeof window!=="undefined"&&window.document){
     const start=()=>{if(!api.live)api.live=init(window.document,window);};
     if(window.document.readyState==="loading")window.document.addEventListener("DOMContentLoaded",start,{once:true});

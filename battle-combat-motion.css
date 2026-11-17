@@ -1,0 +1,14 @@
+.mw6-actor{position:fixed;z-index:10100;pointer-events:none;transform-origin:center;background:transparent;}
+.mw6-actor>img{display:block;width:100%;height:100%;object-fit:fill;}
+.mw6-source-hidden{visibility:hidden!important;}
+.mw6-number{position:fixed;z-index:12000;pointer-events:none;text-align:center;transform:translateX(-50%);min-width:96px;
+ color:#fff5dc;background:#142a2bee;border:1px solid #e9c97e;border-radius:12px;padding:6px 10px;box-shadow:0 3px 14px #000c;font:bold 24px/1.2 Georgia,serif;}
+.mw6-number small{display:block;font:600 12px/1.4 sans-serif;color:#ffe3aa;white-space:nowrap;}
+#mw6Aim{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9800;overflow:visible;}
+#mw6Aim line{stroke:#ffe6a0;stroke-width:4;stroke-linecap:round;stroke-dasharray:9 7;filter:drop-shadow(0 1px 2px #000);}
+.mw6-journal{margin:8px;padding:8px;border:1px solid #647e74;border-radius:8px;color:#ffe9be;background:#10242c;}
+.mw6-journal ol{padding-left:20px;max-height:240px;overflow:auto;font:13px/1.5 sans-serif;}
+@media(prefers-reduced-motion:reduce){.mw6-number{animation:none;}}
+
+#battleWorkspace:not(.mw3d-active) .mw6-minion-armor{position:absolute;right:-8px;bottom:30px;z-index:8;
+ color:#eef8ff;background:#254a65;border:1px solid #c8e6ff;border-radius:9px;padding:2px 5px;font:bold 14px/1.2 Georgia,serif;pointer-events:none;}

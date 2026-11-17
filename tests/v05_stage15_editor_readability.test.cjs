@@ -26,7 +26,7 @@ test("single masked art paint, with curved name and existing gold trim",()=>{
 });
 test("hover preview uses card alone without duplicate explanatory title",()=>{
  const src=read("battle-hand-v05S14.js"),css=read("card-readability-v05S15.css");
- assert.match(src,/portal\.append\(img\);main\.append\(portal\)/);
+ assert.match(src,/portal\.append\(img\);doc\.body\.append\(portal\)/);
  assert.doesNotMatch(src,/caption\.textContent/);
  assert.match(css,/\.mw14-hand-preview\{[\s\S]*?border:0!important/);
  assert.match(css,/\.mw14-preview-label\{display:none!important/);

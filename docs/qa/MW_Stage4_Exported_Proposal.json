@@ -1,0 +1,145 @@
+{
+  "format": "mw-motion-proposal",
+  "version": 1,
+  "status": "proposal",
+  "parameters": {
+    "playerPlay": 260,
+    "opponentReveal": 700,
+    "attack": 320,
+    "heroPower": 260,
+    "turnBanner": 600,
+    "drawReveal": 420,
+    "drawTravel": 240,
+    "playLift": 180,
+    "playTravel": 320,
+    "summon": 180,
+    "attackPrepare": 100,
+    "attackLunge": 140,
+    "contact": 100,
+    "attackReturn": 180,
+    "numbers": 900,
+    "endBanner": 320,
+    "hourStep": 520,
+    "opponentBanner": 600
+  },
+  "speed": 1.5,
+  "reduced": false,
+  "numberStyle": "badge",
+  "fixtureSeed": 758,
+  "timeline": [
+    {
+      "id": "turn",
+      "label": "Ваш ход",
+      "start": 0,
+      "end": 400,
+      "duration": 400
+    },
+    {
+      "id": "draw-reveal",
+      "label": "Добор: показать карту",
+      "start": 400,
+      "end": 680,
+      "duration": 280
+    },
+    {
+      "id": "draw-travel",
+      "label": "Добор: в руку",
+      "start": 680,
+      "end": 840,
+      "duration": 160
+    },
+    {
+      "id": "lift",
+      "label": "Выбор и подъём",
+      "start": 840,
+      "end": 960,
+      "duration": 120
+    },
+    {
+      "id": "play",
+      "label": "Карта к полю",
+      "start": 960,
+      "end": 1173,
+      "duration": 213
+    },
+    {
+      "id": "summon",
+      "label": "Появление овала",
+      "start": 1173,
+      "end": 1293,
+      "duration": 120
+    },
+    {
+      "id": "prepare",
+      "label": "Подготовка атаки",
+      "start": 1293,
+      "end": 1360,
+      "duration": 67
+    },
+    {
+      "id": "lunge",
+      "label": "Рывок",
+      "start": 1360,
+      "end": 1453,
+      "duration": 93
+    },
+    {
+      "id": "impact",
+      "label": "Контакт: общий пакет урона",
+      "start": 1453,
+      "end": 1520,
+      "duration": 67
+    },
+    {
+      "id": "return",
+      "label": "Возврат",
+      "start": 1520,
+      "end": 1640,
+      "duration": 120
+    },
+    {
+      "id": "numbers",
+      "label": "Прочитать результат",
+      "start": 1640,
+      "end": 2240,
+      "duration": 600
+    },
+    {
+      "id": "end",
+      "label": "Завершение хода",
+      "start": 2240,
+      "end": 2453,
+      "duration": 213
+    },
+    {
+      "id": "hour",
+      "label": "Один игровой час",
+      "start": 2453,
+      "end": 2800,
+      "duration": 347
+    },
+    {
+      "id": "opponent",
+      "label": "Ход соперника",
+      "start": 2800,
+      "end": 3200,
+      "duration": 400
+    }
+  ],
+  "outcome": {
+    "ownMana": 1,
+    "enemyHealth": 30,
+    "ownBoard": [
+      {
+        "uid": "u10",
+        "health": 1
+      },
+      {
+        "uid": "u14",
+        "health": 2
+      }
+    ],
+    "hour": 13,
+    "turn": 1
+  }
+}

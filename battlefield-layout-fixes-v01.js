@@ -14,6 +14,7 @@
     if(clock&&clock.parentElement!==stage)stage.appendChild(clock);
     // Keep navigation visible; put all technical controls behind one fold-out.
     const actions=arena.querySelector('.battle-quick-actions');
+    const timer=$('battleTurnTimer');if(actions&&timer)actions.append(timer);
     if(actions&&!$('mw02ToolsMenu')){
       const menu=doc.createElement('details');menu.id='mw02ToolsMenu';menu.className='mw02-tools-menu';
       const summary=doc.createElement('summary');summary.textContent='⚙ Меню';

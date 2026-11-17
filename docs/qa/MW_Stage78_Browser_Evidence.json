@@ -1,0 +1,404 @@
+{
+  "recovery": [
+    {
+      "mode": "normal",
+      "sameOutcome": true,
+      "transients": 0,
+      "activeAnimations": 0,
+      "inputReleased": true
+    },
+    {
+      "mode": "reduced",
+      "sameOutcome": true,
+      "transients": 0,
+      "activeAnimations": 0,
+      "inputReleased": true
+    },
+    {
+      "mode": "resize",
+      "sameOutcome": true,
+      "transients": 0,
+      "activeAnimations": 0,
+      "inputReleased": true
+    },
+    {
+      "mode": "VFX-error",
+      "sameOutcome": true,
+      "transients": 0,
+      "activeAnimations": 0,
+      "inputReleased": true
+    },
+    {
+      "mode": "image-error",
+      "sameOutcome": true,
+      "transients": 0,
+      "activeAnimations": 0,
+      "inputReleased": true
+    }
+  ],
+  "timer": {
+    "savedMs": 5836.4000000003725,
+    "resumedMs": 4888.9000000003725,
+    "reloadPreserved": true,
+    "handNotPaid": true,
+    "choiceCanceled": true,
+    "turnAdvanced": true,
+    "oldHand": 6
+  },
+  "bot": {
+    "pausedUnchanged": true,
+    "sameOutcome": true,
+    "replay": true,
+    "transients": 0
+  },
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 720,
+      "handCount": 1,
+      "actualHand": 1,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "handCount": 3,
+      "actualHand": 3,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "handCount": 7,
+      "actualHand": 7,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "handCount": 10,
+      "actualHand": 10,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "handCount": 1,
+      "actualHand": 1,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "handCount": 3,
+      "actualHand": 3,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "handCount": 7,
+      "actualHand": 7,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "handCount": 10,
+      "actualHand": 10,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1600,
+      "height": 900,
+      "handCount": 1,
+      "actualHand": 1,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1600,
+      "height": 900,
+      "handCount": 3,
+      "actualHand": 3,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1600,
+      "height": 900,
+      "handCount": 7,
+      "actualHand": 7,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1600,
+      "height": 900,
+      "handCount": 10,
+      "actualHand": 10,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "handCount": 1,
+      "actualHand": 1,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "handCount": 3,
+      "actualHand": 3,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "handCount": 7,
+      "actualHand": 7,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "handCount": 10,
+      "actualHand": 10,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "handCount": 1,
+      "actualHand": 1,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "handCount": 3,
+      "actualHand": 3,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "handCount": 7,
+      "actualHand": 7,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "handCount": 10,
+      "actualHand": 10,
+      "boards": [
+        7,
+        7
+      ],
+      "previewInside": true,
+      "fullTextInside": true,
+      "focus": true,
+      "restored": true
+    }
+  ],
+  "benchmark": {
+    "scope": "requestAnimationFrame cadence, on-screen 1280x720 Chrome iframe battle: one minion exchange plus idle, 3.5 seconds; not GPU FPS or target-hardware acceptance",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+    "DPR": 1,
+    "hardwareConcurrency": 9,
+    "frames": 141,
+    "meanFPS": 40.21677124928694,
+    "frameP95ms": 23.600000000093132,
+    "frameMaxMs": 559.5,
+    "endTurnP95ms": 0.6000000000931323,
+    "transients": 0,
+    "runtime": {
+      "active": 0,
+      "peak": 7,
+      "skipped": 0,
+      "limit": 32
+    }
+  },
+  "background": {
+    "simulatedVisibility": true,
+    "pausedUnchanged": true,
+    "sameOutcome": true,
+    "replay": true,
+    "transients": 0,
+    "inputReleased": true
+  },
+  "manualBackground": {
+    "accepted": false,
+    "reason": "Native tab switch attempted, but controlled document.hidden remained false; deterministic visibility simulation is reported separately."
+  },
+  "benchmarkTrials": [
+    {
+      "scope": "Visible Chrome, 1280x720 iframe battle: one minion exchange plus idle, 3.5 seconds; not target-hardware acceptance",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "DPR": 1,
+      "hardwareConcurrency": 9,
+      "frames": 165,
+      "meanFPS": 47.05412650430492,
+      "frameP95ms": 20.5,
+      "endTurnP95ms": 1,
+      "transients": 0,
+      "runtime": {
+        "active": 0,
+        "peak": 7,
+        "skipped": 0,
+        "limit": 32
+      },
+      "limitation": "iframe visibility within viewport was not controlled in these preliminary runs"
+    },
+    {
+      "scope": "Visible Chrome, 1280x720 iframe battle: one minion exchange plus idle, 3.5 seconds; not target-hardware acceptance",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "DPR": 1,
+      "hardwareConcurrency": 9,
+      "frames": 110,
+      "meanFPS": 31.27843494085698,
+      "frameP95ms": 21.5,
+      "endTurnP95ms": 0.7000000001862645,
+      "transients": 0,
+      "runtime": {
+        "active": 0,
+        "peak": 7,
+        "skipped": 0,
+        "limit": 32
+      },
+      "limitation": "iframe visibility within viewport was not controlled in these preliminary runs"
+    }
+  ]
+}

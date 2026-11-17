@@ -1,0 +1,46 @@
+{
+  "viewport": "1363×936 Chrome",
+  "massContact": {
+    "boardCount": 3,
+    "busy": "true",
+    "numbers": [
+      "−1 уронБроня −0 · HP −1",
+      "−4 уронБроня −0 · HP −4",
+      "−1 уронБроня −0 · HP −1"
+    ]
+  },
+  "afterMass": {
+    "actors": 0,
+    "boardCount": 0,
+    "busy": null,
+    "journal": "−4 урон · Броня −4 · HP −0Прочность 1−2 урон · Броня −0 · HP −2−1 урон · Броня −0 · HP −1Гибель: ЗЛЫДЗЕНЬПредсмертный эффект: ЗЛЫДЗЕНЬ−1 урон · Броня −0 · HP −1Сила героя использована−1 урон · Броня −0 · HP −1−4 урон · Броня −0 · HP −4−1 урон · Броня −0 · HP −1Гибель: МАЛАДЫ ДРУЖЫННІК, КОТ БАЮН, ДРУЖЫННІК",
+    "mana": "3/10",
+    "numbers": 0
+  },
+  "replay": "Повтор проверен: 19 действий, итоговый ход 5, код 0f5446e4.\"",
+  "final": {
+    "actors": 0,
+    "botArmor": "6",
+    "botHP": "30",
+    "busy": null,
+    "cancelHidden": true,
+    "mana": "8/10",
+    "myHP": "28",
+    "numbers": 0,
+    "weapon": "Оружие не экипировано"
+  },
+  "logs": [
+    {
+      "level": "warn",
+      "message": "MW v05 card font fallback: NetworkError: A network error occurred.",
+      "timestamp": "2026-11-16T18:25:59.211Z",
+      "url": "http://127.0.0.1:4173/battle-v05-card-bridge.js?v=0523"
+    },
+    {
+      "level": "warn",
+      "message": "MW v05 card font fallback: NetworkError: A network error occurred.",
+      "timestamp": "2026-11-16T18:32:20.877Z",
+      "url": "http://127.0.0.1:4173/battle-v05-card-bridge.js?v=0523"
+    }
+  ]
+}

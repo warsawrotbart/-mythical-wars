@@ -1,0 +1,29 @@
+/* Stable hit roots: enlargement is confined to the screen-space preview. */
+#battleWorkspace.mw13-2d-layout:not(.mw3d-active) .battle-card.hand:is(:hover,:focus-visible,:focus-within,.selected,.mw14-hovered,.battle-dragging){
+ transform:translateY(var(--mw13-fan-y,0px)) rotate(var(--mw13-fan-rot,0deg))!important;
+}
+body > .mw14-hand-preview{position:fixed!important;z-index:11000;pointer-events:none;box-sizing:border-box;
+ border:0;border-radius:12px;background:transparent;box-shadow:0 12px 35px #000c;overflow:hidden;}
+body > .mw14-hand-preview[hidden]{display:none!important;}
+body > .mw14-hand-preview img{width:100%;height:100%;object-fit:contain;display:block;}
+body > .mw14-hand-preview img[hidden]{display:none;}
+.mw-placement-slot{position:fixed;z-index:9900;transform:translate(-50%,-50%);width:30px;height:64px;
+ border:2px dashed #a7ffd1;border-radius:14px;background:#174e3eda;color:#d4ffe8;font-size:24px;cursor:pointer;}
+.mw-placement-slot:is(:hover,:focus-visible,.active){background:#419b68;outline:3px solid #ffdc86;}
+.mw-card-flight{position:fixed!important;z-index:10050!important;pointer-events:none!important;margin:0!important;
+ transform-origin:0 0!important;box-sizing:border-box;background:#20342b;border:2px solid #a68b58;border-radius:10px;overflow:hidden;
+ color:#f8e6bd;display:flex;align-items:center;justify-content:center;}
+.mw-card-flight > img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
+.mw-flight-oval{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;transform:none!important;
+ background:#193025;border-radius:50%;overflow:hidden;}
+.mw-flight-oval .mw-template-face{width:100%!important;height:100%!important;object-fit:contain;}
+#battleWorkspace:not(.mw3d-active) .battle-card.minion.mw14-new-summon{animation:none!important;}
+@media(prefers-reduced-motion:reduce){.mw14-hand-preview,.mw-placement-slot{animation:none!important;transition:none!important;}}
+
+body:has(.mw14-drag-active) > .mw-placement-slot{pointer-events:none;}
+.mw-flight-oval{background:transparent;border-radius:0;}
+.mw-flight-oval .mw-template-face{position:absolute;inset:0;display:block;border:0;}
+/* The current battlefield has a flat hand and a more specific #myHand rule. */
+#battleWorkspace.mw02-field:not(.mw3d-active) #myHand .battle-card.hand:is(:hover,:focus-visible,:focus-within,.selected,.mw14-hovered,.battle-dragging){
+ transform:none!important;
+}

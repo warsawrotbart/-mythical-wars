@@ -1,0 +1,1709 @@
+TAP version 13
+# Subtest: combat damage is one simultaneous batch before removal, followed by consumed attack
+ok 1 - combat damage is one simultaneous batch before removal, followed by consumed attack
+  ---
+  duration_ms: 15.779163
+  type: 'test'
+  ...
+# Subtest: hero actual damage separates armor and HP and excludes overkill
+ok 2 - hero actual damage separates armor and HP and excludes overkill
+  ---
+  duration_ms: 10.54141
+  type: 'test'
+  ...
+# Subtest: shield absorbs damage, consumes the attack and removes only the shield
+ok 3 - shield absorbs damage, consumes the attack and removes only the shield
+  ---
+  duration_ms: 5.936065
+  type: 'test'
+  ...
+# Subtest: invulnerability precedes shield and armor; zero attack cannot declare
+ok 4 - invulnerability precedes shield and armor; zero attack cannot declare
+  ---
+  duration_ms: 6.338338
+  type: 'test'
+  ...
+# Subtest: minion armor is consumed before HP, after incoming time multiplier
+ok 5 - minion armor is consumed before HP, after incoming time multiplier
+  ---
+  duration_ms: 9.353695
+  type: 'test'
+  ...
+# Subtest: disappeared or newly taunt-protected target rejects without a replacement or resource use
+ok 6 - disappeared or newly taunt-protected target rejects without a replacement or resource use
+  ---
+  duration_ms: 11.193068
+  type: 'test'
+  ...
+# Subtest: area damage is one batch; deaths and deathrattles are active-side first in board order
+ok 7 - area damage is one batch; deaths and deathrattles are active-side first in board order
+  ---
+  duration_ms: 4.844825
+  type: 'test'
+  ...
+# Subtest: death chain preserves source UID/card even after the source left the board
+ok 8 - death chain preserves source UID/card even after the source left the board
+  ---
+  duration_ms: 8.482818
+  type: 'test'
+  ...
+# Subtest: both lethal hero deathrattles finish before the final result
+ok 9 - both lethal hero deathrattles finish before the final result
+  ---
+  duration_ms: 10.645474
+  type: 'test'
+  ...
+# Subtest: max-HP gain is an attribute event; full-HP heal emits no fake healing
+ok 10 - max-HP gain is an attribute event; full-HP heal emits no fake healing
+  ---
+  duration_ms: 8.71322
+  type: 'test'
+  ...
+# Subtest: actual healing is recorded before subsequent buffs and is capped at max HP
+ok 11 - actual healing is recorded before subsequent buffs and is capped at max HP
+  ---
+  duration_ms: 2.579288
+  type: 'test'
+  ...
+# Subtest: weapon breaks locally, replacement does not reset attack, invalid attack spends no durability
+ok 12 - weapon breaks locally, replacement does not reset attack, invalid attack spends no durability
+  ---
+  duration_ms: 6.076876
+  type: 'test'
+  ...
+# Subtest: targeted hero power cannot pay on invalid target, used state survives a light change
+ok 13 - targeted hero power cannot pay on invalid target, used state survives a light change
+  ---
+  duration_ms: 5.080889
+  type: 'test'
+  ...
+# Subtest: combat observer is side-effect-free and never publishes private zones
+ok 14 - combat observer is side-effect-free and never publishes private zones
+  ---
+  duration_ms: 10.737274
+  type: 'test'
+  ...
+# Subtest: presentation command and combat steps deduplicate without double attack
+ok 15 - presentation command and combat steps deduplicate without double attack
+  ---
+  duration_ms: 6.722804
+  type: 'test'
+  ...
+# Subtest: screen-space lunge vector stays finite across scale and never moves whole HUD
+ok 16 - screen-space lunge vector stays finite across scale and never moves whole HUD
+  ---
+  duration_ms: 0.399311
+  type: 'test'
+  ...
+# Subtest: controlled QA scenario uses documented armor, canonical cards and verifies deterministically
+ok 17 - controlled QA scenario uses documented armor, canonical cards and verifies deterministically
+  ---
+  duration_ms: 57.741694
+  type: 'test'
+  ...
+# Subtest: shared attack status rejects frozen sources and follows current taunt without mutation
+ok 18 - shared attack status rejects frozen sources and follows current taunt without mutation
+  ---
+  duration_ms: 3.567097
+  type: 'test'
+  ...
+# Subtest: reordering and inserting keeps roots, rendered images and unchanged children attached
+ok 19 - reordering and inserting keeps roots, rendered images and unchanged children attached
+  ---
+  duration_ms: 3.887894
+  type: 'test'
+  ...
+# Subtest: stat update replaces only the changed base child and removes departed instances
+ok 20 - stat update replaces only the changed base child and removes departed instances
+  ---
+  duration_ms: 0.887272
+  type: 'test'
+  ...
+# Subtest: duplicate instance keys are rejected before modifying the visible zone
+ok 21 - duplicate instance keys are rejected before modifying the visible zone
+  ---
+  duration_ms: 0.942303
+  type: 'test'
+  ...
+# Subtest: insertion uses live centers and creates only n+1 temporary gaps below seven
+ok 22 - insertion uses live centers and creates only n+1 temporary gaps below seven
+  ---
+  duration_ms: 1.581091
+  type: 'test'
+  ...
+# Subtest: grab point preserves fractional offset at several arena scales, clamped at edges
+ok 23 - grab point preserves fractional offset at several arena scales, clamped at edges
+  ---
+  duration_ms: 1.084635
+  type: 'test'
+  ...
+# Subtest: inserts before/between/after physical instances, charges once; replay accepts optional position
+ok 24 - inserts before/between/after physical instances, charges once; replay accepts optional position
+  ---
+  duration_ms: 48.955439
+  type: 'test'
+  ...
+# Subtest: invalid/capacity placement never pays, consumes a UID or changes RNG/state
+ok 25 - invalid/capacity placement never pays, consumes a UID or changes RNG/state
+  ---
+  duration_ms: 7.883613
+  type: 'test'
+  ...
+# Subtest: capture gives exact sequential draw instances/counts without writing saved state
+ok 26 - capture gives exact sequential draw instances/counts without writing saved state
+  ---
+  duration_ms: 4.484123
+  type: 'test'
+  ...
+# Subtest: opponent draw stream hides physical IDs and faces, own draws expose only the moved card
+ok 27 - opponent draw stream hides physical IDs and faces, own draws expose only the moved card
+  ---
+  duration_ms: 4.64679
+  type: 'test'
+  ...
+# Subtest: opening 3 versus 4 plus protected coin; confirm duplicate cannot draw twice
+ok 28 - opening 3 versus 4 plus protected coin; confirm duplicate cannot draw twice
+  ---
+  duration_ms: 4.099777
+  type: 'test'
+  ...
+# Subtest: hand overflow emits no arrival and fatigue emits no invented card
+ok 29 - hand overflow emits no arrival and fatigue emits no invented card
+  ---
+  duration_ms: 1.031906
+  type: 'test'
+  ...
+# Subtest: preview avoids hero portraits while remaining inside the viewport
+ok 30 - preview avoids hero portraits while remaining inside the viewport
+  ---
+  duration_ms: 1.127617
+  type: 'test'
+  ...
+# Subtest: effect-created cards have a distinct source and never pretend to leave the deck
+ok 31 - effect-created cards have a distinct source and never pretend to leave the deck
+  ---
+  duration_ms: 2.43207
+  type: 'test'
+  ...
+# Subtest: choice sidecar retains valid placement and rejects invalid restored indices
+ok 32 - choice sidecar retains valid placement and rejects invalid restored indices
+  ---
+  duration_ms: 1.806944
+  type: 'test'
+  ...
+# Subtest: accepted drag continues from the release point with the original grab offset
+ok 33 - accepted drag continues from the release point with the original grab offset
+  ---
+  duration_ms: 0.140893
+  type: 'test'
+  ...
+# Subtest: complete turn fixture uses legal engine commands and approved decks without mutating catalog
+ok 34 - complete turn fixture uses legal engine commands and approved decks without mutating catalog
+  ---
+  duration_ms: 37.482307
+  type: 'test'
+  ...
+# Subtest: fixture shows one ordinary draw, a played instance, and one simultaneous damage packet
+ok 35 - fixture shows one ordinary draw, a played instance, and one simultaneous damage packet
+  ---
+  duration_ms: 4.93323
+  type: 'test'
+  ...
+# Subtest: seeking and speed/reduced motion only sample snapshots, never execute the engine again
+ok 36 - seeking and speed/reduced motion only sample snapshots, never execute the engine again
+  ---
+  duration_ms: 20.633377
+  type: 'test'
+  ...
+# Subtest: timeline has continuous ordered intervals and stable phase addressing at boundaries
+ok 37 - timeline has continuous ordered intervals and stable phase addressing at boundaries
+  ---
+  duration_ms: 9.443977
+  type: 'test'
+  ...
+# Subtest: parameter normalization handles invalid and zero durations without infinite playback
+ok 38 - parameter normalization handles invalid and zero durations without infinite playback
+  ---
+  duration_ms: 4.593943
+  type: 'test'
+  ...
+# Subtest: public motion snapshots contain no opponent hand/deck contents, RNG, or replay
+ok 39 - public motion snapshots contain no opponent hand/deck contents, RNG, or replay
+  ---
+  duration_ms: 6.216939
+  type: 'test'
+  ...
+# Subtest: changed card definition stops the fixture instead of silently inventing numbers
+ok 40 - changed card definition stops the fixture instead of silently inventing numbers
+  ---
+  duration_ms: 0.829264
+  type: 'test'
+  ...
+# Subtest: preview bounds fit all five specified viewports
+ok 41 - preview bounds fit all five specified viewports
+  ---
+  duration_ms: 1.423215
+  type: 'test'
+  ...
+# Subtest: failed, stalled or aborted renderer releases its barrier
+ok 42 - failed, stalled or aborted renderer releases its barrier
+  ---
+  duration_ms: 5.601736
+  type: 'test'
+  ...
+# Subtest: resource success removes all abort listeners across 300 waits
+ok 43 - resource success removes all abort listeners across 300 waits
+  ---
+  duration_ms: 11.168379
+  type: 'test'
+  ...
+# Subtest: animation load cap and cancellation release all tracked work
+ok 44 - animation load cap and cancellation release all tracked work
+  ---
+  duration_ms: 7.053122
+  type: 'test'
+  ...
+# Subtest: broken VFX API fast-forwards without trapping input
+ok 45 - broken VFX API fast-forwards without trapping input
+  ---
+  duration_ms: 0.339414
+  type: 'test'
+  ...
+# Subtest: nine resource descriptors include version, layer, alpha, pivot and fallback
+ok 46 - nine resource descriptors include version, layer, alpha, pivot and fallback
+  ---
+  duration_ms: 0.311441
+  type: 'test'
+  ...
+# Subtest: accepted command pays once and emits cause before summon; replay remains deterministic
+ok 47 - accepted command pays once and emits cause before summon; replay remains deterministic
+  ---
+  duration_ms: 23.140902
+  type: 'test'
+  ...
+# Subtest: rejected and stale commands do not spend resources or emit successful scenes
+ok 48 - rejected and stale commands do not spend resources or emit successful scenes
+  ---
+  duration_ms: 9.554768
+  type: 'test'
+  ...
+# Subtest: command ID collision is rejected, history limit never evicts paid IDs
+ok 49 - command ID collision is rejected, history limit never evicts paid IDs
+  ---
+  duration_ms: 3.656328
+  type: 'test'
+  ...
+# Subtest: public view and stream omit hidden hand IDs, deck order, choices, RNG and replay
+ok 50 - public view and stream omit hidden hand IDs, deck order, choices, RNG and replay
+  ---
+  duration_ms: 3.148461
+  type: 'test'
+  ...
+# Subtest: projection waits for commit, preserves instance UID, ignores duplicates and refuses gaps
+ok 51 - projection waits for commit, preserves instance UID, ignores duplicates and refuses gaps
+  ---
+  duration_ms: 6.9538
+  type: 'test'
+  ...
+# Subtest: queue serializes async handlers and deduplicates batches
+ok 52 - queue serializes async handlers and deduplicates batches
+  ---
+  duration_ms: 10.294558
+  type: 'test'
+  ...
+# Subtest: timeout or throwing VFX still applies committed model and unlocks
+ok 53 - timeout or throwing VFX still applies committed model and unlocks
+  ---
+  duration_ms: 24.620468
+  type: 'test'
+  ...
+# Subtest: reset aborts current scene and prevents stale commits after switching battle
+ok 54 - reset aborts current scene and prevents stale commits after switching battle
+  ---
+  duration_ms: 5.72438
+  type: 'test'
+  ...
+# Subtest: queue validates whole batch before scheduling and does not silently evict events
+ok 55 - queue validates whole batch before scheduling and does not silently evict events
+  ---
+  duration_ms: 4.79862
+  type: 'test'
+  ...
+# Subtest: throwing engine command is never executed again under the same or a fresh ID
+ok 56 - throwing engine command is never executed again under the same or a fresh ID
+  ---
+  duration_ms: 3.062958
+  type: 'test'
+  ...
+# Subtest: animation and fast-forward yield identical logic and recover from an accepted save
+ok 57 - animation and fast-forward yield identical logic and recover from an accepted save
+  ---
+  duration_ms: 12.416699
+  type: 'test'
+  ...
+# Subtest: same card definitions remain addressed as separate played and board instances
+ok 58 - same card definitions remain addressed as separate played and board instances
+  ---
+  duration_ms: 3.882989
+  type: 'test'
+  ...
+# Subtest: attack and endTurn declare causes before commit; repeated endTurn advances one hour
+ok 59 - attack and endTurn declare causes before commit; repeated endTurn advances one hour
+  ---
+  duration_ms: 26.555845
+  type: 'test'
+  ...
+# Subtest: queued bot decisions are identical to original policy and aggregate replay verifies
+ok 60 - queued bot decisions are identical to original policy and aggregate replay verifies
+  ---
+  duration_ms: 335.001657
+  type: 'test'
+  ...
+# Subtest: choice draft round-trips without payment, hidden reroll, or trusting stale options
+ok 61 - choice draft round-trips without payment, hidden reroll, or trusting stale options
+  ---
+  duration_ms: 11.930096
+  type: 'test'
+  ...
+# Subtest: incomplete mandatory choices refuse payment and can be cancelled/reopened
+ok 62 - incomplete mandatory choices refuse payment and can be cancelled/reopened
+  ---
+  duration_ms: 2.603298
+  type: 'test'
+  ...
+# Subtest: checkpoint inside a bot turn resumes from gameplay state without replaying prior payments
+ok 63 - checkpoint inside a bot turn resumes from gameplay state without replaying prior payments
+  ---
+  duration_ms: 4.432174
+  type: 'test'
+  ...
+# Subtest: 24 hour boundaries: one transition, expiry then next resources and draw
+ok 64 - 24 hour boundaries: one transition, expiry then next resources and draw
+  ---
+  duration_ms: 26.829259
+  type: 'test'
+  ...
+# Subtest: lethal end chain finishes its effects before outcome; no phantom hour
+ok 65 - lethal end chain finishes its effects before outcome; no phantom hour
+  ---
+  duration_ms: 4.25868
+  type: 'test'
+  ...
+# Subtest: overflow removes top deck entry, discards and never creates a death
+ok 66 - overflow removes top deck entry, discards and never creates a death
+  ---
+  duration_ms: 1.048486
+  type: 'test'
+  ...
+# Subtest: return primitive clears acquired state; full hand discards without deathrattle
+ok 67 - return primitive clears acquired state; full hand discards without deathrattle
+  ---
+  duration_ms: 1.37543
+  type: 'test'
+  ...
+# Subtest: fatigue increments and announces real damage through armor before HP
+ok 68 - fatigue increments and announces real damage through armor before HP
+  ---
+  duration_ms: 0.763817
+  type: 'test'
+  ...
+# Subtest: opponent hidden overflow has no card ID; duplicate command cannot end twice
+ok 69 - opponent hidden overflow has no card ID; duplicate command cannot end twice
+  ---
+  duration_ms: 5.875024
+  type: 'test'
+  ...
+# Subtest: timer counts selection time, pauses mandatory/background and claims expiry once
+ok 70 - timer counts selection time, pauses mandatory/background and claims expiry once
+  ---
+  duration_ms: 0.570782
+  type: 'test'
+  ...
+# Subtest: timer restore preserves remainder and does not charge time while closed
+ok 71 - timer restore preserves remainder and does not charge time while closed
+  ---
+  duration_ms: 0.334628
+  type: 'test'
+  ...
+# Subtest: new discard zone is backwards compatible with saves; card definitions unchanged
+ok 72 - new discard zone is backwards compatible with saves; card definitions unchanged
+  ---
+  duration_ms: 4.929297
+  type: 'test'
+  ...
+# Subtest: repeated ignition refreshes two next personal turns and burns without death
+ok 73 - repeated ignition refreshes two next personal turns and burns without death
+  ---
+  duration_ms: 1.95336
+  type: 'test'
+  ...
+# PASS woin_30.csv recognized with 30 valid cards
+# PASS chernoknizhnik_30.csv recognized with 30 valid cards
+# PASS nekromant_30.csv recognized with 30 valid cards
+# PASS TSV text pasted from Google Sheets
+# PASS XLSX numeric count with .0 is accepted
+# PASS Notes and totals below Necromancer deck are ignored
+# PASS Unknown IDs and incomplete decks block import
+# PASS Wrong hero class fails validation
+# IMPORT CHECKS: 8 passed
+# Subtest: tests/deck_import_v1_8.test.cjs
+ok 9 - tests/deck_import_v1_8.test.cjs
+  ---
+  duration_ms: 109.247292
+  type: 'test'
+  ...
+# PASS tutorial Ragvalod starts with the documented test armor 10
+# PASS warrior power is locked in campaign mode
+# PASS warrior sunny power calls only approved TKN-001 1/1
+# PASS power shared once-per-turn limit, resets next personal turn
+# PASS no summon with full seven-minion board
+# PASS night FAKEL requires a friendly Human and does not pay before choice
+# PASS FAKEL does not restore HP or change printed affinity and expires at end
+# PASS unapproved Warlock power stays unavailable
+# PASS Chernobog powers remain disabled without approved token metadata
+# PASS custom necromancer token metadata permits configured idol, local darkness to neighbors
+# PASS configured Chernobog undead has charge, expires this turn, no auto corpse
+# PASS death of own minion writes to only own graveyard, not automatic corpses
+# PASS explicit corpse spell and card cost appear in separate ledger
+# PASS grave selection removal is recorded as separate history item
+# PASS CHR-020 fills own board with Malye Zlydni and buffs other Spirits
+# PASS NEU-024 doubles opponent spell cost only on following turn
+# PASS CHR-030 deathrattle deals one damage to each creature
+# PASS NEU-043 inflicts double battlecry damage to Humans, including allied Humans
+# PASS NEU-044 heals for creatures killed directly by battlecry
+# HERO, GRAVEYARD, CREATURE TESTS: 19 passed
+# Subtest: tests/hero_graveyard.test.js
+ok 10 - tests/hero_graveyard.test.js
+  ---
+  duration_ms: 135.279266
+  type: 'test'
+  ...
+# PASS ordinary draw takes next card of a shuffled deck (no chooser)
+# PASS KNZ-008 chooses random human among eligible cards, not first always
+# PASS KNZ-008 with no eligible human consumes spell, not mana for fatigue
+# PASS KNZ-009 randomly draws eligible Spirit and discounts only at night
+# PASS KNZ-016 draws one random Weapon and one random Spell, not from UI
+# PASS KNZ-020 draws two physical Human card copies without replacement
+# PASS KNZ-020 takes only available eligible cards, never invents cards
+# PASS NEU-014 draws a random Peasant, then second with three Peasants on board
+# PASS full hand: first draw fits, second is burned, deck still loses both
+# PASS ordinary draw on empty deck still applies fatigue
+# PASS player selection remains for explicit 'Выберыце' and graveyard
+# PASS bot auto-draw needs no selection object
+# PASS total: 12/12
+# Subtest: tests/random_draw_v1_9_1.test.cjs
+ok 11 - tests/random_draw_v1_9_1.test.cjs
+  ---
+  duration_ms: 171.936426
+  type: 'test'
+  ...
+# PASS KNZ-008: random eligible draw requires no player selection
+# PASS KNZ-009: night spirit draw automatically reduces drawn card cost
+# PASS KNZ-016: weapon and spell drawn automatically from matching groups
+# PASS KNZ-020: two eligible human card instances drawn without replacement
+# PASS NEU-014: Congregation draws eligible peasants automatically
+# PASS KNZ-015: up to two unique own humans; no mutation on cancel
+# PASS CHR-014: deck cards summoned instead of put into hand, nighttime bonuses
+# PASS NCR-021: only own non-token <=4 mana; remove precisely chosen grave entry
+# PASS NCR-027: grave selection, consume entry, summon base stats
+# PASS CHR-021: grave choice different Spirits; cannot choose duplicates
+# PASS NEU-017: two distinct fallen Peasants, Spirit & Night, non-token only
+# PASS NCR-027: no living grave choices blocks before cost
+# PASS bot draws from deck automatically without choices
+# PASS local text modification disables effect even with source card ID
+# PASS total: 14/14
+# Subtest: tests/selection.test.js
+ok 12 - tests/selection.test.js
+  ---
+  duration_ms: 86.756561
+  type: 'test'
+  ...
+# Subtest: BF-02: both full sides reject the eighth before spending a card or mana
+ok 78 - BF-02: both full sides reject the eighth before spending a card or mana
+  ---
+  duration_ms: 20.861125
+  type: 'test'
+  ...
+# Subtest: BF-02: multi-token summon only fills remaining places to seven
+ok 79 - BF-02: multi-token summon only fills remaining places to seven
+  ---
+  duration_ms: 2.485585
+  type: 'test'
+  ...
+# Subtest: BF-05: actual weapon play, attacks and breaking update live weapon state
+ok 80 - BF-05: actual weapon play, attacks and breaking update live weapon state
+  ---
+  duration_ms: 7.288741
+  type: 'test'
+  ...
+# Subtest: BF-06/07: power phase switches without resetting use, clock advances once
+ok 81 - BF-06/07: power phase switches without resetting use, clock advances once
+  ---
+  duration_ms: 4.341377
+  type: 'test'
+  ...
+# Subtest: BF-08: coin gives the eleventh mana only temporarily
+ok 82 - BF-08: coin gives the eleventh mana only temporarily
+  ---
+  duration_ms: 1.380837
+  type: 'test'
+  ...
+# Subtest: BF-09/11: ten-card hand rejects an additional developer give; empty deck draws fatigue
+ok 83 - BF-09/11: ten-card hand rejects an additional developer give; empty deck draws fatigue
+  ---
+  duration_ms: 0.897355
+  type: 'test'
+  ...
+# Subtest: BF layout fixes are wired after battlefield v02 and after game re-render
+ok 84 - BF layout fixes are wired after battlefield v02 and after game re-render
+  ---
+  duration_ms: 2.88721
+  type: 'test'
+  ...
+# Subtest: BF-01/11 clip off-canvas hands and scale preview coordinates exactly once
+ok 85 - BF-01/11 clip off-canvas hands and scale preview coordinates exactly once
+  ---
+  duration_ms: 2.168217
+  type: 'test'
+  ...
+# Subtest: BF-10 settings retain all actions without inherited minimum-width overflow
+ok 86 - BF-10 settings retain all actions without inherited minimum-width overflow
+  ---
+  duration_ms: 0.560256
+  type: 'test'
+  ...
+# Subtest: BF-02 keeps 1176 width and max seven and removes old seating slots
+ok 87 - BF-02 keeps 1176 width and max seven and removes old seating slots
+  ---
+  duration_ms: 0.51351
+  type: 'test'
+  ...
+# Subtest: BF-03..BF-09 bind approved hero HUD, phase art, clock and deck backs
+ok 88 - BF-03..BF-09 bind approved hero HUD, phase art, clock and deck backs
+  ---
+  duration_ms: 0.892067
+  type: 'test'
+  ...
+# Subtest: BF-10 preserves 3D and game actions inside a collapsible developer menu
+ok 89 - BF-10 preserves 3D and game actions inside a collapsible developer menu
+  ---
+  duration_ms: 1.268776
+  type: 'test'
+  ...
+# Subtest: only canonical battlefield v02 can be selected in 2D
+ok 90 - only canonical battlefield v02 can be selected in 2D
+  ---
+  duration_ms: 1.805357
+  type: 'test'
+  ...
+# Subtest: canonical v02 holds max 7 creatures but 9-card measured width 1176
+ok 91 - canonical v02 holds max 7 creatures but 9-card measured width 1176
+  ---
+  duration_ms: 1.034649
+  type: 'test'
+  ...
+# Subtest: all real 24-hour phases drive 12-position art at 30-degree intervals
+ok 92 - all real 24-hour phases drive 12-position art at 30-degree intervals
+  ---
+  duration_ms: 0.329724
+  type: 'test'
+  ...
+# Subtest: one uniformly scaled 1920x1080 canvas, centered at 4 target resolutions
+ok 93 - one uniformly scaled 1920x1080 canvas, centered at 4 target resolutions
+  ---
+  duration_ms: 0.382077
+  type: 'test'
+  ...
+# Subtest: sole v02 battlefield CSS/JS loaded at the end of the real entrypoint
+ok 94 - sole v02 battlefield CSS/JS loaded at the end of the real entrypoint
+  ---
+  duration_ms: 1.361072
+  type: 'test'
+  ...
+# Subtest: game renders new 2D view after old HUD, no duplicate active hero powers
+ok 95 - game renders new 2D view after old HUD, no duplicate active hero powers
+  ---
+  duration_ms: 1.595594
+  type: 'test'
+  ...
+# Subtest: approved assets are packaged with integrity checks and rebuilt by Pages
+ok 96 - approved assets are packaged with integrity checks and rebuilt by Pages
+  ---
+  duration_ms: 0.785579
+  type: 'test'
+  ...
+# Subtest: curved heading preserves every character and follows arch
+ok 97 - curved heading preserves every character and follows arch
+  ---
+  duration_ms: 14.429368
+  type: 'test'
+  ...
+# Subtest: stroke/fill of title both performed for all glyphs
+ok 98 - stroke/fill of title both performed for all glyphs
+  ---
+  duration_ms: 0.292013
+  type: 'test'
+  ...
+# Subtest: side lines only removed for creatures, frame preserved
+ok 99 - side lines only removed for creatures, frame preserved
+  ---
+  duration_ms: 0.214353
+  type: 'test'
+  ...
+# Subtest: top decor rises only for creatures
+ok 100 - top decor rises only for creatures
+  ---
+  duration_ms: 0.13447
+  type: 'test'
+  ...
+# Subtest: editor integration keeps original editable layout and valid scripts
+ok 101 - editor integration keeps original editable layout and valid scripts
+  ---
+  duration_ms: 0.948299
+  type: 'test'
+  ...
+# Subtest: v05 manifest identity and geometry
+ok 102 - v05 manifest identity and geometry
+  ---
+  duration_ms: 2.153747
+  type: 'test'
+  ...
+# Subtest: v05 88 original assets match official SHA-256
+ok 103 - v05 88 original assets match official SHA-256
+  ---
+  duration_ms: 77.037081
+  type: 'test'
+  ...
+# Subtest: v05 control images are canonical and layer paths are valid
+ok 104 - v05 control images are canonical and layer paths are valid
+  ---
+  duration_ms: 40.892307
+  type: 'test'
+  ...
+# Subtest: manifest samples correspond to control types without data overwrites
+ok 105 - manifest samples correspond to control types without data overwrites
+  ---
+  duration_ms: 0.543404
+  type: 'test'
+  ...
+# Subtest: v05 fonts and archives are not delivered as assets
+ok 106 - v05 fonts and archives are not delivered as assets
+  ---
+  duration_ms: 3.00522
+  type: 'test'
+  ...
+# Subtest: single v05 editor entry; legacy editor hidden; studio retained only for QA
+ok 107 - single v05 editor entry; legacy editor hidden; studio retained only for QA
+  ---
+  duration_ms: 2.447266
+  type: 'test'
+  ...
+# Subtest: all 169 cards have a normalized v05 representation
+ok 108 - all 169 cards have a normalized v05 representation
+  ---
+  duration_ms: 15.960934
+  type: 'test'
+  ...
+# Subtest: battle layout uses game state numbers instead of changing combat data
+ok 109 - battle layout uses game state numbers instead of changing combat data
+  ---
+  duration_ms: 0.327247
+  type: 'test'
+  ...
+# Subtest: one v05 manifest for editor, 2D, initial replacement and 3D
+ok 110 - one v05 manifest for editor, 2D, initial replacement and 3D
+  ---
+  duration_ms: 3.642965
+  type: 'test'
+  ...
+# Subtest: font-aware digit alignment and contrast present in editor and battle
+ok 111 - font-aware digit alignment and contrast present in editor and battle
+  ---
+  duration_ms: 0.925635
+  type: 'test'
+  ...
+# Subtest: 3D can show a readable face while texture is loading
+ok 112 - 3D can show a readable face while texture is loading
+  ---
+  duration_ms: 0.833151
+  type: 'test'
+  ...
+# Subtest: mulligan/rendered face fallbacks do not lock pending flags
+ok 113 - mulligan/rendered face fallbacks do not lock pending flags
+  ---
+  duration_ms: 0.695667
+  type: 'test'
+  ...
+# Subtest: v05.11 installs the same Hero HUD in 2D and 3D without a second editor
+ok 114 - v05.11 installs the same Hero HUD in 2D and 3D without a second editor
+  ---
+  duration_ms: 2.641928
+  type: 'test'
+  ...
+# Subtest: HUD reads engine state only; original input and targeting remain unchanged
+ok 115 - HUD reads engine state only; original input and targeting remain unchanged
+  ---
+  duration_ms: 1.288783
+  type: 'test'
+  ...
+# Subtest: equipment illustration respects existing saved custom art, never changes weapon stats
+ok 116 - equipment illustration respects existing saved custom art, never changes weapon stats
+  ---
+  duration_ms: 0.482253
+  type: 'test'
+  ...
+# Subtest: all protected assets and library coverage survive the HUD-only release
+ok 117 - all protected assets and library coverage survive the HUD-only release
+  ---
+  duration_ms: 3.161102
+  type: 'test'
+  ...
+# Subtest: stage B is actually loaded by the real battle entrypoint after legacy HUD
+ok 118 - stage B is actually loaded by the real battle entrypoint after legacy HUD
+  ---
+  duration_ms: 1.26172
+  type: 'test'
+  ...
+# Subtest: live game objects and hooks remain on the battle page, exactly once
+ok 119 - live game objects and hooks remain on the battle page, exactly once
+  ---
+  duration_ms: 0.808723
+  type: 'test'
+  ...
+# Subtest: new 2D field is isolated from the independent 3D view
+ok 120 - new 2D field is isolated from the independent 3D view
+  ---
+  duration_ms: 0.285708
+  type: 'test'
+  ...
+# Subtest: fan positioning uses live DOM elements, never game state or HTML replacements
+ok 121 - fan positioning uses live DOM elements, never game state or HTML replacements
+  ---
+  duration_ms: 1.11695
+  type: 'test'
+  ...
+# Subtest: all generated CSS and JS are isolated new assets, without modifying protected data
+ok 122 - all generated CSS and JS are isolated new assets, without modifying protected data
+  ---
+  duration_ms: 0.268379
+  type: 'test'
+  ...
+# Subtest: new 2D arena is always active and uses the same real cards
+ok 123 - new 2D arena is always active and uses the same real cards
+  ---
+  duration_ms: 4.947291
+  type: 'test'
+  ...
+# Subtest: hand glow only when engine authorizes playing
+ok 124 - hand glow only when engine authorizes playing
+  ---
+  duration_ms: 1.870828
+  type: 'test'
+  ...
+# Subtest: targeted and choice cards derive readiness from engine status
+ok 125 - targeted and choice cards derive readiness from engine status
+  ---
+  duration_ms: 1.521966
+  type: 'test'
+  ...
+# Subtest: hover preview is clamped to main even for far-left and far-right cards
+ok 126 - hover preview is clamped to main even for far-left and far-right cards
+  ---
+  duration_ms: 0.524068
+  type: 'test'
+  ...
+# Subtest: 2D hand opacity, hover preview, green, drop and reduced motion are isolated
+ok 127 - 2D hand opacity, hover preview, green, drop and reduced motion are isolated
+  ---
+  duration_ms: 0.711027
+  type: 'test'
+  ...
+# Subtest: deckgame uses engine validation for availability and drop rather than new rules
+ok 128 - deckgame uses engine validation for availability and drop rather than new rules
+  ---
+  duration_ms: 2.025932
+  type: 'test'
+  ...
+# Subtest: load order: hand module after renderer and before deckgame, 3D remains isolated
+ok 129 - load order: hand module after renderer and before deckgame, 3D remains isolated
+  ---
+  duration_ms: 1.36555
+  type: 'test'
+  ...
+# Subtest: focal crop always covers the picture window
+ok 130 - focal crop always covers the picture window
+  ---
+  duration_ms: 1.147623
+  type: 'test'
+  ...
+# Subtest: invalid and oversized crops are clamped
+ok 131 - invalid and oversized crops are clamped
+  ---
+  duration_ms: 0.214078
+  type: 'test'
+  ...
+# Subtest: portrait renders real art without baked card text or stats
+ok 132 - portrait renders real art without baked card text or stats
+  ---
+  duration_ms: 0.566221
+  type: 'test'
+  ...
+# Subtest: only 2D battlefield uses new face; existing 3D and full cards retained
+ok 133 - only 2D battlefield uses new face; existing 3D and full cards retained
+  ---
+  duration_ms: 0.498961
+  type: 'test'
+  ...
+# Subtest: live battle values and taunt affinity come from engine model
+ok 134 - live battle values and taunt affinity come from engine model
+  ---
+  duration_ms: 1.119968
+  type: 'test'
+  ...
+# Subtest: dependencies loaded before board and 3D untouched
+ok 135 - dependencies loaded before board and 3D untouched
+  ---
+  duration_ms: 0.656963
+  type: 'test'
+  ...
+# Subtest: engine and UI have exactly the same implemented deathrattle IDs
+ok 136 - engine and UI have exactly the same implemented deathrattle IDs
+  ---
+  duration_ms: 3.297442
+  type: 'test'
+  ...
+# Subtest: known summoned tokens are resolved from engine TOKEN_DATA without adding them to game.cards
+ok 137 - known summoned tokens are resolved from engine TOKEN_DATA without adding them to game.cards
+  ---
+  duration_ms: 3.822369
+  type: 'test'
+  ...
+# Subtest: all seven library token IDs and unique hero-power summons get visual source without invented effects
+ok 138 - all seven library token IDs and unique hero-power summons get visual source without invented effects
+  ---
+  duration_ms: 0.263197
+  type: 'test'
+  ...
+# Subtest: visible badges use only real combat flags and known implemented deathrattles
+ok 139 - visible badges use only real combat flags and known implemented deathrattles
+  ---
+  duration_ms: 0.264173
+  type: 'test'
+  ...
+# Subtest: legacy, 3D and hand renderers preserved; 2D token sources included
+ok 140 - legacy, 3D and hand renderers preserved; 2D token sources included
+  ---
+  duration_ms: 1.080154
+  type: 'test'
+  ...
+# Subtest: legacy template interface disconnected without changing editor or manifest
+ok 141 - legacy template interface disconnected without changing editor or manifest
+  ---
+  duration_ms: 2.835844
+  type: 'test'
+  ...
+# Subtest: editor has large sticky card and compact on-demand help
+ok 142 - editor has large sticky card and compact on-demand help
+  ---
+  duration_ms: 0.665463
+  type: 'test'
+  ...
+# Subtest: single masked art paint, with curved name and existing gold trim
+ok 143 - single masked art paint, with curved name and existing gold trim
+  ---
+  duration_ms: 0.366886
+  type: 'test'
+  ...
+# Subtest: hover preview uses card alone without duplicate explanatory title
+ok 144 - hover preview uses card alone without duplicate explanatory title
+  ---
+  duration_ms: 0.42454
+  type: 'test'
+  ...
+# Subtest: mulligan preserves card image and selection, no extra bottom text
+ok 145 - mulligan preserves card image and selection, no extra bottom text
+  ---
+  duration_ms: 0.850558
+  type: 'test'
+  ...
+# Subtest: descriptions enlarge adaptively with preserved fit logic
+ok 146 - descriptions enlarge adaptively with preserved fit logic
+  ---
+  duration_ms: 0.264578
+  type: 'test'
+  ...
+# Subtest: 3D action remains visible and old 2D layout control is not created
+ok 147 - 3D action remains visible and old 2D layout control is not created
+  ---
+  duration_ms: 1.933986
+  type: 'test'
+  ...
+# Subtest: 2D refinements do not target WebGL 3D
+ok 148 - 2D refinements do not target WebGL 3D
+  ---
+  duration_ms: 0.419538
+  type: 'test'
+  ...
+# Subtest: opening hand and coin share one centered row without a panel frame
+ok 149 - opening hand and coin share one centered row without a panel frame
+  ---
+  duration_ms: 0.202949
+  type: 'test'
+  ...
+# Subtest: game card uses same curved heading as editor and a common number baseline
+ok 150 - game card uses same curved heading as editor and a common number baseline
+  ---
+  duration_ms: 0.71167
+  type: 'test'
+  ...
+# Subtest: hero mana counter uses live game data and the 2D layer can move it
+ok 151 - hero mana counter uses live game data and the 2D layer can move it
+  ---
+  duration_ms: 1.995571
+  type: 'test'
+  ...
+# Subtest: stepwise bot and synchronous bot produce identical deterministic state
+ok 152 - stepwise bot and synchronous bot produce identical deterministic state
+  ---
+  duration_ms: 14.526106
+  type: 'test'
+  ...
+# Subtest: bot waits for the presentation queue before the next strategic frame
+ok 153 - bot waits for the presentation queue before the next strategic frame
+  ---
+  duration_ms: 0.656987
+  type: 'test'
+  ...
+# Subtest: single imported art is the original v01 PNG matching the verified Drive source
+ok 154 - single imported art is the original v01 PNG matching the verified Drive source
+  ---
+  duration_ms: 18.274001
+  type: 'test'
+  ...
+# Subtest: coin keeps its internal runtime ID distinct from the library visual ID
+ok 155 - coin keeps its internal runtime ID distinct from the library visual ID
+  ---
+  duration_ms: 0.780734
+  type: 'test'
+  ...
+# Subtest: one local art mapping is shared between game and editor
+ok 156 - one local art mapping is shared between game and editor
+  ---
+  duration_ms: 2.637344
+  type: 'test'
+  ...
+# Subtest: coin renders through the approved v05 spell template in mulligan, hand and inspect
+ok 157 - coin renders through the approved v05 spell template in mulligan, hand and inspect
+  ---
+  duration_ms: 1.127248
+  type: 'test'
+  ...
+# Subtest: existing coin game mechanic is untouched
+ok 158 - existing coin game mechanic is untouched
+  ---
+  duration_ms: 0.832655
+  type: 'test'
+  ...
+# Subtest: v05 manifest geometry and 3 official template types
+ok 159 - v05 manifest geometry and 3 official template types
+  ---
+  duration_ms: 2.03552
+  type: 'test'
+  ...
+# Subtest: each official control card validates with its original art
+ok 160 - each official control card validates with its original art
+  ---
+  duration_ms: 0.567087
+  type: 'test'
+  ...
+# Subtest: draw plan includes base layers in order and art exactly once after declared backing
+ok 161 - draw plan includes base layers in order and art exactly once after declared backing
+  ---
+  duration_ms: 1.133482
+  type: 'test'
+  ...
+# Subtest: only approved color layers have tint flag, not gold, art, shadow or icons
+ok 162 - only approved color layers have tint flag, not gold, art, shadow or icons
+  ---
+  duration_ms: 0.989454
+  type: 'test'
+  ...
+# Subtest: neutral creature has no class badge
+ok 163 - neutral creature has no class badge
+  ---
+  duration_ms: 0.339216
+  type: 'test'
+  ...
+# Subtest: 0 is numeric and visible, null is hidden
+ok 164 - 0 is numeric and visible, null is hidden
+  ---
+  duration_ms: 1.78388
+  type: 'test'
+  ...
+# Subtest: missing illustration blocks final export without deleting card data
+ok 165 - missing illustration blocks final export without deleting card data
+  ---
+  duration_ms: 0.29545
+  type: 'test'
+  ...
+# Subtest: unknown race/time/rarity/class are not guessed
+ok 166 - unknown race/time/rarity/class are not guessed
+  ---
+  duration_ms: 0.657218
+  type: 'test'
+  ...
+# Subtest: weapon/spell nonempty subtype blocks export until slot approved
+ok 167 - weapon/spell nonempty subtype blocks export until slot approved
+  ---
+  duration_ms: 0.281347
+  type: 'test'
+  ...
+# Subtest: unknown creature subtype icon must not map randomly
+ok 168 - unknown creature subtype icon must not map randomly
+  ---
+  duration_ms: 0.277852
+  type: 'test'
+  ...
+# Subtest: data validation catches fractional/negative/unsafe numbers
+ok 169 - data validation catches fractional/negative/unsafe numbers
+  ---
+  duration_ms: 0.473055
+  type: 'test'
+  ...
+# Subtest: crop cover maintains aspect and viewport at zoom=1
+ok 170 - crop cover maintains aspect and viewport at zoom=1
+  ---
+  duration_ms: 0.356729
+  type: 'test'
+  ...
+# Subtest: zoom and crop are bounded and reject underscale
+ok 171 - zoom and crop are bounded and reject underscale
+  ---
+  duration_ms: 0.584469
+  type: 'test'
+  ...
+# Subtest: all v05 files in draw plans exist and alpha masks are generated
+ok 172 - all v05 files in draw plans exist and alpha masks are generated
+  ---
+  duration_ms: 2.017134
+  type: 'test'
+  ...
+# Subtest: source manifest SHA256 is unchanged from verified stage 1
+ok 173 - source manifest SHA256 is unchanged from verified stage 1
+  ---
+  duration_ms: 1.299416
+  type: 'test'
+  ...
+# Subtest: no bulk application is exposed in the dynamic standalone script
+ok 174 - no bulk application is exposed in the dynamic standalone script
+  ---
+  duration_ms: 0.838629
+  type: 'test'
+  ...
+# Subtest: ready import retains all 100 existing mappings and adds exactly 51 unique IDs
+ok 175 - ready import retains all 100 existing mappings and adds exactly 51 unique IDs
+  ---
+  duration_ms: 1.602893
+  type: 'test'
+  ...
+# Subtest: all 51 original PNGs and runtime WebPs match the recorded SHA256
+ok 176 - all 51 original PNGs and runtime WebPs match the recorded SHA256
+  ---
+  duration_ms: 507.722065
+  type: 'test'
+  ...
+# Subtest: test-art approval is separate from crop review and game admission
+ok 177 - test-art approval is separate from crop review and game admission
+  ---
+  duration_ms: 0.564063
+  type: 'test'
+  ...
+# Subtest: hero summons reuse token illustration aliases without adding engine cards
+ok 178 - hero summons reuse token illustration aliases without adding engine cards
+  ---
+  duration_ms: 1.852257
+  type: 'test'
+  ...
+# Subtest: game and editor load the ready registry after the existing catalog
+ok 179 - game and editor load the ready registry after the existing catalog
+  ---
+  duration_ms: 0.723107
+  type: 'test'
+  ...
+# Subtest: saved crop remains first priority over imported crop in both renderers
+ok 180 - saved crop remains first priority over imported crop in both renderers
+  ---
+  duration_ms: 0.422009
+  type: 'test'
+  ...
+# Subtest: read-only baseline exactly 162 cards and 7 disjoint tokens
+ok 181 - read-only baseline exactly 162 cards and 7 disjoint tokens
+  ---
+  duration_ms: 1.505129
+  type: 'test'
+  ...
+# Subtest: unchanged workbook has no field-level diffs
+ok 182 - unchanged workbook has no field-level diffs
+  ---
+  duration_ms: 11.431462
+  type: 'test'
+  ...
+# Subtest: changing numeric attack and notes shows two exact old/new fields, not artwork
+ok 183 - changing numeric attack and notes shows two exact old/new fields, not artwork
+  ---
+  duration_ms: 20.526391
+  type: 'test'
+  ...
+# Subtest: decimal 2.0, 2,0 accepted as integers; 2,5 and negatives blocked
+ok 184 - decimal 2.0, 2,0 accepted as integers; 2,5 and negatives blocked
+  ---
+  duration_ms: 74.239935
+  type: 'test'
+  ...
+# Subtest: duplicate ID, unknown ID and missing ID all block commit
+ok 185 - duplicate ID, unknown ID and missing ID all block commit
+  ---
+  duration_ms: 14.68185
+  type: 'test'
+  ...
+# Subtest: partial library and missing 21-column schema cannot be silently applied
+ok 186 - partial library and missing 21-column schema cannot be silently applied
+  ---
+  duration_ms: 6.478788
+  type: 'test'
+  ...
+# Subtest: unknown classes, rarities and resources are errors without default substitutions
+ok 187 - unknown classes, rarities and resources are errors without default substitutions
+  ---
+  duration_ms: 50.132677
+  type: 'test'
+  ...
+# Subtest: special cases retained: corpus cost, Day+Night, unknown species, token rarity
+ok 188 - special cases retained: corpus cost, Day+Night, unknown species, token rarity
+  ---
+  duration_ms: 0.802558
+  type: 'test'
+  ...
+# Subtest: tokens never modify cards and vice versa
+ok 189 - tokens never modify cards and vice versa
+  ---
+  duration_ms: 3.789916
+  type: 'test'
+  ...
+# Subtest: supported class palette, rarity and subtype are derived from explicit dictionaries
+ok 190 - supported class palette, rarity and subtype are derived from explicit dictionaries
+  ---
+  duration_ms: 0.335457
+  type: 'test'
+  ...
+# Subtest: stored snapshot has stable IDs; injected replacement is rejected
+ok 191 - stored snapshot has stable IDs; injected replacement is rejected
+  ---
+  duration_ms: 3.398097
+  type: 'test'
+  ...
+# Subtest: file routing accepts correct XLSX tabs, does not import class/deck tabs
+ok 192 - file routing accepts correct XLSX tabs, does not import class/deck tabs
+  ---
+  duration_ms: 0.533533
+  type: 'test'
+  ...
+# Subtest: stage 3 does not modify source manifest, game catalogue or sample controls
+ok 193 - stage 3 does not modify source manifest, game catalogue or sample controls
+  ---
+  duration_ms: 1.012151
+  type: 'test'
+  ...
+# Subtest: v05.7 uses one visible editor and retains game/deck navigation
+ok 194 - v05.7 uses one visible editor and retains game/deck navigation
+  ---
+  duration_ms: 3.299883
+  type: 'test'
+  ...
+# Subtest: all 169 entries have honest test-art coverage: 99 available, 70 missing
+ok 195 - all 169 entries have honest test-art coverage: 99 available, 70 missing
+  ---
+  duration_ms: 0.912728
+  type: 'test'
+  ...
+# Subtest: every test art exists, matches checksum, preserves test state and canonical ID
+ok 196 - every test art exists, matches checksum, preserves test state and canonical ID
+  ---
+  duration_ms: 707.198491
+  type: 'test'
+  ...
+# Subtest: three control artworks retain original v05 template sources
+ok 197 - three control artworks retain original v05 template sources
+  ---
+  duration_ms: 0.3524
+  type: 'test'
+  ...
+# Subtest: protected manifest and battle/canonical files have no changes in web update
+ok 198 - protected manifest and battle/canonical files have no changes in web update
+  ---
+  duration_ms: 0.725524
+  type: 'test'
+  ...
+# Subtest: collection shows exactly 92 test arts, 70 missing canonical arts, no autoapproval
+ok 199 - collection shows exactly 92 test arts, 70 missing canonical arts, no autoapproval
+  ---
+  duration_ms: 4.262288
+  type: 'test'
+  ...
+# Subtest: editor exposes built-in picture, reset and no-art state
+ok 200 - editor exposes built-in picture, reset and no-art state
+  ---
+  duration_ms: 1.079042
+  type: 'test'
+  ...
+# Subtest: reset cancels the custom art override and explicitly commits a new profile
+ok 201 - reset cancels the custom art override and explicitly commits a new profile
+  ---
+  duration_ms: 0.279786
+  type: 'test'
+  ...
+# Subtest: picker filters by checked built-in ID and counts coverage
+ok 202 - picker filters by checked built-in ID and counts coverage
+  ---
+  duration_ms: 0.252584
+  type: 'test'
+  ...
+# Subtest: all built-in art URLs point only to shipped files, never remote data
+ok 203 - all built-in art URLs point only to shipped files, never remote data
+  ---
+  duration_ms: 2.468045
+  type: 'test'
+  ...
+# Subtest: embedded status does not claim art approval or change canonical rules
+ok 204 - embedded status does not claim art approval or change canonical rules
+  ---
+  duration_ms: 0.79225
+  type: 'test'
+  ...
+# Subtest: v05.9 contains exactly 99 known-ID art mappings, 70 honest gaps
+ok 205 - v05.9 contains exactly 99 known-ID art mappings, 70 honest gaps
+  ---
+  duration_ms: 1.858479
+  type: 'test'
+  ...
+# Subtest: all seven token image files and reference versions are bundled
+ok 206 - all seven token image files and reference versions are bundled
+  ---
+  duration_ms: 86.163893
+  type: 'test'
+  ...
+# Subtest: corrected v02 files are preferred; previous v01/test variants retained intact
+ok 207 - corrected v02 files are preferred; previous v01/test variants retained intact
+  ---
+  duration_ms: 96.717594
+  type: 'test'
+  ...
+# Subtest: all remaining files match their manifest hashes and remain test assets
+ok 208 - all remaining files match their manifest hashes and remain test assets
+  ---
+  duration_ms: 441.316829
+  type: 'test'
+  ...
+# Subtest: only one user-visible editor and no remote art sources in client
+ok 209 - only one user-visible editor and no remote art sources in client
+  ---
+  duration_ms: 0.770564
+  type: 'test'
+  ...
+# Subtest: reference is left of live canvas inside the editor stage
+ok 210 - reference is left of live canvas inside the editor stage
+  ---
+  duration_ms: 2.829684
+  type: 'test'
+  ...
+# Subtest: stage has side-by-side tools and safe responsive layouts
+ok 211 - stage has side-by-side tools and safe responsive layouts
+  ---
+  duration_ms: 0.433154
+  type: 'test'
+  ...
+# Subtest: undo redo and keyboard shortcuts are preserved
+ok 212 - undo redo and keyboard shortcuts are preserved
+  ---
+  duration_ms: 1.205974
+  type: 'test'
+  ...
+# Subtest: saving is local and still supports portable JSON
+ok 213 - saving is local and still supports portable JSON
+  ---
+  duration_ms: 0.397889
+  type: 'test'
+  ...
+# PASS source decks are exactly 30 and individually valid
+# PASS versioned JSON snapshot preserves full game, graves, events and random state
+# PASS stateful RNG continues identically after restore
+# PASS malformed or incompatible game saves are rejected
+# PASS developer commands are disabled until explicitly enabled
+# PASS test summon and death respects personal graveyard, no free corpses
+# PASS resource changes in developer mode are recorded in corpse ledger
+# PASS KNZ-010 deathrattle draws one approved Human from shuffled deck
+# PASS NCR-008 battlecry draws random ritual only
+# PASS CHR-006 weapon battlecry damages hero for two and draws a Spirit
+# PASS KNZ-022 draws maximum printed cost card from remaining deck
+# PASS test tools never modify the canonical catalog
+# PASS event filter supports owner and type, and does not reveal bot draws
+# PASS bot consumes only legal actions and never exceeds the board or hand limits
+# TOTAL v2.0: 14 passed, 0 failed
+# Subtest: tests/v2_0.integration.test.cjs
+ok 36 - tests/v2_0.integration.test.cjs
+  ---
+  duration_ms: 184.806529
+  type: 'test'
+  ...
+# PASS canonical catalog has no structural errors; 162 cards indexed
+# PASS all three source decks pass strict 30-card validation
+# PASS audit detects duplicate ID, bad health, missing key without modifying originals
+# PASS KNZ-007 draws random weapon and Druzhyna, never an unrelated card
+# PASS CHR-031 infects a selected enemy; takes one damage at its next start
+# PASS CHR-031 requires target before charging mana or changing hand
+# PASS NEU-040 unique minimum gets +1/+1 at end of own turn
+# PASS NEU-040 ties do not invent selection ordering
+# PASS replay of real bot-vs-bot actions recovers exactly identical state
+# PASS replay detects one altered action
+# PASS replay can inspect intermediate game without changing live game
+# PASS v2.0-style imported battle can start an honest partial replay
+# PASS both owners can be controlled legally by AI
+# PASS six deterministic full matches cover all class pairings
+# PASS selfplay honors upper turn-limit without inventing a winner
+# PASS batch output is a regular UTF-8 CSV with six records
+# TOTAL 2.1A: 16 passed, 0 failed
+# Subtest: tests/v2_1A.integration.test.cjs
+ok 37 - tests/v2_1A.integration.test.cjs
+  ---
+  duration_ms: 1022.404968
+  type: 'test'
+  ...
+# PASS own board accepts a playable creature
+# PASS enemy board rejects a creature before any payment
+# PASS putting a normal creature over an existing own minion still plays to board
+# PASS targeted spell onto board opens selection rather than auto-targeting
+# PASS targeted spell onto valid enemy hero is allowed
+# PASS invalid target for spell cannot consume mana or card
+# PASS own ready minion can attack enemy hero through drop
+# PASS unready minion cannot attack through drag
+# PASS enemy taunt blocks drag attack on enemy hero
+# PASS invalid turn and missing uid reject drag
+# PASS two sources with same card ID remain distinct via uid
+# v2.1B drag rules: 11 passed
+# Subtest: tests/v2_1B.drag.test.cjs
+ok 38 - tests/v2_1B.drag.test.cjs
+  ---
+  duration_ms: 103.629399
+  type: 'test'
+  ...
+# PASS multiline quoted CSV roundtrip
+# PASS TSV paste
+# PASS spreadsheet formula escaping
+# PASS card CSV column headers and revision
+# PASS existing local attack update planned
+# PASS revision conflict blocked
+# PASS canonical card blocked
+# PASS new card staged
+# PASS undersize art warning
+# PASS large art accepted
+# PASS new deck import
+# PASS deck version mismatch
+# PASS offline ZIP created
+# RESULT 13/13 workflow assertions
+# Subtest: tests/v2_1G.workflow.test.cjs
+ok 39 - tests/v2_1G.workflow.test.cjs
+  ---
+  duration_ms: 97.817445
+  type: 'test'
+  ...
+# PASS matrix identity
+# PASS model translation
+# PASS matrix inverse
+# PASS singular inverse
+# PASS project-ray round trip
+# PASS point inside polygon
+# PASS seven board pieces centred
+# PASS ten hand cards stay inside tabletop
+# PASS opponent hidden hand has no card IDs
+# PASS clock dawn resets
+# PASS clock 13:00 counts seven daylight hours
+# PASS clock dusk resets
+# PASS clock after midnight
+# PASS clock exactly twelve markers limit
+# PASS layout clamps invalid size
+# 3D math/layout: 15/15 passed
+# Subtest: tests/v2_1H.3d_math.test.cjs
+ok 40 - tests/v2_1H.3d_math.test.cjs
+  ---
+  duration_ms: 76.960251
+  type: 'test'
+  ...
+# Subtest: 45 CHR artworks: unique, all test, complete types and correct IDs
+ok 219 - 45 CHR artworks: unique, all test, complete types and correct IDs
+  ---
+  duration_ms: 2.186992
+  type: 'test'
+  ...
+# Subtest: All assets decode to valid embedded WebP bytes with individual master SHA-256
+ok 220 - All assets decode to valid embedded WebP bytes with individual master SHA-256
+  ---
+  duration_ms: 74.901654
+  type: 'test'
+  ...
+# Subtest: Variants only use selected v02 for CHR-015 and CHR-023
+ok 221 - Variants only use selected v02 for CHR-015 and CHR-023
+  ---
+  duration_ms: 0.336679
+  type: 'test'
+  ...
+# Subtest: Newly created arts are tracked as generated test assets, not approved
+ok 222 - Newly created arts are tracked as generated test assets, not approved
+  ---
+  duration_ms: 0.266824
+  type: 'test'
+  ...
+# Subtest: 3D uses shared 2D clock art assets for its clock face and twelve markers
+ok 223 - 3D uses shared 2D clock art assets for its clock face and twelve markers
+  ---
+  duration_ms: 4.225518
+  type: 'test'
+  ...
+# Subtest: 3D uses board-anchored hero/deck information and compact turn button
+ok 224 - 3D uses board-anchored hero/deck information and compact turn button
+  ---
+  duration_ms: 1.237634
+  type: 'test'
+  ...
+# Subtest: inspector only holds complete rendered card, not enlarged standalone illustration
+ok 225 - inspector only holds complete rendered card, not enlarged standalone illustration
+  ---
+  duration_ms: 1.700024
+  type: 'test'
+  ...
+# Subtest: mulligan renders actual card images and keeps coin unreplaceable
+ok 226 - mulligan renders actual card images and keeps coin unreplaceable
+  ---
+  duration_ms: 1.850637
+  type: 'test'
+  ...
+# Subtest: new typography and title banner match description panel width
+ok 227 - new typography and title banner match description panel width
+  ---
+  duration_ms: 1.381083
+  type: 'test'
+  ...
+# Subtest: selected warlock concept is third and default art is test status
+ok 228 - selected warlock concept is third and default art is test status
+  ---
+  duration_ms: 1.263626
+  type: 'test'
+  ...
+# Subtest: hero art paths are safe local WebP assets, with no ZIP in art directory
+ok 229 - hero art paths are safe local WebP assets, with no ZIP in art directory
+  ---
+  duration_ms: 1.425554
+  type: 'test'
+  ...
+# Subtest: both 2D and 3D load shared hero art manifest and distinct ability image
+ok 230 - both 2D and 3D load shared hero art manifest and distinct ability image
+  ---
+  duration_ms: 1.651894
+  type: 'test'
+  ...
+# Subtest: 2D/3D counters have only a number visibly, descriptive text stays accessible
+ok 231 - 2D/3D counters have only a number visibly, descriptive text stays accessible
+  ---
+  duration_ms: 1.354313
+  type: 'test'
+  ...
+# Subtest: graveyard click and corpse update are still wired into gameplay
+ok 232 - graveyard click and corpse update are still wired into gameplay
+  ---
+  duration_ms: 1.398703
+  type: 'test'
+  ...
+# Subtest: the clock remains the same original clock system
+ok 233 - the clock remains the same original clock system
+  ---
+  duration_ms: 1.910458
+  type: 'test'
+  ...
+# Subtest: 3D camera moves closer and anchors aim above the previous viewpoint
+ok 234 - 3D camera moves closer and anchors aim above the previous viewpoint
+  ---
+  duration_ms: 1.09465
+  type: 'test'
+  ...
+# Subtest: 3D controls follow projected board midpoint, not viewport midpoint
+ok 235 - 3D controls follow projected board midpoint, not viewport midpoint
+  ---
+  duration_ms: 0.357307
+  type: 'test'
+  ...
+# Subtest: 2D clock targets only its own widget, not the earlier 3D clock in DOM
+ok 236 - 2D clock targets only its own widget, not the earlier 3D clock in DOM
+  ---
+  duration_ms: 0.250116
+  type: 'test'
+  ...
+# Subtest: 2D clock has 12 phase-specific markers that light only when elapsed
+ok 237 - 2D clock has 12 phase-specific markers that light only when elapsed
+  ---
+  duration_ms: 0.175318
+  type: 'test'
+  ...
+# Subtest: 2D/3D clock shares dawn/dusk time boundary
+ok 238 - 2D/3D clock shares dawn/dusk time boundary
+  ---
+  duration_ms: 1.872725
+  type: 'test'
+  ...
+# Subtest: new 2D CSS and offline GitHub Pages assets are linked
+ok 239 - new 2D CSS and offline GitHub Pages assets are linked
+  ---
+  duration_ms: 0.649393
+  type: 'test'
+  ...
+# Subtest: full canonical library is preserved, 162 unique IDs
+ok 240 - full canonical library is preserved, 162 unique IDs
+  ---
+  duration_ms: 1.165186
+  type: 'test'
+  ...
+# Subtest: 45 embedded CHR artworks are test versions; missing art distinct
+ok 241 - 45 embedded CHR artworks are test versions; missing art distinct
+  ---
+  duration_ms: 1.181997
+  type: 'test'
+  ...
+# Subtest: class, type, art, frame, query and scope filters are composable
+ok 242 - class, type, art, frame, query and scope filters are composable
+  ---
+  duration_ms: 1.555012
+  type: 'test'
+  ...
+# Subtest: saved custom art is prioritised; approval and custom text are respected
+ok 243 - saved custom art is prioritised; approval and custom text are respected
+  ---
+  duration_ms: 0.997129
+  type: 'test'
+  ...
+# Subtest: thumbnail or default frame alone must NOT be reported as custom art
+ok 244 - thumbnail or default frame alone must NOT be reported as custom art
+  ---
+  duration_ms: 0.988179
+  type: 'test'
+  ...
+# Subtest: user-created local cards display separately without changing canonical count
+ok 245 - user-created local cards display separately without changing canonical count
+  ---
+  duration_ms: 0.873267
+  type: 'test'
+  ...
+# Subtest: duplicate canonical and saved IDs never duplicate displayed records
+ok 246 - duplicate canonical and saved IDs never duplicate displayed records
+  ---
+  duration_ms: 0.789749
+  type: 'test'
+  ...
+# Subtest: all collection functions are deterministic and do not mutate source
+ok 247 - all collection functions are deterministic and do not mutate source
+  ---
+  duration_ms: 1.139278
+  type: 'test'
+  ...
+# Subtest: Exactly three base types and four canonical class options (12 combinations)
+ok 248 - Exactly three base types and four canonical class options (12 combinations)
+  ---
+  duration_ms: 4.20726
+  type: 'test'
+  ...
+# Subtest: Art windows remain locked to type: oval, rectangle, circle
+ok 249 - Art windows remain locked to type: oval, rectangle, circle
+  ---
+  duration_ms: 0.178213
+  type: 'test'
+  ...
+# Subtest: One class override cannot change another class or another card type
+ok 250 - One class override cannot change another class or another card type
+  ---
+  duration_ms: 0.537919
+  type: 'test'
+  ...
+# Subtest: Base changes propagate only where the class inherits the field
+ok 251 - Base changes propagate only where the class inherits the field
+  ---
+  duration_ms: 0.42545
+  type: 'test'
+  ...
+# Subtest: Individual field can return to base without losing other overrides
+ok 252 - Individual field can return to base without losing other overrides
+  ---
+  duration_ms: 0.351719
+  type: 'test'
+  ...
+# Subtest: Clear class only affects one template combination
+ok 253 - Clear class only affects one template combination
+  ---
+  duration_ms: 0.570026
+  type: 'test'
+  ...
+# Subtest: Canonical neutral alias resolves to the same class
+ok 254 - Canonical neutral alias resolves to the same class
+  ---
+  duration_ms: 2.873738
+  type: 'test'
+  ...
+# Subtest: JSON export / import is a lossless, versioned style-only round trip
+ok 255 - JSON export / import is a lossless, versioned style-only round trip
+  ---
+  duration_ms: 1.761417
+  type: 'test'
+  ...
+# Subtest: Reject invalid frame assets, XSS text, stats or arbitrary extra properties
+ok 256 - Reject invalid frame assets, XSS text, stats or arbitrary extra properties
+  ---
+  duration_ms: 0.843612
+  type: 'test'
+  ...
+# Subtest: Malformed imported value throws instead of overwriting saved state
+ok 257 - Malformed imported value throws instead of overwriting saved state
+  ---
+  duration_ms: 0.676149
+  type: 'test'
+  ...
+# Subtest: Template draft module deliberately provides no apply-to-cards entrypoint
+ok 258 - Template draft module deliberately provides no apply-to-cards entrypoint
+  ---
+  duration_ms: 0.361859
+  type: 'test'
+  ...
+# Subtest: Legacy tab is disconnected, while collection and live editor remain
+ok 259 - Legacy tab is disconnected, while collection and live editor remain
+  ---
+  duration_ms: 0.815108
+  type: 'test'
+  ...
+# PASS CHR-038 damages only non-Нечысць and hits hero only at night
+# PASS CHR-044 summons three canonical Kasny 1/1 without invented token stats
+# PASS KNZ-037 cleanses modeled negative timed effects and heals, retains partial flag
+# PASS NEU-001 offers three distinct Zav cards and shuffles other two in daylight
+# PASS NEU-001 night summons three, not in deck; restriction when board nearly full
+# PASS NEU-028 ignites hand cards, expires on second following own end, never creates grave records
+# PASS Local project original art is retained independently of the thumbnail and canonical stats
+# v1.9 PASS 7
+# Subtest: tests/visual_mechanics_v1_9.test.cjs
+ok 47 - tests/visual_mechanics_v1_9.test.cjs
+  ---
+  duration_ms: 96.425018
+  type: 'test'
+  ...
+1..260
+# tests 260
+# suites 0
+# pass 260
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1868.368224

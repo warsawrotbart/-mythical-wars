@@ -106,5 +106,17 @@ function verify(input,through=null){
  return {ok:true,steps:count,total:trace.actions.length,game,
    stateHash:checksum(snapshot(game))};
 }
-return {capture,ensureCapture,exportReplay,loadReplay,verify,checksum,snapshot};
+function* recordedBotFrames(game,owner,dispatch){
+ const trace=ensureCapture(game),before=checksum(snapshot(game));
+ const frames=E.botTurnFrames(game,owner,dispatch);
+ let step=frames.next();
+ while(!step.done){yield step.value;step=frames.next();}
+ if(step.value?.ok&&trace.canReplay&&!trace.overflow){
+  if(trace.actions.length>=LIMIT)trace.overflow=true;
+  else trace.actions.push({type:'runBotTurn',args:[owner],before,after:checksum(snapshot(game)),turn:game.turns});
+ }
+ return step.value;
+}
+const botEngine=Object.freeze({...Object.fromEntries(actions.map(name=>[name,original[name]]))});
+return {capture,ensureCapture,exportReplay,loadReplay,verify,checksum,snapshot,recordedBotFrames,botEngine};
 });

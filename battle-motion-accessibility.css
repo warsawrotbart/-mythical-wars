@@ -1,0 +1,8 @@
+.mw6-number{max-width:calc(100vw - 24px);box-sizing:border-box;font-size:clamp(16px,2vw,24px);overflow-wrap:anywhere}
+.mw6-number small{white-space:normal}
+.battle-inspect-modal,.battle-choice-modal{box-sizing:border-box;padding:12px;overflow:auto}
+.battle-inspect-panel,.battle-choice-panel{max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);box-sizing:border-box;overflow:auto;overflow-wrap:anywhere}
+#battleInspectEffect,#battleInspectName,.choice-section{overflow-wrap:anywhere}
+#battleWorkspace :focus-visible,.mw-placement-slot:focus-visible{outline:3px solid #ffeda5;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){#battleWorkspace *,#mw14HandPreview,.mw-card-flight,.mw6-actor,.mw6-number{animation-duration:0s!important;transition-duration:0s!important}}
+html[data-mw-reduced=true] #battleWorkspace *,html[data-mw-reduced=true] .mw-card-flight,html[data-mw-reduced=true] .mw6-actor{animation-duration:0s!important;transition-duration:0s!important}

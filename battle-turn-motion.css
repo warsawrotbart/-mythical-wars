@@ -1,0 +1,4 @@
+.mw-turn-banner{position:fixed;left:50%;top:12%;transform:translateX(-50%);max-width:calc(100vw - 32px);box-sizing:border-box;padding:12px 24px;background:#17362df2;color:#ffedbe;border:1px solid #d7b66e;border-radius:12px;font:600 clamp(14px,2vw,24px)/1.4 system-ui;text-align:center;pointer-events:none;z-index:12000}
+#mwTurnStatus{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#battleTurnTimer{font-variant-numeric:tabular-nums;white-space:normal;max-width:220px}
+#battleTurnTimer[data-urgent=true]{color:#ffb1a0}

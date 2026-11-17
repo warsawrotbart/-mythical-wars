@@ -401,6 +401,7 @@ function hydrateInspect(game,owner,kind,uid){
  });
 }
 function observePlay(game){
+ if(global.MW_BATTLE_PRESENTATION)return; // shared queue reveals the played card before commit
  const entries=game?.events||[];
  const lastIdx=entries.findLastIndex?.(e=>e?.kind==="play"&&game.cards?.[e.cardId]?.cardType==="spell")??-1;
  const e=lastIdx>=0?entries[lastIdx]:null;

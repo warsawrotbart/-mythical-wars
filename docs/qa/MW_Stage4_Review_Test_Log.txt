@@ -1,0 +1,361 @@
+✔ reordering and inserting keeps roots, rendered images and unchanged children attached (8.979627ms)
+✔ stat update replaces only the changed base child and removes departed instances (0.612442ms)
+✔ duplicate instance keys are rejected before modifying the visible zone (0.587594ms)
+✔ complete turn fixture uses legal engine commands and approved decks without mutating catalog (22.345608ms)
+✔ fixture shows one ordinary draw, a played instance, and one simultaneous damage packet (3.969555ms)
+✔ seeking and speed/reduced motion only sample snapshots, never execute the engine again (8.21119ms)
+✔ timeline has continuous ordered intervals and stable phase addressing at boundaries (5.100417ms)
+✔ parameter normalization handles invalid and zero durations without infinite playback (4.415456ms)
+✔ public motion snapshots contain no opponent hand/deck contents, RNG, or replay (3.639028ms)
+✔ changed card definition stops the fixture instead of silently inventing numbers (0.384299ms)
+✔ accepted command pays once and emits cause before summon; replay remains deterministic (18.344615ms)
+✔ rejected and stale commands do not spend resources or emit successful scenes (6.372283ms)
+✔ command ID collision is rejected, history limit never evicts paid IDs (4.838153ms)
+✔ public view and stream omit hidden hand IDs, deck order, choices, RNG and replay (2.860977ms)
+✔ projection waits for commit, preserves instance UID, ignores duplicates and refuses gaps (4.108225ms)
+✔ queue serializes async handlers and deduplicates batches (5.163663ms)
+✔ timeout or throwing VFX still applies committed model and unlocks (18.264354ms)
+✔ reset aborts current scene and prevents stale commits after switching battle (3.498927ms)
+✔ queue validates whole batch before scheduling and does not silently evict events (3.715603ms)
+✔ throwing engine command is never executed again under the same or a fresh ID (2.108234ms)
+✔ animation and fast-forward yield identical logic and recover from an accepted save (9.216865ms)
+✔ same card definitions remain addressed as separate played and board instances (3.704596ms)
+✔ attack and endTurn declare causes before commit; repeated endTurn advances one hour (22.261891ms)
+✔ queued bot decisions are identical to original policy and aggregate replay verifies (194.464542ms)
+✔ choice draft round-trips without payment, hidden reroll, or trusting stale options (5.760872ms)
+✔ incomplete mandatory choices refuse payment and can be cancelled/reopened (11.328984ms)
+✔ checkpoint inside a bot turn resumes from gameplay state without replaying prior payments (5.661693ms)
+PASS woin_30.csv recognized with 30 valid cards
+PASS chernoknizhnik_30.csv recognized with 30 valid cards
+PASS nekromant_30.csv recognized with 30 valid cards
+PASS TSV text pasted from Google Sheets
+PASS XLSX numeric count with .0 is accepted
+PASS Notes and totals below Necromancer deck are ignored
+PASS Unknown IDs and incomplete decks block import
+PASS Wrong hero class fails validation
+IMPORT CHECKS: 8 passed
+✔ tests/deck_import_v1_8.test.cjs (133.297476ms)
+PASS tutorial Ragvalod starts with the documented test armor 10
+PASS warrior power is locked in campaign mode
+PASS warrior sunny power calls only approved TKN-001 1/1
+PASS power shared once-per-turn limit, resets next personal turn
+PASS no summon with full seven-minion board
+PASS night FAKEL requires a friendly Human and does not pay before choice
+PASS FAKEL does not restore HP or change printed affinity and expires at end
+PASS unapproved Warlock power stays unavailable
+PASS Chernobog powers remain disabled without approved token metadata
+PASS custom necromancer token metadata permits configured idol, local darkness to neighbors
+PASS configured Chernobog undead has charge, expires this turn, no auto corpse
+PASS death of own minion writes to only own graveyard, not automatic corpses
+PASS explicit corpse spell and card cost appear in separate ledger
+PASS grave selection removal is recorded as separate history item
+PASS CHR-020 fills own board with Malye Zlydni and buffs other Spirits
+PASS NEU-024 doubles opponent spell cost only on following turn
+PASS CHR-030 deathrattle deals one damage to each creature
+PASS NEU-043 inflicts double battlecry damage to Humans, including allied Humans
+PASS NEU-044 heals for creatures killed directly by battlecry
+HERO, GRAVEYARD, CREATURE TESTS: 19 passed
+✔ tests/hero_graveyard.test.js (150.244306ms)
+PASS ordinary draw takes next card of a shuffled deck (no chooser)
+PASS KNZ-008 chooses random human among eligible cards, not first always
+PASS KNZ-008 with no eligible human consumes spell, not mana for fatigue
+PASS KNZ-009 randomly draws eligible Spirit and discounts only at night
+PASS KNZ-016 draws one random Weapon and one random Spell, not from UI
+PASS KNZ-020 draws two physical Human card copies without replacement
+PASS KNZ-020 takes only available eligible cards, never invents cards
+PASS NEU-014 draws a random Peasant, then second with three Peasants on board
+PASS full hand: first draw fits, second is burned, deck still loses both
+PASS ordinary draw on empty deck still applies fatigue
+PASS player selection remains for explicit 'Выберыце' and graveyard
+PASS bot auto-draw needs no selection object
+PASS total: 12/12
+✔ tests/random_draw_v1_9_1.test.cjs (150.763889ms)
+PASS KNZ-008: random eligible draw requires no player selection
+PASS KNZ-009: night spirit draw automatically reduces drawn card cost
+PASS KNZ-016: weapon and spell drawn automatically from matching groups
+PASS KNZ-020: two eligible human card instances drawn without replacement
+PASS NEU-014: Congregation draws eligible peasants automatically
+PASS KNZ-015: up to two unique own humans; no mutation on cancel
+PASS CHR-014: deck cards summoned instead of put into hand, nighttime bonuses
+PASS NCR-021: only own non-token <=4 mana; remove precisely chosen grave entry
+PASS NCR-027: grave selection, consume entry, summon base stats
+PASS CHR-021: grave choice different Spirits; cannot choose duplicates
+PASS NEU-017: two distinct fallen Peasants, Spirit & Night, non-token only
+PASS NCR-027: no living grave choices blocks before cost
+PASS bot draws from deck automatically without choices
+PASS local text modification disables effect even with source card ID
+PASS total: 14/14
+✔ tests/selection.test.js (155.875118ms)
+✔ BF-02: both full sides reject the eighth before spending a card or mana (18.459798ms)
+✔ BF-02: multi-token summon only fills remaining places to seven (2.211299ms)
+✔ BF-05: actual weapon play, attacks and breaking update live weapon state (1.569933ms)
+✔ BF-06/07: power phase switches without resetting use, clock advances once (4.914909ms)
+✔ BF-08: coin gives the eleventh mana only temporarily (1.834291ms)
+✔ BF-09/11: ten-card hand rejects an additional developer give; empty deck draws fatigue (0.752473ms)
+✔ BF layout fixes are wired after battlefield v02 and after game re-render (1.921653ms)
+✔ BF-01/11 clip off-canvas hands and scale preview coordinates exactly once (2.425521ms)
+✔ BF-10 settings retain all actions without inherited minimum-width overflow (0.394183ms)
+✔ BF-02 keeps 1176 width and max seven and removes old seating slots (0.276466ms)
+✔ BF-03..BF-09 bind approved hero HUD, phase art, clock and deck backs (0.469517ms)
+✔ BF-10 preserves 3D and game actions inside a collapsible developer menu (0.633894ms)
+✔ only canonical battlefield v02 can be selected in 2D (1.555401ms)
+✔ canonical v02 holds max 7 creatures but 9-card measured width 1176 (1.65467ms)
+✔ all real 24-hour phases drive 12-position art at 30-degree intervals (0.364989ms)
+✔ one uniformly scaled 1920x1080 canvas, centered at 4 target resolutions (0.401214ms)
+✔ sole v02 battlefield CSS/JS loaded at the end of the real entrypoint (1.595501ms)
+✔ game renders new 2D view after old HUD, no duplicate active hero powers (1.187377ms)
+✔ approved assets are packaged with integrity checks and rebuilt by Pages (0.616168ms)
+✔ curved heading preserves every character and follows arch (13.627203ms)
+✔ stroke/fill of title both performed for all glyphs (0.35857ms)
+✔ side lines only removed for creatures, frame preserved (0.148663ms)
+✔ top decor rises only for creatures (0.290317ms)
+✔ editor integration keeps original editable layout and valid scripts (0.472341ms)
+✔ v05 manifest identity and geometry (1.990466ms)
+✔ v05 88 original assets match official SHA-256 (28.536026ms)
+✔ v05 control images are canonical and layer paths are valid (17.380783ms)
+✔ manifest samples correspond to control types without data overwrites (0.421164ms)
+✔ v05 fonts and archives are not delivered as assets (1.528201ms)
+✔ single v05 editor entry; legacy editor hidden; studio retained only for QA (0.811331ms)
+✔ all 169 cards have a normalized v05 representation (22.291756ms)
+✔ battle layout uses game state numbers instead of changing combat data (0.220662ms)
+✔ one v05 manifest for editor, 2D, initial replacement and 3D (2.257328ms)
+✔ font-aware digit alignment and contrast present in editor and battle (0.537048ms)
+✔ 3D can show a readable face while texture is loading (0.460423ms)
+✔ mulligan/rendered face fallbacks do not lock pending flags (0.412801ms)
+✔ v05.11 installs the same Hero HUD in 2D and 3D without a second editor (2.03251ms)
+✔ HUD reads engine state only; original input and targeting remain unchanged (1.075429ms)
+✔ equipment illustration respects existing saved custom art, never changes weapon stats (0.331379ms)
+✔ all protected assets and library coverage survive the HUD-only release (1.374398ms)
+✔ stage B is actually loaded by the real battle entrypoint after legacy HUD (1.606428ms)
+✔ live game objects and hooks remain on the battle page, exactly once (0.968608ms)
+✔ new 2D field is isolated from the independent 3D view (1.748242ms)
+✔ fan positioning uses live DOM elements, never game state or HTML replacements (1.600709ms)
+✔ all generated CSS and JS are isolated new assets, without modifying protected data (0.369056ms)
+✔ new 2D arena is always active and uses the same real cards (4.228325ms)
+✔ hand glow only when engine authorizes playing (1.190292ms)
+✔ targeted and choice cards derive readiness from engine status (1.033746ms)
+✔ hover preview is clamped to main even for far-left and far-right cards (0.412381ms)
+✔ 2D hand opacity, hover preview, green, drop and reduced motion are isolated (0.446642ms)
+✔ deckgame uses engine validation for availability and drop rather than new rules (0.706493ms)
+✔ load order: hand module after renderer and before deckgame, 3D remains isolated (0.625121ms)
+✔ focal crop always covers the picture window (1.197713ms)
+✔ invalid and oversized crops are clamped (0.203426ms)
+✔ portrait renders real art without baked card text or stats (0.474154ms)
+✔ only 2D battlefield uses new face; existing 3D and full cards retained (0.49184ms)
+✔ live battle values and taunt affinity come from engine model (0.806604ms)
+✔ dependencies loaded before board and 3D untouched (0.555356ms)
+✔ engine and UI have exactly the same implemented deathrattle IDs (2.491181ms)
+✔ known summoned tokens are resolved from engine TOKEN_DATA without adding them to game.cards (3.459818ms)
+✔ all seven library token IDs and unique hero-power summons get visual source without invented effects (0.382345ms)
+✔ visible badges use only real combat flags and known implemented deathrattles (0.367363ms)
+✔ legacy, 3D and hand renderers preserved; 2D token sources included (1.338084ms)
+✔ legacy template interface disconnected without changing editor or manifest (2.362477ms)
+✔ editor has large sticky card and compact on-demand help (0.435275ms)
+✔ single masked art paint, with curved name and existing gold trim (0.499161ms)
+✔ hover preview uses card alone without duplicate explanatory title (0.416828ms)
+✔ mulligan preserves card image and selection, no extra bottom text (0.682858ms)
+✔ descriptions enlarge adaptively with preserved fit logic (0.31889ms)
+✔ 3D action remains visible and old 2D layout control is not created (2.109265ms)
+✔ 2D refinements do not target WebGL 3D (0.669338ms)
+✔ opening hand and coin share one centered row without a panel frame (0.263347ms)
+✔ game card uses same curved heading as editor and a common number baseline (0.82999ms)
+✔ hero mana counter uses live game data and the 2D layer can move it (1.754982ms)
+✔ stepwise bot and synchronous bot produce identical deterministic state (19.068104ms)
+✔ bot waits for the presentation queue before the next strategic frame (0.735817ms)
+✔ single imported art is the original v01 PNG matching the verified Drive source (5.213618ms)
+✔ coin keeps its internal runtime ID distinct from the library visual ID (0.353763ms)
+✔ one local art mapping is shared between game and editor (2.101744ms)
+✔ coin renders through the approved v05 spell template in mulligan, hand and inspect (2.339412ms)
+✔ existing coin game mechanic is untouched (0.786394ms)
+✔ v05 manifest geometry and 3 official template types (1.545086ms)
+✔ each official control card validates with its original art (0.429546ms)
+✔ draw plan includes base layers in order and art exactly once after declared backing (0.864992ms)
+✔ only approved color layers have tint flag, not gold, art, shadow or icons (0.49828ms)
+✔ neutral creature has no class badge (0.1995ms)
+✔ 0 is numeric and visible, null is hidden (0.255435ms)
+✔ missing illustration blocks final export without deleting card data (1.869284ms)
+✔ unknown race/time/rarity/class are not guessed (0.249465ms)
+✔ weapon/spell nonempty subtype blocks export until slot approved (0.386151ms)
+✔ unknown creature subtype icon must not map randomly (0.274973ms)
+✔ data validation catches fractional/negative/unsafe numbers (0.212901ms)
+✔ crop cover maintains aspect and viewport at zoom=1 (0.25298ms)
+✔ zoom and crop are bounded and reject underscale (0.536277ms)
+✔ all v05 files in draw plans exist and alpha masks are generated (2.181494ms)
+✔ source manifest SHA256 is unchanged from verified stage 1 (0.539081ms)
+✔ no bulk application is exposed in the dynamic standalone script (0.32566ms)
+✔ ready import retains all 100 existing mappings and adds exactly 51 unique IDs (1.735082ms)
+✔ all 51 original PNGs and runtime WebPs match the recorded SHA256 (287.559441ms)
+✔ test-art approval is separate from crop review and game admission (0.831962ms)
+✔ hero summons reuse token illustration aliases without adding engine cards (10.94756ms)
+✔ game and editor load the ready registry after the existing catalog (1.120487ms)
+✔ saved crop remains first priority over imported crop in both renderers (0.459883ms)
+✔ read-only baseline exactly 162 cards and 7 disjoint tokens (0.99691ms)
+✔ unchanged workbook has no field-level diffs (14.613868ms)
+✔ changing numeric attack and notes shows two exact old/new fields, not artwork (10.581719ms)
+✔ decimal 2.0, 2,0 accepted as integers; 2,5 and negatives blocked (58.647463ms)
+✔ duplicate ID, unknown ID and missing ID all block commit (37.766385ms)
+✔ partial library and missing 21-column schema cannot be silently applied (6.953016ms)
+✔ unknown classes, rarities and resources are errors without default substitutions (18.213237ms)
+✔ special cases retained: corpus cost, Day+Night, unknown species, token rarity (0.758852ms)
+✔ tokens never modify cards and vice versa (2.778152ms)
+✔ supported class palette, rarity and subtype are derived from explicit dictionaries (0.530829ms)
+✔ stored snapshot has stable IDs; injected replacement is rejected (2.422076ms)
+✔ file routing accepts correct XLSX tabs, does not import class/deck tabs (0.457348ms)
+✔ stage 3 does not modify source manifest, game catalogue or sample controls (1.030701ms)
+✔ v05.7 uses one visible editor and retains game/deck navigation (2.092119ms)
+✔ all 169 entries have honest test-art coverage: 99 available, 70 missing (0.82401ms)
+✔ every test art exists, matches checksum, preserves test state and canonical ID (251.505983ms)
+✔ three control artworks retain original v05 template sources (0.434975ms)
+✔ protected manifest and battle/canonical files have no changes in web update (0.732853ms)
+✔ collection shows exactly 92 test arts, 70 missing canonical arts, no autoapproval (10.803974ms)
+✔ editor exposes built-in picture, reset and no-art state (1.663594ms)
+✔ reset cancels the custom art override and explicitly commits a new profile (0.374764ms)
+✔ picker filters by checked built-in ID and counts coverage (0.479121ms)
+✔ all built-in art URLs point only to shipped files, never remote data (3.343974ms)
+✔ embedded status does not claim art approval or change canonical rules (0.986525ms)
+✔ v05.9 contains exactly 99 known-ID art mappings, 70 honest gaps (1.61438ms)
+✔ all seven token image files and reference versions are bundled (29.913089ms)
+✔ corrected v02 files are preferred; previous v01/test variants retained intact (31.614279ms)
+✔ all remaining files match their manifest hashes and remain test assets (169.394664ms)
+✔ only one user-visible editor and no remote art sources in client (0.853404ms)
+✔ reference is left of live canvas inside the editor stage (1.318645ms)
+✔ stage has side-by-side tools and safe responsive layouts (0.308965ms)
+✔ undo redo and keyboard shortcuts are preserved (0.288535ms)
+✔ saving is local and still supports portable JSON (0.424719ms)
+PASS source decks are exactly 30 and individually valid
+PASS versioned JSON snapshot preserves full game, graves, events and random state
+PASS stateful RNG continues identically after restore
+PASS malformed or incompatible game saves are rejected
+PASS developer commands are disabled until explicitly enabled
+PASS test summon and death respects personal graveyard, no free corpses
+PASS resource changes in developer mode are recorded in corpse ledger
+PASS KNZ-010 deathrattle draws one approved Human from shuffled deck
+PASS NCR-008 battlecry draws random ritual only
+PASS CHR-006 weapon battlecry damages hero for two and draws a Spirit
+PASS KNZ-022 draws maximum printed cost card from remaining deck
+PASS test tools never modify the canonical catalog
+PASS event filter supports owner and type, and does not reveal bot draws
+PASS bot consumes only legal actions and never exceeds the board or hand limits
+TOTAL v2.0: 14 passed, 0 failed
+✔ tests/v2_0.integration.test.cjs (158.341916ms)
+PASS canonical catalog has no structural errors; 162 cards indexed
+PASS all three source decks pass strict 30-card validation
+PASS audit detects duplicate ID, bad health, missing key without modifying originals
+PASS KNZ-007 draws random weapon and Druzhyna, never an unrelated card
+PASS CHR-031 infects a selected enemy; takes one damage at its next start
+PASS CHR-031 requires target before charging mana or changing hand
+PASS NEU-040 unique minimum gets +1/+1 at end of own turn
+PASS NEU-040 ties do not invent selection ordering
+PASS replay of real bot-vs-bot actions recovers exactly identical state
+PASS replay detects one altered action
+PASS replay can inspect intermediate game without changing live game
+PASS v2.0-style imported battle can start an honest partial replay
+PASS both owners can be controlled legally by AI
+PASS six deterministic full matches cover all class pairings
+PASS selfplay honors upper turn-limit without inventing a winner
+PASS batch output is a regular UTF-8 CSV with six records
+TOTAL 2.1A: 16 passed, 0 failed
+✔ tests/v2_1A.integration.test.cjs (987.759514ms)
+PASS own board accepts a playable creature
+PASS enemy board rejects a creature before any payment
+PASS putting a normal creature over an existing own minion still plays to board
+PASS targeted spell onto board opens selection rather than auto-targeting
+PASS targeted spell onto valid enemy hero is allowed
+PASS invalid target for spell cannot consume mana or card
+PASS own ready minion can attack enemy hero through drop
+PASS unready minion cannot attack through drag
+PASS enemy taunt blocks drag attack on enemy hero
+PASS invalid turn and missing uid reject drag
+PASS two sources with same card ID remain distinct via uid
+v2.1B drag rules: 11 passed
+✔ tests/v2_1B.drag.test.cjs (129.544341ms)
+PASS multiline quoted CSV roundtrip
+PASS TSV paste
+PASS spreadsheet formula escaping
+PASS card CSV column headers and revision
+PASS existing local attack update planned
+PASS revision conflict blocked
+PASS canonical card blocked
+PASS new card staged
+PASS undersize art warning
+PASS large art accepted
+PASS new deck import
+PASS deck version mismatch
+PASS offline ZIP created
+RESULT 13/13 workflow assertions
+✔ tests/v2_1G.workflow.test.cjs (132.208222ms)
+PASS matrix identity
+PASS model translation
+PASS matrix inverse
+PASS singular inverse
+PASS project-ray round trip
+PASS point inside polygon
+PASS seven board pieces centred
+PASS ten hand cards stay inside tabletop
+PASS opponent hidden hand has no card IDs
+PASS clock dawn resets
+PASS clock 13:00 counts seven daylight hours
+PASS clock dusk resets
+PASS clock after midnight
+PASS clock exactly twelve markers limit
+PASS layout clamps invalid size
+3D math/layout: 15/15 passed
+✔ tests/v2_1H.3d_math.test.cjs (125.908338ms)
+✔ 45 CHR artworks: unique, all test, complete types and correct IDs (1.969925ms)
+✔ All assets decode to valid embedded WebP bytes with individual master SHA-256 (50.756435ms)
+✔ Variants only use selected v02 for CHR-015 and CHR-023 (0.406202ms)
+✔ Newly created arts are tracked as generated test assets, not approved (0.209205ms)
+✔ 3D uses shared 2D clock art assets for its clock face and twelve markers (1.763976ms)
+✔ 3D uses board-anchored hero/deck information and compact turn button (0.538681ms)
+✔ inspector only holds complete rendered card, not enlarged standalone illustration (0.694115ms)
+✔ mulligan renders actual card images and keeps coin unreplaceable (0.837281ms)
+✔ new typography and title banner match description panel width (1.746539ms)
+✔ selected warlock concept is third and default art is test status (2.353813ms)
+✔ hero art paths are safe local WebP assets, with no ZIP in art directory (4.285781ms)
+✔ both 2D and 3D load shared hero art manifest and distinct ability image (2.267283ms)
+✔ 2D/3D counters have only a number visibly, descriptive text stays accessible (1.457875ms)
+✔ graveyard click and corpse update are still wired into gameplay (1.516893ms)
+✔ the clock remains the same original clock system (4.263438ms)
+✔ 3D camera moves closer and anchors aim above the previous viewpoint (2.921819ms)
+✔ 3D controls follow projected board midpoint, not viewport midpoint (0.526182ms)
+✔ 2D clock targets only its own widget, not the earlier 3D clock in DOM (0.25955ms)
+✔ 2D clock has 12 phase-specific markers that light only when elapsed (0.269846ms)
+✔ 2D/3D clock shares dawn/dusk time boundary (2.748036ms)
+✔ new 2D CSS and offline GitHub Pages assets are linked (0.654676ms)
+✔ full canonical library is preserved, 162 unique IDs (1.135559ms)
+✔ 45 embedded CHR artworks are test versions; missing art distinct (1.286947ms)
+✔ class, type, art, frame, query and scope filters are composable (1.043521ms)
+✔ saved custom art is prioritised; approval and custom text are respected (0.694075ms)
+✔ thumbnail or default frame alone must NOT be reported as custom art (0.537449ms)
+✔ user-created local cards display separately without changing canonical count (0.921157ms)
+✔ duplicate canonical and saved IDs never duplicate displayed records (0.428865ms)
+✔ all collection functions are deterministic and do not mutate source (1.067838ms)
+✔ Exactly three base types and four canonical class options (12 combinations) (5.702974ms)
+✔ Art windows remain locked to type: oval, rectangle, circle (0.254763ms)
+✔ One class override cannot change another class or another card type (0.746364ms)
+✔ Base changes propagate only where the class inherits the field (0.703119ms)
+✔ Individual field can return to base without losing other overrides (0.770269ms)
+✔ Clear class only affects one template combination (0.483999ms)
+✔ Canonical neutral alias resolves to the same class (0.182204ms)
+✔ JSON export / import is a lossless, versioned style-only round trip (0.405761ms)
+✔ Reject invalid frame assets, XSS text, stats or arbitrary extra properties (1.036139ms)
+✔ Malformed imported value throws instead of overwriting saved state (0.322155ms)
+✔ Template draft module deliberately provides no apply-to-cards entrypoint (0.340343ms)
+✔ Legacy tab is disconnected, while collection and live editor remain (0.486142ms)
+PASS CHR-038 damages only non-Нечысць and hits hero only at night
+PASS CHR-044 summons three canonical Kasny 1/1 without invented token stats
+PASS KNZ-037 cleanses modeled negative timed effects and heals, retains partial flag
+PASS NEU-001 offers three distinct Zav cards and shuffles other two in daylight
+PASS NEU-001 night summons three, not in deck; restriction when board nearly full
+PASS NEU-028 ignites hand cards, expires on second following own end, never creates grave records
+PASS Local project original art is retained independently of the thumbnail and canonical stats
+v1.9 PASS 7
+✔ tests/visual_mechanics_v1_9.test.cjs (171.023626ms)
+ℹ tests 214
+ℹ suites 0
+ℹ pass 214
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1579.549364

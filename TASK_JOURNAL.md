@@ -56,3 +56,92 @@ Baseline: `64e8266ff510255a5df8ef09ef0b50649f304de6`, рабочая копия 
 
 ## 12.11.2026 — восстановлены и подключены 51 готовый отсутствующий арт
 Пользователь поручил проверить рабочую копию и установить пропущенные арты. Старый checkout и локальный 11e4272 недоступны; восстановлен новый пакет от GitHub main bcce9cea. Актуальная сверка Медиа/Данных редактора: 151 готовый ID, 100 ранее подключённых, 51 пропущенный, конфликтов нет. 51 оригинал без изменения байтов и runtime WebP сохранены; каталог игры/редактора теперь 151 ID. Все прежние маппинги, игровые данные, допуск, ID, баланс, колоды и manifest сохранены. 187/187 Node PASS; 381 source / 375 build static PASS. Технические примерки просмотрены; crop остаётся непроверенным художественно. Локальный Chromium заблокирован socket policy; опубликованный браузер проверяется отдельно. Подробности: READY_ART_IMPORT_2026-11-12.md. Новый пакет не объявляется идентичным утраченному коммиту 11e4272.
+
+
+## 2026-11-16 — T01: аудит боевой реализации
+
+- Выполнено по поручению пользователя «приступай к первому пункту». Baseline main: 1b88856d94817d394ab33ededfddb2dea4995124; checkout до аудита чистый.
+- Учтено приложение актуального ТЗ: часы слева; существующий овальный боевой арт; фактический урон с отдельными HP/бронёй; накопление точек, детали сброса D03 открыты.
+- Составлена матрица AN-01–AN-18 с файлами, ограничениями, контрактом требуемых событий и небольшими подзадачами. Все комплексные AN частичны; приёмка новых анимаций не заявляется.
+- Node: 187/187 PASS. Живой Chrome: старт Воин/Воин, две замены, розыгрыш KNZ-002, мана1→0. Hitbox: border-radius5px, clip-path none, угол принимает попадание; овальный арт есть.
+- Контрольные вызовы: summon→play в логе; HP1/броня2/усталость5 записывает actual5 при HP−2; frame330→0 на 11→12/23→00. Логи не пригодны для прямого playback.
+- Изменений игровых файлов, карт и баланса нет; commit/push/deploy не выполнялись. Проверка FPS/полная партия/весь BF-12 не заявляются.
+- Отчёт: MW_T01_Implementation_Audit_2026-11-16.md (папка ТЗ и задачи на Drive; https://drive.google.com/file/d/1rrxpi_zFZXQXlyzoSenLbdEhxLD3oRMf/view; запись MW-LOG-022).
+- Следующее предложение: T03.1 схема событий, T03.2 очередь, T03.3 стабильное представление и T04.1 один motion-сценарий. Не начинать разработку автоматически по записи журнала.
+
+Отчёт T01: https://drive.google.com/file/d/1rrxpi_zFZXQXlyzoSenLbdEhxLD3oRMf/view
+
+## 2026-11-16 — Второй этап, T03 инкремент 1
+
+- Добавлен battle-presentation.js: командная граница с revision/ID, публичные snapshots, проекция и bounded queue с timeout/AbortSignal/reset. Нет изменения ядра/каталога/баланса/replay формата.
+- deckgame.js: клик и DnD простого существа подключены к очереди; одна оплата, блокировка ввода, сохранение принятой логики до VFX, cleanup и fast-forward при hidden/reduced motion. Остальные действия пока старые.
+- 199/199 Node PASS, в том числе 12 новых тестов. Pages build 577 файлов, 376 static checks PASS. Browser smoke KNZ-002 в тестовом режиме: busy+ghost во время сцены; затем1 minion,0 ghosts,0/1mana, ввод восстановлен.
+- Контракт и границы: docs/MW_T03_Presentation_Contract.md. T03/AN-15 полностью не закрыт: ещё нужны stable DOM/2D/3D view, все команды, choices, simultaneous engine events и полная Q13/Q15. T04 полного хода не выполнен.
+- Подготовлен локальный пакет изменений, без push/main/Pages deploy. Следующий шаг — подключение стабильного представления и атак к общей границе, затем обязательные выборы и motion полного хода.
+
+## 2026-11-16 — Этап3: установочный контроль + стабильное представление/команды
+
+- По поручению пользователя проверен MW_T03_Increment1: уже установлен efda3ea, reverse-check PASS; дублирования нет.
+- Новый battle-dom-reconcile.js: UID roots, renderer-owned faces и неизменённые дочерние узлы сохраняются; обновление статов локальное.
+- Все player команды и bot dispatcher подключены к queue. Core bot policy/RNG/карты не менялись. Replay bot — одна aggregate runBotTurn; mid-turn save без незавершённого replay, с восстановлением checkpoint.
+- Choice sidecar: UID/requestId/draft; валидируется на копии, сохраняется до оплаты; old saves поддержаны. 3D render/bridge — стабильная копиядоcommit. Старый duplicate spell reveal снят.
+- 207/207 Node PASS; 18 bot equivalence/replay scenarios; 377 static checks; build578. Browser: stable serial1/2+hand3–8, attackHP30→29, end/bot/back, NEU001/ZAV004 selected→reload/resume unchanged→confirmmana10→3, ghost0/unlocked.
+- Исправлена потеря диагностического DOMserial при reconcile, проверено в браузере. Legacy side panel перекрывает некоторыеclicks; обход клавиатурой, задачаUI открыта.
+- docs/MW_Stage3_Implementation_Report.md + docs/qa/MW_Stage3_Result.jpg; WORK_CONTEXT.md переписан как актуальная передача. В Google журнале MW-LOG-024 точныйcommit и пакет с hashes.
+- Без публикации main/Pages. Фактическийdamage/overkill, полнаяsimultaneity, часовD03, полныйQ/BF12 не закрыты. Следующий этап4: T04 motion полного хода. Оставшиеся этапы4–9 перечислены в отчёте и WORK_CONTEXT; показывать их после каждой выполненной задачи по новому требованию пользователя.
+
+
+## 16.11.2026 — повторная проверка установки и тестов
+
+По запросу пользователя повторно проверен HEAD f875435c36bf067c5faf85c96a488683260d1c1b: этап2 efda3ea является предком; stage3 incremental reverse-check PASS. Перед записью этого результата checkout чистый. Node207/207 PASS,0fail/0skip; build578 файлов; static377 PASS; diff-check PASS. git ls-remote подтвердил origin/main=1b88856d94817d394ab33ededfddb2dea4995124: патчи этапов2/3 установлены в локальной рабочей копии, на GitHub/Pages их ещё нет. Новый browser smoke этой повторной проверкой не выполнялся, см. результаты предыдущего этапа. Игровой код не менялся.
+
+Остались этапы4–9: полный motion-ход; рука/перенос/добор; боевые эффекты/цепочки; ход/таймер/часы; VFX/adaptive/recovery; финальная QA. Эта запись — локальное служебное дополнение, пока не закоммичено; постоянная копия результатов — MW-LOG-025 на Drive.
+
+
+## 2026-11-16 — Этап4/T04 motion-прототип полного хода
+
+- Изолированныйэкранbattle-motion-lab.htmlс14сценами,шкалой/play/pause/seek/step/speed/14параметрами,2вариантамичисел,reducedmotion,JSONexport. Ссылкаизбоевогоменю. Состояниетекущегобоя/коллекциянесохраняютсяинеизменяются.
+- Общийbattle-motion-config.js;productionбазовыедлительности260/320/700сохранены. Fixture—обычныекомандыядраиздвухпримерныхколодВоин,фиксированныйseed758,безручныхstat/resourceправок. Дваdamage1вобщемконтактеизизолированногоконтрольногообмена,ненеуниверсальныйadapter.
+- 214/214NodePASS,381staticchecksPASS,build583,gitdiffcheckPASS. Chromefullreducedдоopponent13:00/HP1,2vs1;сценаcontactдве−1;JSONэкспорт900ms/speed1.5/badge/14scenes/3200ms/13:00прочитанипроверен. Найденоисправлениеonchange→oninputдляживогопримененияпараметра.
+- docs/MW_Stage4_Motion_Prototype_Report.md,photoиэкспортвdocs/qa,WORK_CONTEXTобновлён. Прототипготовдлявизуальнойоценки;D04темп/стильнеутвержденыавтоматически,D03сброс/начало/загрузкаточекоткрыты.
+- Безпубликацииmain/Pages.Новыйcommit/пакетсhashesвMW-LOG-026.Следующийэтап5рука/hover/drag/добор/переход/вставка;далее6бой,7ход/часы,8VFX/adaptive,9финальнаяQA.
+
+
+## Повторная QA этапа4 — MW-LOG-027,16.11.2026
+
+Каталогmw-auditнедоступен;изпроверенногоStage4ZIPиmain1b88856восстановленточныйcommit0d4e38dbf21fdd16af3ba6cde22782369a9fd63e. Новаякопия:/workspace/scratch/e491f224769e/mw-stage4-check. Пакетсhashesсошёлся,накопительныепатчи2–4применены. Коднепереписывался.
+
+214/214NodePASS,381staticPASS,build583. Chromeполныйобычныйplayдоконца4.52/4.52→opponent13:00/mana1/2;паузафиксирует12мс;seekcontact2числа−1;numbers900/speed1.5/badge→реальныйJSON14сцен/end3200/hour13. Всекартинкизагружены,errorhidden. D04визуальнаяприёмкаиобщаяQAнеобъявляютсязакрытыми.
+
+СлужебныйQAотчёт:docs/MW_Stage4_QA_Review.md,снимокиJSONвdocs/qa/MW_Stage4_Review*. ИгровойHEADпо-прежнему0d4e38d,служебныефайлыпокаnotcommitted. ПостоянныйQAпакетиссылки—MW-LOG-027. Никакойпубликации/новогоигровогопатчанет. Следующийэтап5;остались5–9,показыватьихпослекаждойзадачи.
+
+
+## 2026-11-16 — этап 5 / T05–T09
+
+Реализованы стабильное hover/focus-превью, offset захвата/возврат/отмена, click/native размещение по промежуткам, шестой optional position до оплаты, причинные cardDrawn/cardCreated без сохранения служебных данных в игре, последовательные доборы/создание/старт и переход полной карты в существующий овал с FLIP соседей. Позиция выбора сохраняется sidecar. В правила/стоимости/статы/тексты/арт не вносились изменения.
+
+226/226 Node PASS, 383 static PASS, build585. Chrome: замена3, Escape без оплаты, центр/лево/середина, invalid/valid native drop, двойной добор писаря, reload/resume. Replay UI PASS:13 действий, turn9,29a77bb2. Исправлен более специфичный battlefield hover; одинаковый DOMRect до/после focus. Артефакты docs/qa/MW_Stage5_*. Отчёт docs/MW_Stage5_Hand_Cards_Report.md; WORK_CONTEXT актуализирован. Подробные ограничения QA в отчёте, полная матрица не заявляется пройденной.
+
+Публикации нет. Патч этапа5 от0d4e38d и накопительный2–5 от1b88856, commit/пакет/SHA256 — MW-LOG-028. Сохранять только один установочный вариант. Следующий этап6; остались6–9:бой,ход/часы,VFX/adaptive/recovery,финальнаяQA.
+
+
+## 16.11.2026 — этап 6 / T10–T13, MW-LOG-029
+
+Реализован причинный 2D-слой боя: attackStatus/направление/портретный рывок, контакт и общие пакеты чисел, раздельные броня/HP, лечение отдельно от maxHP, волны смертей/хрипы, локальное оружие/одна сила. Исправлены hero actual overkill и обработка существующих смертей по активной стороне; итог атаки/розыгрыша после цепочки. Данные карт и арт не менялись.
+
+244/244 Node; build589; static385; diff-check PASS. Chrome: armor10→6/HP30/weapon2→1; Злыдзень смерть→хрип/hero29; одна сила+1token/−2mana; actual mass1/4/1 и уход3; последняя прочность→пустой слот/hero28; replay18/a4d8f7b6 и финальный19/turn5/0f5446e4. Стык стадии5 послеreload — Сцяганосецmana8/10/отмена скрыта. QA-страница воспроизводима через обычное ядро и developer commands, с backup прежнегоsave.
+
+Файловый chooser завис и был прерван; заменён QA-страницей. JPEG контакта отстаёт от DOM, не приписывать ему видимые числа; доказательства в JSON. Отчёт docs/MW_Stage6_Combat_Report.md, evidence/фото/лог docs/qa/MW_Stage6_*. Перерождение legacy, возвраты/overflow, все составные эффекты и общаяматрица не объявлены закрытыми. D03–D05 открыты.
+
+Публикации нет. Отдельный патч от8fcfccb и накопительный2–6 от1b88856 — альтернативы, не применять оба. Точный commit/поставка/SHA256 — MW-LOG-029. Следующий этап7; остались7–9.
+
+
+## Этапы7–8 — актуальное продолжение, 17.11.2026 / MW-LOG-031
+
+Рабочая копия восстановлена в /workspace/scratch/e491f224769e/mw-stage78 из public1b88856 и проверенного накопительного пакета этапа6. Получен ТОЧНЫЙ f62f721b34d2ae989858f51e553da34cbefa0652, затем заново реализованы7–8. MW-LOG-030 описывает прерванный сеанс, НЕ текущую готовую поставку. Финальный commit — git rev-parse HEAD и README поставки. Push/deploy не выполнялись.
+
+Актуальный отчёт: docs/MW_Stage78_Report.md; доказательства docs/qa/MW_Stage78_Browser_Evidence.json,MW_Stage78_Review.jpg,MW_Stage78_Test_Log.txt,stage78_engine_profile.json.260/260 Node,390 static,596 build PASS.100 engine-боёв/2172хода/100 replay PASS. Браузер:5 recovery modes PASS; таймер сохраняется/отменяет непринятое размещение без оплаты; offline и SIMULATED visibility PASS;20 viewport fixtures PASS. Натуральный уход в фон не принят: управляемый target не сообщил hidden. Не выдавать симуляцию за натуральный background. rAF40.22/с в коротком on-screen сценарии, НЕ GPU FPS и НЕ целевая приёмка; CPU bot-turn P95~2.464мс.
+
+Новые модули: battle-turn-timer.js, battle-turn-motion.js/.css, battle-motion-runtime.js, battle-motion-accessibility.css, battle-motion-qa.html/.js. Таймер optional90s, sidecar, паузы mandatory/hidden/offline, периодический save1s+pagehide. End-chain resolve до часа, expiredmana0, clock forward, очередь событий. discarded отдельно от гибели; fatigue/cappedarmor; возврат primitive без включения CHR-017. Runtime: resource1500ms/cap32/cancelAll, клип preview, фокус/Reduce motion. botStepper продолжает тот же iterator после паузы. Карточные определения (цена/статы/тексты эффектов), каталог/арт/manifest не менялись; исправлена реализация сроков поджога по правилам0.6.
+
+Следующий этап9/T21–T24. Открыты D03/D04/D05; legacyRebirth/NEU-028/timeMode/multiplier, полный школьный арт, натуральный background/native drag-resize, другиебраузеры/DPR/devices/GPU. Подробности статусовT14–T20 в отчёте — не заявлять полную художественную/платформенную приёмку. Финальная поставка содержит два АЛЬТЕРНАТИВНЫХ патча с проверкой точного HEAD на чистых базах. Не применять оба/повторно. Постоянные ссылки и SHA256 ZIP — MW-LOG-031.

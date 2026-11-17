@@ -1,0 +1,51 @@
+{
+  "board": [
+    {
+      "uid": "0|u25",
+      "visibility": ""
+    },
+    {
+      "uid": "0|u30",
+      "visibility": ""
+    },
+    {
+      "uid": "0|u21",
+      "visibility": ""
+    },
+    {
+      "uid": "0|u15",
+      "visibility": ""
+    }
+  ],
+  "runtimeLogs": [
+    {
+      "level": "warn",
+      "message": "MW v05 card font fallback: NetworkError: A network error occurred.",
+      "timestamp": "2026-11-16T16:16:49.863Z",
+      "url": "http://127.0.0.1:4173/battle-v05-card-bridge.js?v=0523"
+    },
+    {
+      "level": "warn",
+      "message": "MW v05 card font fallback: NetworkError: A network error occurred.",
+      "timestamp": "2026-11-16T16:22:54.632Z",
+      "url": "http://127.0.0.1:4173/battle-v05-card-bridge.js?v=0523"
+    },
+    {
+      "level": "warn",
+      "message": "MW v05 card font fallback: NetworkError: A network error occurred.",
+      "timestamp": "2026-11-16T16:25:55.310Z",
+      "url": "http://127.0.0.1:4173/battle-v05-card-bridge.js?v=0523"
+    }
+  ],
+  "replay": "Повтор проверен: 13 действий, итоговый ход 9, код 29a77bb2.",
+  "stableHover": {
+    "before": {
+      "rect": "{\"bottom\":783.1937866210938,\"height\":127.78125,\"left\":312.3320007324219,\"right\":397.5195007324219,\"top\":655.4125366210938,\"width\":85.1875,\"x\":312.3320007324219,\"y\":655.4125366210938}",
+      "transform": "none"
+    },
+    "after": {
+      "rect": "{\"bottom\":783.1937866210938,\"height\":127.78125,\"left\":312.3320007324219,\"right\":397.5195007324219,\"top\":655.4125366210938,\"width\":85.1875,\"x\":312.3320007324219,\"y\":655.4125366210938}",
+      "transform": "none"
+    }
+  }
+}

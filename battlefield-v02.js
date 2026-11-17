@@ -123,11 +123,17 @@
     stage.style.setProperty('--mw02-left',fit.left+'px');
     stage.style.setProperty('--mw02-top',fit.top+'px');
   }
+  let clockTurns=null,clockHour=null,clockAngle=0;
+  function resetClock(){clockTurns=null;clockHour=null;}
   function renderClock(game){
     if(!face||!game)return;
     const current=frame(game.time),hh=String(current.hour).padStart(2,'0')+':00';
     dial.src=path('clock_assets/ART-16_clock_'+(current.day?'day':'night')+'_dial_v2.png');
-    pointer.style.transform='rotate('+current.angle+'deg)';
+    const forward=clockTurns!==null&&(game.turns===clockTurns||game.turns===clockTurns+1)&&current.hour===(clockHour+1)%24;
+    if(forward)clockAngle+=30;
+    else if(clockTurns===null||current.hour!==clockHour||Math.abs(game.turns-clockTurns)>1){clockAngle=current.angle;pointer.style.transition='none';}
+    pointer.style.transform='rotate('+clockAngle+'deg)';clockTurns=game.turns;clockHour=current.hour;
+    if(pointer.style.transition==='none'){void pointer.offsetWidth;pointer.style.transition='';}
     // Color each socket from the real gaming hour of its half-dial, never
     // from the non-canonical `socket.type` in the artist layout JSON.
     for(let i=0;i<12;i++){
@@ -219,7 +225,7 @@
     syncVisibility();syncHand();
     return true;
   }
-  const api=Object.freeze({init,render,plan,viewportFit,frame,syncScale,MAX_CREATURES,BOARD_WIDTH});
+  const api=Object.freeze({init,render,plan,viewportFit,frame,syncScale,resetClock,MAX_CREATURES,BOARD_WIDTH});
   global.MW_BATTLEFIELD_V02=api;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(typeof window!=='undefined'?window:globalThis);

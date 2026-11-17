@@ -10,6 +10,66 @@
  if(typeof module!=="undefined"&&module.exports)module.exports=exported;
 })(typeof window!=="undefined"?window:globalThis,function(){
 "use strict";
+// Ephemeral observers never enter saves, replay checksums or RNG state.
+const movementSinks=new WeakMap();
+function captureCardMovements(s){
+ const items=[],previous=movementSinks.get(s);movementSinks.set(s,items);
+ return {items,close(){if(previous)movementSinks.set(s,previous);else movementSinks.delete(s);}};
+}
+function addHandCard(s,o,card,source="created"){
+ const p=player(s,o);if(p.hand.length>=10)return discardCard(s,o,card.cardId,"overflow",source);p.hand.push(card);
+ movementSinks.get(s)?.push({owner:o,source,uid:card.uid,cardId:card.cardId,
+  index:p.hand.length-1,handCount:p.hand.length,deckCount:p.deck.length});
+ return true;
+}
+// A discard is never a death: no graveyard entry, corpse or deathrattle.
+function discardCard(s,o,cardId,reason,source){
+ const p=player(s,o);(p.discarded||(p.discarded=[])).push({cardId,reason,source});
+ combatEvent(s,"cardDiscarded",{owner:o,cardId,reason,zoneSource:source,deckCount:p.deck.length,handCount:p.hand.length});
+ log(s,reason==="overflow"?"Переполнение руки: карта сброшена.":"Карта сброшена: "+reason+".");return false;
+}
+// Zone primitive only. Does not enable an unapproved prototype card.
+function returnToHand(s,o,instanceUid){return resolveAction(s,()=>{
+ const p=player(s,o),index=p.board.findIndex(m=>m.uid===instanceUid);if(index<0)return false;
+ const [m]=p.board.splice(index,1);syncAuras(s);
+ combatEvent(s,"creatureReturned",{owner:o,instance:{uid:m.uid,cardId:m.cardId},index});
+ const received=addHandCard(s,o,{uid:uid(s),cardId:m.cardId,costAdjustment:0},"return");removeDead(s);return received;
+});}
+// T10–T13: ephemeral causal combat trace. No hidden zones, save fields or RNG.
+const combatSinks=new WeakMap(),minionStates=new WeakMap(),resolutionDepth=new WeakMap(),deathResolvers=new WeakMap();
+function combatSnapshot(s){return {time:s.time,turn:s.turn,turns:s.turns,phase:s.phase,players:s.players.map(p=>({health:p.health,armor:p.armor,
+ mana:p.mana,maxMana:p.maxMana,heroAttacked:p.heroAttacked,heroPowerUsed:p.heroPowerUsed,
+ weapon:clean(p.weapon),board:clean(p.board)}))};}
+function captureCombat(s,source=null){
+ const previous=combatSinks.get(s),sink={items:[],source,group:null};combatSinks.set(s,sink);
+ for(const p of s.players)for(const m of p.board)minionStates.set(m,s);
+ return {items:sink.items,close(){if(previous)combatSinks.set(s,previous);else combatSinks.delete(s);}};
+}
+function combatEvent(s,type,payload={}){
+ const sink=combatSinks.get(s);if(!sink)return;
+ const item={type,source:clean(sink.source),...clean(payload)};
+ if(sink.group){sink.group.push(item);return;}
+ sink.items.push({...item,snapshot:combatSnapshot(s)});
+}
+function combatBatch(s,kind,fn){
+ const sink=combatSinks.get(s);if(!sink||sink.group)return fn();
+ sink.group=[];try{return fn();}finally{const changes=sink.group;sink.group=null;
+  if(changes.length)combatEvent(s,"impactBatch",{kind,changes});}
+}
+function combatCause(s,source,fn){const sink=combatSinks.get(s);if(!sink)return fn();
+ const before=sink.source;sink.source=source;try{return fn();}finally{sink.source=before;}}
+function resolveAction(s,fn){
+ resolutionDepth.set(s,(resolutionDepth.get(s)||0)+1);
+ try{return fn();}finally{const depth=resolutionDepth.get(s)-1;
+  if(depth)resolutionDepth.set(s,depth);else{resolutionDepth.delete(s);checkEnd(s);}}
+}
+function weaponEvent(s,o,before,reason){
+ const after=player(s,o).weapon;
+ if(JSON.stringify(before)!==JSON.stringify(after))combatEvent(s,"weaponChanged",{owner:o,before,after,reason});
+}
+function attack(s,...args){return resolveAction(s,()=>attackResolved(s,...args));}
+function playCard(s,...args){return resolveAction(s,()=>playCardResolved(s,...args));}
+function useHeroPower(s,...args){return resolveAction(s,()=>useHeroPowerResolved(s,...args));}
 const SPELL_IDS=[
  "KNZ-001","KNZ-004","KNZ-011","KNZ-014","KNZ-026","KNZ-031","KNZ-036","KNZ-038",
  "CHR-001","CHR-003","CHR-005","CHR-008","CHR-010","CHR-018","CHR-025","CHR-037",
@@ -198,7 +258,7 @@ function heroPowerTargetValid(s,o,target){
  return !!(target&&target.kind==="minion"&&target.owner===o
    &&minion(s,o,target.uid)&&isHuman(minion(s,o,target.uid)));
 }
-function useHeroPower(s,o,target=null){
+function useHeroPowerResolved(s,o,target=null){
  const check=heroPowerStatus(s,o);
  if(!check.ok)return check;
  if(check.targeted&&!heroPowerTargetValid(s,o,target))
@@ -230,6 +290,7 @@ function useHeroPower(s,o,target=null){
  if((check.id==="warrior-recruit"||check.id.startsWith("necro-"))&&!summoned)
   return {ok:false,reason:"Не удалось призвать токен."};
  p.mana-=check.cost;p.heroPowerUsed=true;
+ combatEvent(s,"heroPowerUsed",{owner:o,id:check.id,target});
  log(s,(o===0?"Игрок":"Бот")+" использует силу героя «"+check.name+"» ("+check.cost+" маны).",{kind:"hero-power",owner:o});
  return {ok:true,id:check.id};
 }
@@ -248,7 +309,7 @@ function makeGame(deckA,deckB,catalog,opts={}){
    classId:d.classId,deckName:d.name,health:30,
    armor:d.classId==="Воин"&&opts.heroProfiles?.[owner]==="ragvalod"?10:0,
    deck:shuffle(Object.entries(d.counts).flatMap(([id,q])=>Array(num(q)).fill(id)),rng),
-   hand:[],board:[],graveyard:[],graveyardHistory:[],corpseLedger:[],
+   hand:[],board:[],discarded:[],graveyard:[],graveyardHistory:[],corpseLedger:[],
    heroPowerUsed:false,heroProfile:opts.heroProfiles?.[owner]||"campaign",
    necroTokens:opts.necroTokens||null,
    weapon:null,maxMana:0,mana:0,corpses:0,
@@ -267,18 +328,28 @@ function makeGame(deckA,deckB,catalog,opts={}){
  return s;
 }
 function checkEnd(s){
+ if(resolutionDepth.get(s)||deathResolvers.has(s))return;
  const a=player(s,0).health,b=player(s,1).health;
  if(s.phase==="ended")return;
- if(a<=0&&b<=0){s.phase="ended";s.winner="draw";log(s,"Оба героя погибли: итог требует утверждения.");}
+ if(a<=0&&b<=0){s.phase="ended";s.winner="draw";log(s,"Ничья: оба героя погибли.");}
  else if(a<=0){s.phase="ended";s.winner=1;log(s,"Победил бот.");}
  else if(b<=0){s.phase="ended";s.winner=0;log(s,"Победил игрок.");}
 }
+function applyDamage(s,target,amount,ref){
+ const packet=Math.max(0,num(amount)),before={health:target.health,armor:Math.max(0,num(target.armor))};
+ let blocked=null,armorLoss=0,healthLoss=0;
+ if(packet&&target.invulnerable)blocked="Неуязвимость";
+ else if(packet&&target.divineShield){target.divineShield=false;blocked="Божественный щит";}
+ else{armorLoss=Math.min(packet,before.armor);healthLoss=Math.min(Math.max(0,before.health),packet-armorLoss);
+  if(before.armor||armorLoss)target.armor=before.armor-armorLoss;
+  target.health-=packet-armorLoss;}
+ const actual=armorLoss+healthLoss;
+ if(packet)combatEvent(s,"damage",{target:ref,packet,actual,armorLoss,healthLoss,blocked,
+  healthBefore:before.health,healthAfter:target.health,armorBefore:before.armor,armorAfter:target.armor||0});
+ return actual;
+}
 function damageHero(s,o,amount){
- const p=player(s,o);let remain=Math.max(0,num(amount));
- if(!remain)return 0;
- let actual=0;
- if(p.armor){const x=Math.min(remain,p.armor);p.armor-=x;remain-=x;actual+=x;}
- if(remain){p.health-=remain;actual+=remain;}
+ const p=player(s,o),actual=applyDamage(s,p,amount,{kind:"hero",owner:o});
  if(actual)p.lastDamageTurn=s.turns;
  if(actual)log(s,"Герой "+(o===0?"игрока":"бота")+" получает "+actual+" урона.",
   {kind:"damage",owner:o,amount:actual});
@@ -288,16 +359,17 @@ function healHero(s,o,amount){
  const p=player(s,o),before=p.health;
  p.health=Math.min(30,p.health+Math.max(0,num(amount)));
  const restored=p.health-before;
+ if(restored)combatEvent(s,"healing",{target:{kind:"hero",owner:o},actual:restored});
  if(restored)log(s,"Герой "+(o===0?"игрока":"бота")+" восстанавливает "+restored+" здоровья.",
     {kind:"healing",owner:o,amount:restored});
  return restored;
 }
 function draw(s,o){
  const p=player(s,o);
- if(!p.deck.length){p.fatigue++;damageHero(s,o,p.fatigue);log(s,"Усталость: "+p.fatigue+" урона.");return false;}
+ if(!p.deck.length){p.fatigue++;combatEvent(s,"fatigue",{owner:o,amount:p.fatigue});damageHero(s,o,p.fatigue);log(s,"Усталость: "+p.fatigue+" урона.");return false;}
  const id=p.deck.shift();
- if(p.hand.length>=10){log(s,"Переполнение руки: "+id+" сброшена.");return false;}
- p.hand.push({uid:uid(s),cardId:id,costAdjustment:0});
+ if(p.hand.length>=10)return discardCard(s,o,id,"overflow","deck");
+ addHandCard(s,o,{uid:uid(s),cardId:id,costAdjustment:0},"deck");
  log(s,(o===0?"Игрок взял карту: "+(s.cards[id]?.name||id):"Бот взял карту")+" (верх колоды).",
    {kind:"draw",owner:o,cardId:o===0?id:null});
  return true;
@@ -306,8 +378,8 @@ function drawOneWhere(s,o,predicate,adjustment=0){
  const p=player(s,o),idx=p.deck.findIndex(id=>predicate(s.cards[id]));
  if(idx<0)return false;
  const [id]=p.deck.splice(idx,1);
- if(p.hand.length>=10){log(s,"Переполнение руки: "+id+" сброшена.");return false;}
- p.hand.push({uid:uid(s),cardId:id,costAdjustment:adjustment});
+ if(p.hand.length>=10)return discardCard(s,o,id,"overflow","deck");
+ addHandCard(s,o,{uid:uid(s),cardId:id,costAdjustment:adjustment},"deck");
  return true;
 }
 // Selects an eligible card uniformly at random from remaining physical deck entries.
@@ -317,8 +389,8 @@ function drawRandomWhere(s,o,predicate,adjustment=0){
  const selected=pick(s,matches);
  if(!selected){log(s,"Добор из колоды: подходящих карт не осталось.");return false;}
  p.deck.splice(selected.i,1);
- if(p.hand.length>=10){log(s,"Переполнение руки: карта из колоды сброшена.");return false;}
- p.hand.push({uid:uid(s),cardId:selected.id,costAdjustment:adjustment});
+ if(p.hand.length>=10)return discardCard(s,o,selected.id,"overflow","deck");
+ addHandCard(s,o,{uid:uid(s),cardId:selected.id,costAdjustment:adjustment},"deck");
  log(s,(o===0?"Вы взяли карту: "+(s.cards[selected.id]?.name||selected.id):
    "Бот взял карту")+" (случайный добор из колоды).",
    {kind:"draw",owner:o,cardId:o===0?selected.id:null});
@@ -380,7 +452,8 @@ function auraHealth(s,m,owner){
 function syncAuras(s){
  withOwner(s,(m,o)=>{
   const desired=auraHealth(s,m,o),delta=desired-num(m.auraHealth);
-  if(delta){m.maxHealth+=delta;m.health+=delta;m.auraHealth=desired;}
+  if(delta){m.maxHealth+=delta;m.health+=delta;m.auraHealth=desired;
+   combatEvent(s,"attributesChanged",{target:{kind:"minion",owner:o,uid:m.uid},attack:0,maxHealth:delta,aura:true});}
  });
 }
 function localBright(s,m){
@@ -410,7 +483,9 @@ function incomingMultiplier(s,m,kind="combat"){
 }
 function addTimed(m,kind,amount,untilOwner,remaining=1){
  if(!Array.isArray(m.timed))m.timed=[];
+ const s=minionStates.get(m),before=s?effectiveAttack(s,m):m.attack;
  m.timed.push({kind,amount,untilOwner,remaining});
+ if(s)combatEvent(s,"attributesChanged",{target:{kind:"minion",owner:boardOwner(s,m),uid:m.uid},attack:effectiveAttack(s,m)-before,maxHealth:0,timedKind:kind});
 }
 function cleanseKnownNegativeEffects(s,m){
  if(!m)return 0;
@@ -425,7 +500,7 @@ function cleanseKnownNegativeEffects(s,m){
 function igniteHands(s){
  let count=0;
  for(const p of s.players)for(const h of p.hand){
-   if(h.burnTurnsLeft!=null)continue; // Repeat ignition: unresolved in v0.4
+   // Rules 0.6: refresh the two-personal-turn duration.
    h.burnTurnsLeft=2;h.burnStartedAt=s.turns;count++;
  }
  log(s,"Падпал: отмечено "+count+" карт в руках; два следующих собственных хода.");
@@ -433,6 +508,7 @@ function igniteHands(s){
 function buff(s,m,atk=0,hp=0){
  if(!m)return;
  m.attack+=atk;m.maxHealth+=hp;m.health+=hp;
+ if(atk||hp)combatEvent(s,"attributesChanged",{target:{kind:"minion",owner:boardOwner(s,m),uid:m.uid},attack:atk,maxHealth:hp});
 }
 function makeMinion(s,card,bonus=0,opts={}){
  const text=String(card.ability||"").trim();
@@ -451,10 +527,11 @@ function makeMinion(s,card,bonus=0,opts={}){
 function randomMinion(s,o,predicate){return pick(s,player(s,o).board.filter(predicate));}
 function summon(s,o,card,opts={}){
  const p=player(s,o);if(!card||p.board.length>=7)return null;
- const m=makeMinion(s,card,num(opts.bonus),opts);
+ const m=makeMinion(s,card,num(opts.bonus),opts);minionStates.set(m,s);
  if(opts.taunt)m.taunt=true;
  if(opts.charge){m.charge=true;m.ready=true;}
- p.board.push(m);syncAuras(s);
+ p.board.splice(opts.position??p.board.length,0,m);syncAuras(s);
+ combatEvent(s,"creatureEntered",{owner:o,instance:m,index:p.board.indexOf(m)});
  log(s,(o===0?"Игрок":"Бот")+" призывает "+m.name+".",
    {kind:"summon",owner:o,cardId:m.cardId});
  // NEU-010: after you summon a Peasant with 1 attack, give +1/+1.
@@ -471,6 +548,7 @@ function healMinion(s,o,id,amount){
  const before=m.health;m.health=Math.min(m.maxHealth,m.health+Math.max(0,num(amount)));
  const restored=m.health-before;
  if(restored>0){
+  combatEvent(s,"healing",{target:{kind:"minion",owner:o,uid:id},actual:restored});
   log(s,m.name+" восстанавливает "+restored+" здоровья.",
      {kind:"healing",owner:o,cardId:m.cardId,amount:restored});
   for(const source of [...player(s,o).board])if(source.cardId==="KNZ-028"&&source.uid===id){
@@ -482,23 +560,24 @@ function healMinion(s,o,id,amount){
 function damageMinion(s,o,id,amount,kind="spell",batch=false){
  const m=minion(s,o,id);if(!m)return 0;
  const dmg=Math.max(0,num(amount))*incomingMultiplier(s,m,kind);
- const actual=Math.min(Math.max(0,m.health),dmg);
- m.health-=dmg;
+ const actual=applyDamage(s,m,dmg,{kind:"minion",owner:o,uid:id});
  if(actual)log(s,m.name+" получает "+actual+" урона.",
     {kind:"damage",owner:o,cardId:m.cardId,amount:actual});
  if(!batch)removeDead(s);return actual;
 }
 function areaDamage(s,targets,amount,kind="spell"){
- for(const [o,m] of targets)if(minion(s,o,m.uid))damageMinion(s,o,m.uid,amount,kind,true);
+ combatBatch(s,"area",()=>{for(const [o,m] of targets)if(minion(s,o,m.uid))damageMinion(s,o,m.uid,amount,kind,true);});
  removeDead(s);
 }
 function destroyMinion(s,o,id){
  const m=minion(s,o,id);if(!m)return;
- m.health=0;removeDead(s);
+ m.health=0;combatEvent(s,"destroyed",{target:{kind:"minion",owner:o,uid:id}});removeDead(s);
 }
 function chooseWounded(s,o){return player(s,o).board
  .filter(m=>m.health<m.maxHealth).sort((a,b)=>(a.health-a.maxHealth)-(b.health-b.maxHealth))[0];}
 function deathrattle(s,o,m){
+ const supported=new Set(["CHR-002","CHR-023","CHR-034","KNZ-010","NEU-003","NEU-005","NEU-037","NEU-042","ZAV-004","NCR-002","NCR-013"]);
+ if(supported.has(m.cardId))combatEvent(s,"deathrattleTriggered",{owner:o,instance:m});
  switch(m.cardId){
   case "CHR-002":damageHero(s,other(o),1);break;
   case "CHR-023":player(s,o).nextSpiritDiscount++;break;
@@ -534,31 +613,42 @@ function friendlyDeath(s,o,m){
  s.rituals=s.rituals.filter(r=>!r.done);
 }
 function removeDead(s){
- // Снимки смерти и порядок исполнения детерминированы, но порядок нескольких
- // одновременных триггеров остаётся предметом согласования с автором.
- let loops=0;
- while(loops++<35){
+ const active=deathResolvers.get(s);
+ if(active){collectDeaths(s,active);return;}
+ const context={queue:[],waves:0};deathResolvers.set(s,context);
+ try{
+  collectDeaths(s,context);
+  while(context.queue.length&&context.waves<35){
+   const {o,m}=context.queue.shift();
+   combatCause(s,{kind:"deathrattle",owner:o,uid:m.uid,cardId:m.cardId},()=>{friendlyDeath(s,o,m);deathrattle(s,o,m);});
+   collectDeaths(s,context);
+  }
+  if(context.waves>=35)log(s,"Защитное ограничение цепочки смертей.");
+ }finally{deathResolvers.delete(s);}
+ checkEnd(s);
+}
+function collectDeaths(s,context){
+ while(context.waves<35){
   syncAuras(s);
-  const dying=s.players.flatMap((p,o)=>p.board.filter(m=>m.health<=0).map(m=>({o,m})));
-  if(!dying.length)break;
+  // Canon §15.3: active side first, each side left-to-right; subsequent triggers append.
+  const order=[s.turn,other(s.turn)];
+  const dying=order.flatMap(o=>player(s,o).board.filter(m=>m.health<=0).map(m=>({o,m})));
+  if(!dying.length)return;
+  context.waves++;const departed=[];
+  // Remove the whole wave before recalculating auras or running a death effect.
+  for(const {o,m} of dying)player(s,o).board=player(s,o).board.filter(x=>x.uid!==m.uid);
   for(const {o,m} of dying){
-   const p=player(s,o);p.board=p.board.filter(x=>x.uid!==m.uid);
    if(m.reborn){
-     m.reborn=false;m.health=m.maxHealth;m.ready=false;m.attacked=true;
-     p.board.push(m);
-     log(s,m.name+": Перараджэнне — восстановлено здоровье.");
+    // Existing legacy rebirth is explicitly outside the canonical death-queue acceptance.
+    m.reborn=false;m.health=m.maxHealth;m.ready=false;m.attacked=true;player(s,o).board.push(m);
+    combatEvent(s,"legacyRebirth",{owner:o,instance:m});log(s,m.name+": Перараджэнне — восстановлено здоровье.");
    }else{
-     recordDeath(s,o,m);
-     log(s,m.name+" погибает.",{kind:"death",owner:o,cardId:m.cardId});
+    departed.push({owner:o,instance:clean(m)});recordDeath(s,o,m);
+    log(s,m.name+" погибает.",{kind:"death",owner:o,cardId:m.cardId});context.queue.push({o,m});
    }
   }
-  syncAuras(s);
-  for(const {o,m} of dying){
-   if(!m.reborn&&m.health<=0){friendlyDeath(s,o,m);deathrattle(s,o,m);}
-  }
+  if(departed.length)combatEvent(s,"creaturesDied",{instances:departed});
  }
- if(loops>=35)log(s,"Защитное ограничение цепочки смертей (неутверждённый порядок триггеров).");
- checkEnd(s);
 }
 function targetMode(s,o,card){
  if(card.cardId==="CHR-007"&&!isBright(s.time))return "enemy-minion";
@@ -744,8 +834,8 @@ function resolveChoices(s,o,c,choices){
  for(const idx of deck.map(x=>Number(x.id.split(":")[1])).sort((a,b)=>b-a))
    pl.deck.splice(idx,1);
  function toHand(cardId,discount=0){
-  if(pl.hand.length>=10){log(s,"Рука переполнена: "+cardId+" не получена.");return;}
-  pl.hand.push({uid:uid(s),cardId,costAdjustment:discount});
+  if(pl.hand.length>=10){discardCard(s,o,cardId,"overflow","graveyard");return;}
+  addHandCard(s,o,{uid:uid(s),cardId,costAdjustment:discount},"graveyard");
  }
  function revive(x,transform=null){
   const definition=s.cards[x.cardId];if(!definition)return;
@@ -942,7 +1032,7 @@ function onMinionPlayed(s,o,m,target,choices=null){
   case "ZAV-002":{
     const options=player(s,other(o)).hand.filter(h=>h.cardId!=="__coin__");
     const picked=pick(s,options);
-    if(picked&&p.hand.length<10)p.hand.push({uid:uid(s),cardId:picked.cardId,costAdjustment:1});
+    if(picked)addHandCard(s,o,{uid:uid(s),cardId:picked.cardId,costAdjustment:1},"created");
     break;
   }
   case "ZAV-005":{
@@ -951,7 +1041,7 @@ function onMinionPlayed(s,o,m,target,choices=null){
     else log(s,"ВОГНЕННЫ ДУХ: нет выбранной вражеской цели, боевой клич пропущен.");
     break;
   }
-  case "KNZ-013":if(p.weapon)p.weapon.durability++;break;
+  case "KNZ-013":if(p.weapon){const before=clean(p.weapon);p.weapon.durability++;weaponEvent(s,o,before,"repair");}break;
   case "KNZ-022":{
    const available=p.deck.map(id=>s.cards[id]).filter(Boolean);
    if(available.length){
@@ -964,7 +1054,7 @@ function onMinionPlayed(s,o,m,target,choices=null){
   case "KNZ-017":healMinion(s,o,target.uid,isSpirit(minion(s,o,target.uid))?5:3);break;
   case "KNZ-027":{
     const spirits=p.graveyard.filter(g=>!g.token&&s.cards[g.cardId]?.creatureTypeId==="Дух");
-    const g=pick(s,spirits);if(g&&p.hand.length<10)p.hand.push({uid:uid(s),cardId:g.cardId,costAdjustment:-1});break;}
+    const g=pick(s,spirits);if(g)addHandCard(s,o,{uid:uid(s),cardId:g.cardId,costAdjustment:-1},"graveyard");break;}
   case "KNZ-034":summonTokens(s,o,"TKN-001",2,0,{charge:true});break;
   case "KNZ-035":
    for(const x of p.board.filter(x=>x.uid!==m.uid&&isHuman(x)))buff(s,x,2,2);
@@ -1000,15 +1090,15 @@ function onMinionPlayed(s,o,m,target,choices=null){
   case "NEU-043":{
     // КОТ БАЮН: одновременно 5 всем существам, 10 Людям, включая союзников.
     const targets=s.players.flatMap((pl,i)=>pl.board.map(x=>[i,x]));
-    for(const [owner,x] of targets)if(minion(s,owner,x.uid))
-      damageMinion(s,owner,x.uid,isHuman(x)?10:5,"spell",true);
+    combatBatch(s,"area",()=>{for(const [owner,x] of targets)if(minion(s,owner,x.uid))
+      damageMinion(s,owner,x.uid,isHuman(x)?10:5,"spell",true);});
     removeDead(s);break;
   }
   case "NEU-044":{
     // МАРАНА: 3 всем остальным; лечение по числу убитых непосредственно уроном.
     const targets=s.players.flatMap((pl,i)=>pl.board.filter(x=>x.uid!==m.uid).map(x=>[i,x]));
-    for(const [owner,x] of targets)if(minion(s,owner,x.uid))
-      damageMinion(s,owner,x.uid,3,"spell",true);
+    combatBatch(s,"area",()=>{for(const [owner,x] of targets)if(minion(s,owner,x.uid))
+      damageMinion(s,owner,x.uid,3,"spell",true);});
     const dead=targets.filter(([owner,x])=>minion(s,owner,x.uid)?.health<=0).length;
     removeDead(s);
     if(dead)healHero(s,o,dead);
@@ -1053,7 +1143,7 @@ function onCardPlayed(s,o,card){
  if(card.cardType==="spell"){
   const w=p.weapon;
   if(w?.cardId==="NCR-030"&&card.spellForm==="Ритуал"){
-   draw(s,o);w.durability--;if(w.durability<=0)p.weapon=null;
+   draw(s,o);const before=clean(w);w.durability--;if(w.durability<=0)p.weapon=null;weaponEvent(s,o,before,"ritual");
   }
  }
 }
@@ -1122,24 +1212,32 @@ function startTurn(s,o){
  const p=player(s,o);
  s.turn=o;s.turns++;
  // At start of turn pending ritual/temporary effects resolve before mana/draw.
- onStartTurn(s,o);if(s.phase==="ended")return;
- p.maxMana=Math.min(10,p.maxMana+1);p.mana=p.maxMana;p.heroAttacked=false;p.heroPowerUsed=false;
+ p.heroAttacked=false;p.heroPowerUsed=false;
  p.board.forEach(m=>{m.ready=true;m.attacked=false;});
+ combatEvent(s,"turnStage",{stage:"start",owner:o});
+ resolveAction(s,()=>onStartTurn(s,o));if(s.phase==="ended")return;
+ p.maxMana=Math.min(10,p.maxMana+1);p.mana=p.maxMana;
  // Pending attack prohibition lasts through this owner's turn, then expires at its end.
- draw(s,o);
+ combatEvent(s,"turnStage",{stage:"resources",owner:o});
+ resolveAction(s,()=>draw(s,o));if(s.phase!=="battle")return;
+ combatEvent(s,"turnStage",{stage:"ready",owner:o});
  log(s,"Ход "+s.turns+" · "+(o===0?"Игрок":"Бот")+" · "+
       String(s.time).padStart(2,"0")+":00 · "+phaseOfHour(s.time)+".",{kind:"turn",owner:o});
 }
 function endTurn(s,o){
  if(s.phase!=="battle"||s.turn!==o)return {ok:false,reason:"Сейчас не ваш ход."};
- onEndTurn(s,o);
+ combatEvent(s,"turnStage",{stage:"end-effects",owner:o});
+ resolveAction(s,()=>onEndTurn(s,o));
+ if(s.phase!=="battle")return {ok:true};
+ resolveAction(s,()=>{
  // Two next personal turns; death effects must never trigger on discarded cards.
  const burning=player(s,o),old=burning.hand.length;
  burning.hand=burning.hand.filter(h=>{
    if(h.burnTurnsLeft==null||h.burnStartedAt>=s.turns)return true;
    h.burnTurnsLeft--;
    if(h.burnTurnsLeft>0)return true;
-   log(s,"Падпал: "+(s.cards[h.cardId]?.name||h.cardId)+" сгорела в руке "+(o===0?"игрока":"бота")+".");
+   discardCard(s,o,h.cardId,"burn","hand");
+   log(s,"Падпал: "+(o===0?(s.cards[h.cardId]?.name||h.cardId):"Карта соперника")+" сгорела в руке "+(o===0?"игрока":"бота")+".");
    return false;
  });
  if(old!==burning.hand.length)log(s,"Падпал: сброшено "+(old-burning.hand.length)+" карт.");
@@ -1153,11 +1251,20 @@ function endTurn(s,o){
  // Discount "next Spirit this turn" expires on its current owner's turn.
  p.spiritDiscountThisTurn=0;
  if(p.enemySpellTax>0)p.enemySpellTax--;
- removeDead(s);
- if(s.phase==="battle"){s.time=(s.time+1)%24;startTurn(s,other(o));}
+ p.mana=0;
+ removeDead(s);combatEvent(s,"turnStage",{stage:"expired",owner:o});
+ });
+ if(s.phase==="battle"){
+  const previousHour=s.time;s.time=(s.time+1)%24;resolveAction(s,()=>{syncAuras(s);removeDead(s);});
+  combatEvent(s,"clockAdvanced",{owner:o,previousHour,hour:s.time});
+  if(s.phase==="battle")startTurn(s,other(o));
+ }
  return {ok:true};
 }
-function playCard(s,o,uidValue,target=null,choices=null){
+function playCardResolved(s,o,uidValue,target=null,choices=null,position=null){
+ // Reject stale/invalid placement before payment, choices, or mutation.
+ if(position!==null&&(!Number.isInteger(position)||position<0||position>player(s,o).board.length))
+  return {ok:false,reason:"Место размещения недоступно."};
  const check=actionStatus(s,o,uidValue);if(!check.ok)return check;
  const p=player(s,o),idx=p.hand.findIndex(x=>x.uid===uidValue),h=p.hand[idx];
  if(h.cardId==="__coin__"){p.hand.splice(idx,1);p.mana++;log(s,"Монетка: +1 временная мана.");return {ok:true};}
@@ -1175,17 +1282,17 @@ function playCard(s,o,uidValue,target=null,choices=null){
  }
  if(c.cardType==="spell"&&p.nextSpellDiscount)p.nextSpellDiscount=0;
  if(c.cardType==="creature"){
-  const m=summon(s,o,c,{summonedWithCorpses:c.costType==="corpses"});
+  const m=summon(s,o,c,{summonedWithCorpses:c.costType==="corpses",position});
   if(m?.unsupported)log(s,c.name+": способность реализована не полностью.");
    if(m&&(!m.unsupported||PLAYABLE_PARTIAL_CREATURES.has(c.cardId)))
-     onMinionPlayed(s,o,m,target,choices);
+     combatCause(s,{kind:"card",owner:o,uid:m.uid,cardId:c.cardId},()=>onMinionPlayed(s,o,m,target,choices));
  }else if(c.cardType==="weapon"){
   const weapon={cardId:c.cardId,name:c.name,attack:num(c.attack),durability:num(c.durability),lastTriggerTurn:-1};
-  p.weapon=weapon;
+  const priorWeapon=clean(p.weapon);p.weapon=weapon;weaponEvent(s,o,priorWeapon,"equip");
   if(abilitySupport(c)!=="complete")log(s,c.name+": дополнительная способность пока не реализована.");
   else onWeaponPlayed(s,o,weapon,target);
  }else if(c.cardType==="spell"){
-  resolveSpell(s,o,c,target,choices);
+  combatCause(s,{kind:"card",owner:o,cardId:c.cardId},()=>resolveSpell(s,o,c,target,choices));
  }
  onCardPlayed(s,o,c);
  syncAuras(s);removeDead(s);checkEnd(s);
@@ -1198,7 +1305,7 @@ function eligibleAttackTargets(s,o){
    [...enemy.board.filter(m=>!m.stealth).map(m=>({kind:"minion",owner:other(o),uid:m.uid})),
      {kind:"hero",owner:other(o)}];
 }
-function attack(s,o,attackerUid,target,hero=false){
+function attackStatus(s,o,attackerUid,target,hero=false){
  if(s.phase!=="battle"||s.turn!==o)return {ok:false,reason:"Сейчас не ваш ход."};
  const p=player(s,o),allowed=eligibleAttackTargets(s,o);
  if(!target||!allowed.some(t=>t.kind===target.kind&&t.owner===target.owner&&
@@ -1214,23 +1321,30 @@ function attack(s,o,attackerUid,target,hero=false){
   if(a.cardId==="NCR-009"&&target.kind==="hero")return {ok:false,reason:"Касцяны ваяр не атакует героев."};
   damage=effectiveAttack(s,a);if(damage<=0)return {ok:false,reason:"Атака равна 0."};
  }
+ return {ok:true};
+}
+function attackResolved(s,o,attackerUid,target,hero=false){
+ const status=attackStatus(s,o,attackerUid,target,hero);if(!status.ok)return status;
+ const p=player(s,o),a=hero?null:minion(s,o,attackerUid),weaponUsed=p.weapon,wasMinion=target.kind==="minion";
+ const damage=hero?p.weapon.attack:effectiveAttack(s,a);
  let died=false,dealt=0;
- if(target.kind==="hero"){
-  dealt=damageHero(s,other(o),damage);
- }else{
-  const m=minion(s,other(o),target.uid),counter=effectiveAttack(s,m);
-  const before=m.health;
-  dealt=damageMinion(s,other(o),m.uid,damage,"combat",true);
-  if(hero){damageHero(s,o,counter);}
-  else damageMinion(s,o,a.uid,counter,"combat",true);
-  died=before>0&&m.health<=0;
-  removeDead(s);
- }
+ combatCause(s,{kind:"attack",owner:o,uid:hero?null:attackerUid,hero,target},()=>combatBatch(s,"combat",()=>{
+  if(target.kind==="hero")dealt=damageHero(s,other(o),damage);
+  else{
+   const m=minion(s,other(o),target.uid),counter=effectiveAttack(s,m),before=m.health;
+   dealt=damageMinion(s,other(o),m.uid,damage,"combat",true);
+   if(hero)damageHero(s,o,counter);else damageMinion(s,o,a.uid,counter,"combat",true);
+   died=before>0&&m.health<=0;
+  }
+ }));
+ if(target.kind==="minion")removeDead(s);
  if(hero){
   p.heroAttacked=true;
-  if(weaponUsed){onWeaponAttack(s,o,died,wasMinion);
+  if(weaponUsed){combatCause(s,{kind:"weapon",owner:o,cardId:weaponUsed.cardId},()=>onWeaponAttack(s,o,died,wasMinion));
     // Weapon might have been removed by an effect; decrement only if still equipped.
+    const priorWeapon=clean(p.weapon);
     if(p.weapon===weaponUsed){weaponUsed.durability--;if(weaponUsed.durability<=0)p.weapon=null;}
+    weaponEvent(s,o,priorWeapon,"attack");
   }
  }else{
   a.attacked=true;
@@ -1239,6 +1353,7 @@ function attack(s,o,attackerUid,target,hero=false){
    if(a.cardId==="CHR-013"&&dealt>0)healHero(s,o,2);
   if(a.cardId==="NCR-007"&&dealt>0)healHero(s,o,dealt);
  }
+ combatEvent(s,"attackConsumed",{owner:o,hero,attackerUid});
  log(s,(o===0?"Игрок":"Бот")+" атакует "+(target.kind==="hero"?"героя":"существо")+".",{kind:"attack",owner:o});
  checkEnd(s);return {ok:true};
 }
@@ -1320,7 +1435,8 @@ function botAttackScore(s,o,attacker,target,hero=false){
    (defender.taunt?2:0)+Math.min(trueDamage,defender.health)*.25-
    (dies?hero?12:6+effectiveAttack(s,attacker):0);
 }
-function* botTurnFrames(s,o=1){
+function* botTurnFrames(s,o=1,dispatch=null){
+ const invoke=(name,args)=>dispatch?dispatch(name,args):({playCard,attack,useHeroPower,endTurn}[name])(s,...args);
  if(s.phase!=="battle"||s.turn!==o)return {ok:false,reason:"Не ход управляемого игрока."};
  const p=player(s,o),actions=[];
  // Если летальная атака уже доступна без провокации, не тратим ману прежде неё.
@@ -1332,11 +1448,11 @@ function* botTurnFrames(s,o=1){
  if(!blockers&&lethalDamage>=enemy.health+enemy.armor){
    for(const m of lethalAttackers){
      if(s.phase!=="battle")break;
-     const r=attack(s,o,m.uid,{kind:"hero",owner:other(o)});
+     const r=invoke("attack",[o,m.uid,{kind:"hero",owner:other(o)}]);
      if(r.ok){actions.push({type:"attack",target:"hero",lethal:true});yield actions[actions.length-1];}
    }
    if(s.phase==="battle"&&p.weapon&&!p.heroAttacked){
-     const r=attack(s,o,null,{kind:"hero",owner:other(o)},true);
+     const r=invoke("attack",[o,null,{kind:"hero",owner:other(o)},true]);
      if(r.ok){actions.push({type:"attack",target:"hero",lethal:true});yield actions[actions.length-1];}
    }
    if(s.phase==="ended")return {ok:true,actions};
@@ -1352,7 +1468,7 @@ function* botTurnFrames(s,o=1){
   let played=false;
   for(const option of options){
    const decisions=option.status.choice?botChoices(option.status.choice):null;
-   const result=playCard(s,o,option.h.uid,option.target,decisions);
+   const result=invoke("playCard",[o,option.h.uid,option.target,decisions]);
    if(result.ok){played=true;actions.push({type:"play",cardId:option.h.cardId});yield actions[actions.length-1];break;}
   }
   if(!played)break;
@@ -1363,7 +1479,7 @@ function* botTurnFrames(s,o=1){
    const humans=p.board.filter(isHuman);
    humans.sort((a,b)=>effectiveAttack(s,b)-effectiveAttack(s,a));
    const target=power.targeted&&humans.length?{kind:"minion",owner:o,uid:humans[0].uid}:null;
-   const result=useHeroPower(s,o,target);
+   const result=invoke("useHeroPower",[o,target]);
    if(result.ok){actions.push({type:"hero-power",id:result.id});yield actions[actions.length-1];}
   }
   const attackers=[...p.board.filter(m=>m.ready&&!m.attacked&&!m.timed.some(t=>t.kind==="frozen"))
@@ -1377,11 +1493,11 @@ function* botTurnFrames(s,o=1){
    if(!opts.length)continue;
    opts.sort((x,y)=>botAttackScore(s,o,self,y,a.hero)-botAttackScore(s,o,self,x,a.hero));
    const goal=opts[0];
-   const result=attack(s,o,a.uid,goal,a.hero);
+   const result=invoke("attack",[o,a.uid,goal,a.hero]);
    if(result.ok){actions.push({type:"attack",target:goal.kind,uid:goal.uid||null});yield actions[actions.length-1];}
   }
  }
- if(s.phase==="battle")endTurn(s,o);
+ if(s.phase==="battle")invoke("endTurn",[o]);
  return {ok:true,actions};
 }
 function runBotTurn(s,o=1){
@@ -1438,6 +1554,7 @@ function importBattle(payload,opts={}){
  s.discoveryOffers=s.discoveryOffers&&typeof s.discoveryOffers==="object"?s.discoveryOffers:{};
  s.debugMode=!!s.debugMode;s.debugged=!!s.debugged;
  for(const pl of s.players){
+  pl.discarded=Array.isArray(pl.discarded)?pl.discarded:[];
   pl.graveyardHistory=Array.isArray(pl.graveyardHistory)?pl.graveyardHistory:[];
   pl.corpseLedger=Array.isArray(pl.corpseLedger)?pl.corpseLedger:[];
  }
@@ -1482,7 +1599,7 @@ function debugAction(s,action){
   const m=minion(s,o,String(action.uid||""));
   if(!m)return {ok:false,reason:"Существо отсутствует на поле."};
   detail="уничтожено существо "+m.name;
-  m.health=0;removeDead(s); // use the normal death and graveyard rules
+  m.health=0;combatEvent(s,"destroyed",{target:{kind:"minion",owner:o,uid:m.uid}});removeDead(s); // use the normal death and graveyard rules
  }else return {ok:false,reason:"Неизвестная команда тестирования."};
  s.debugged=true;
  log(s,"ТЕСТ · "+(o===0?"игрок":"бот")+": "+detail+".",{kind:"debug",owner:o,cardId:cardId||null});
@@ -1497,7 +1614,7 @@ function eventJournal(s,{kind="all",owner="all",search=""}={}){
 }
 
 return {
- makeGame,confirmMulligan,startTurn,endTurn,draw,playCard,attack,actionStatus,
+ makeGame,confirmMulligan,startTurn,endTurn,draw,returnToHand,playCard,attack,attackStatus,actionStatus,captureCardMovements,captureCombat,
  exportBattle,importBattle,setDeveloperMode,debugAction,eventJournal,
  eligibleAttackTargets,effectiveAttack,incomingMultiplier,phaseOfHour,isBright,currentCost,
  spellTargetType,targetValid,chooseTargetForBot,runBotTurn,botTurnFrames,abilitySupport,

@@ -10,6 +10,8 @@ const nameType=t=>dm.types[t]||"Неизвестно";
 const getSaved=()=>window.MW_CARD_BRIDGE?.getSavedCards()||[];
 let catalog=dm.indexCatalog(window.MW_CANONICAL_CARDS,getSaved()), decks=new Map(),activeId=null;
 let deckDB=null,storageMode="memory",saveQueue=Promise.resolve(),currentMode="editor",filterText="",filterType="all",filterCost="all",onlyEligible=true;
+let networkPaused=navigator.onLine===false;
+let botStepper=null;
 let game=null,pending=null,mulliganSelection=new Set(),gameRunningAI=false,notifyTimeout=null;
 let labLastSummary=null,labBusy=false,loadedReplay=null,lastAuditReport="";
 // v2.0: local battle save is separate from cards, assets and deck storage.
@@ -18,11 +20,204 @@ const BATTLE_PREVIOUS_KEY="mw-previous-battle-v2.0";
 let battleSaveError="",lastSavedAt="";
 
 let graveOpenOwner=null;
+let inspectReturnFocus=null,choiceReturnFocus=null;
 let inspectOpen=false,lastBattleVisual=null,heroPortraitOwner=null;
 const PORTRAIT_KEY="mw-hero-portrait-v1.9:";
 const heroPortraitMemory=new Map();
 let visualScale=1.15,artFit="contain";
-let battleDragSession=null;
+let battleDragSession=null,handGrabPoint=null,returnDrag=null,cardRelease=null;
+// T03 second increment: stable presentation boundary for player and bot commands.
+let presentationSession=null,presentationGame=null,presentationQueue=null,presentationBusy=false;
+let presentationDisplay=null,presentationDone=Promise.resolve();
+let presentationView=null,presentationViewOwner=null;
+function syncPresentationView(){
+ const snapshot=game?(window.MW_BATTLE_REPLAY?.snapshot(game)||clone(game)):null;
+ if(presentationViewOwner!==game||!presentationView){presentationView=snapshot;presentationViewOwner=game;}
+ else{for(const key of Object.keys(presentationView))if(!(key in snapshot))delete presentationView[key];Object.assign(presentationView,snapshot);}
+ return presentationView;
+}
+let turnTimer=window.MW_TURN_TIMER.create(),timerExpiredPending=false,lastTimerSnapshot=0;
+const timerToken=()=>game?game.turns+":"+game.turn:"none";
+function updateTurnTimer(){
+ const active=game?.phase==="battle"&&!presentationBusy&&!document.hidden&&!networkPaused;
+ const remaining=turnTimer.sync(timerToken(),active),node=$("battleTurnTimer");
+ if(node){node.hidden=!turnTimer.enabled;node.textContent=(presentationBusy?"Пауза · разрешение":document.hidden||networkPaused?"Пауза":"До конца хода")+" · "+Math.ceil(remaining/1000)+" с";node.dataset.urgent=String(remaining<=15000);}
+ if(game?.phase!=="battle")return;
+ if(turnTimer.claimExpiry())timerExpiredPending=true;
+ if(timerExpiredPending&&!presentationBusy&&!document.hidden&&!networkPaused){
+  timerExpiredPending=false;pending=null;pendingChoice=null;choiceDraft={};cardRelease=null;battleDragSession=null;
+  $("battleChoiceDialog").hidden=true;clearBattleDropDecoration();window.MW_HAND_MOTION?.clearSlots(document);window.MW_COMBAT_MOTION?.clearAim(document);
+  executePresentation("endTurn",[game.turn]);
+ }
+ if(turnTimer.enabled&&active&&performance.now()-lastTimerSnapshot>=1000){lastTimerSnapshot=performance.now();persistBattleSession();}
+}
+setInterval(updateTurnTimer,200);
+let presentationCounter=0,presentationEpoch=0;
+function resetPresentation(){
+ presentationEpoch++;presentationQueue?.reset();presentationQueue=null;
+ presentationSession=null;presentationGame=null;presentationBusy=false;presentationDisplay=null;presentationView=null;presentationViewOwner=null;
+ $("battleWorkspace")?.removeAttribute("aria-busy");
+ document.querySelectorAll(".mw-turn-banner").forEach(n=>n.remove());
+ window.MW_COMBAT_MOTION?.reset(document);window.MW_MOTION_RUNTIME?.cancelAll();
+ document.querySelectorAll(".mw-command-ghost,.mw-card-flight,.mw-placement-slot").forEach(n=>n.remove());
+ document.querySelectorAll("#myHand [data-battle-hand],#botHand,[data-battle-minion]").forEach(n=>n.style.visibility="");
+}
+function presentationSource(owner,uid,hero=false){
+ if(hero)return document.querySelector(`[data-hero-owner="${owner}"]`);
+ return [...$("battleWorkspace").querySelectorAll("[data-battle-minion],[data-battle-hand]")]
+  .find(n=>n.dataset.battleMinion===owner+"|"+uid||owner===0&&n.dataset.battleHand===uid);
+}
+async function animatePresentationNode(node,keyframes,signal,duration=window.MW_BATTLE_MOTION.DEFAULTS.playerPlay){
+ if(!node?.animate||signal.aborted)return;
+ const animation=node.animate(keyframes,{duration,easing:"ease-out",fill:"none"});
+ const cancel=()=>animation.cancel();signal.addEventListener("abort",cancel,{once:true});
+ try{await animation.finished;}catch(_){/* timeout/reset fast-forwards the scene */}
+ finally{signal.removeEventListener("abort",cancel);animation.cancel();}
+}
+function applyCombatSnapshot(snapshot){
+ if(!snapshot||!presentationDisplay)return;
+ const state=clone(presentationDisplay);
+ for(const key of ["time","turn","turns","phase"])if(snapshot[key]!==undefined)state[key]=snapshot[key];
+ snapshot.players.forEach((p,o)=>Object.assign(state.players[o],clone(p)));
+ for(let owner=0;owner<2;owner++){
+  const board=$(owner===0?"myBoard":"botBoard");
+  window.MW_BATTLE_DOM.reconcile(board,state.players[owner].board,{key:m=>owner+"|minion|"+m.uid,
+   html:m=>battleCard(m,owner,"minion",state),empty:""});
+  board.classList.toggle("board-empty",!state.players[owner].board.length);
+ }
+ window.MW_BATTLE_CARD_RENDERER?.hydrate(state,$("battleWorkspace"));
+ window.MW_HERO_HUD_V0511?.render2D(state);
+ if($("battleManaValue"))$("battleManaValue").textContent=state.players[0].mana+"/"+state.players[0].maxMana;
+ if($("battleManaCounter"))$("battleManaCounter").setAttribute("aria-label","Мана "+state.players[0].mana+" из "+state.players[0].maxMana);
+ window.MW_BATTLEFIELD_V02?.render(state);window.MW_BF_LAYOUT_FIXES?.render(state);
+ return state;
+}
+async function presentEvent(event,signal){
+ if(event.type==="combatStep"&&window.MW_COMBAT_MOTION){
+  const step=event.payload,played=presentationMotionBatch.played;
+  if(["turnStage","clockAdvanced","cardDiscarded","fatigue","creatureReturned"].includes(step.type)){await window.MW_TURN_MOTION.step(document,step,{signal,apply:applyCombatSnapshot});return;}
+  if(step.type==="creatureEntered"&&played&&!presentationMotionBatch.playedPresented&&
+     step.owner===played.owner&&step.instance.cardId===played.cardId){
+   const before=presentationMotionBatch.publicBefore,after=clone(before);
+   step.snapshot.players.forEach((p,o)=>Object.assign(after.players[o],clone(p)));
+   if(played.owner===0){after.players[0].hand=after.players[0].hand.filter(h=>h.uid!==played.uid);after.players[0].handCount--;}
+   await window.MW_HAND_MOTION.transition(document,{before,after,played,release:presentationMotionBatch.release,signal,
+    isCurrent:presentationMotionBatch.isCurrent,render(){if(!signal.aborted){applyCombatSnapshot(step.snapshot);presentationSource(0,played.uid)?.remove();}}});
+   presentationMotionBatch.playedPresented=true;return;
+  }
+  await window.MW_COMBAT_MOTION.step(document,step,{signal,apply:applyCombatSnapshot});return;
+ }
+
+ if(event.type==="stateCommitted"&&window.MW_HAND_MOTION){
+  await window.MW_HAND_MOTION.transition(document,{...event.payload,...presentationMotionBatch,played:presentationMotionBatch.playedPresented?null:presentationMotionBatch.played,signal,
+   render(){if(!signal.aborted){presentationDisplay=null;renderGame({presentationCommit:true});}}});return;
+ }
+ if(window.MW_MOTION_RUNTIME.reduced(document))return;
+ const p=event.payload;
+ if(event.type==="attackDeclared"&&window.MW_COMBAT_MOTION&&!$("battleWorkspace").classList.contains("mw3d-active")){
+  await window.MW_COMBAT_MOTION.attack(document,p,{signal});return;
+ }
+ if(event.type==="attackDeclared"){
+  const source=presentationSource(p.owner,p.attackerUid,p.hero);
+  const target=presentationSource(p.target.owner,p.target.uid,p.target.kind==="hero");
+  if($("battleWorkspace").classList.contains("mw3d-active")){
+   window.MW_ARENA_3D?.animateAttack({kind:p.hero?"hero":"minion",owner:p.owner,uid:p.attackerUid},p.target);
+   await new Promise(resolve=>{const finish=()=>{clearTimeout(timer);signal.removeEventListener("abort",finish);resolve();};const timer=setTimeout(finish,window.MW_BATTLE_MOTION.DEFAULTS.attack);signal.addEventListener("abort",finish,{once:true});});return;
+  }
+  if(!source||!target)return;
+  const a=source.getBoundingClientRect(),b=target.getBoundingClientRect();
+  // Transform is local to the scaled arena: convert screen delta once.
+  const sx=source.offsetWidth>0?a.width/source.offsetWidth:1,sy=source.offsetHeight>0?a.height/source.offsetHeight:1;
+  await animatePresentationNode(source,[{transform:"translate(0,0)"},
+   {transform:`translate(${(b.left+b.width/2-a.left-a.width/2)*.75/sx}px,${(b.top+b.height/2-a.top-a.height/2)*.75/sy}px)`,offset:.55},
+   {transform:"translate(0,0)"}],signal,window.MW_BATTLE_MOTION.DEFAULTS.attack);return;
+ }
+ if(event.type==="heroPowerDeclared"){
+  await animatePresentationNode($(p.owner?"botHeroPower":"myHeroPower"),[{filter:"brightness(1)"},{filter:"brightness(1.6)"},{filter:"brightness(1)"}],signal);return;
+ }
+ if(event.type==="cardPlayDeclared"&&window.MW_HAND_MOTION){
+  if(p.card)await window.MW_MOTION_RUNTIME.resource(Promise.all([
+   window.MW_BATTLE_CARD_RENDERER?.request(p.card,"full",{}),
+   p.card.cardType==="creature"?window.MW_BATTLE_CARD_RENDERER?.request(p.card,"boardPortrait",{}):null]),signal);
+  if(p.card?.cardType!=="creature"){
+   await window.MW_COMBAT_MOTION?.reveal(document,p,{signal});
+   presentationMotionBatch.playedPresented=true;presentationSource(0,p.uid)?.remove();
+  }
+  return;
+ }
+ if(event.type!=="cardPlayDeclared")return;
+ const source=p.owner===0?presentationSource(0,p.uid):null;
+ if(p.owner===0&&(!source||$("battleWorkspace").classList.contains("mw3d-active")))return;
+ const rect=source?.getBoundingClientRect(),ghost=source?source.cloneNode(true):document.createElement("div");
+ ghost.removeAttribute("id");ghost.querySelectorAll("[id]").forEach(n=>n.removeAttribute("id"));
+ ghost.classList.add("mw-command-ghost");ghost.setAttribute("aria-hidden","true");
+ if(!source){
+  ghost.textContent=p.card?.name||"Монетка";
+  Object.assign(ghost.style,{background:"#241e18",color:"#f5dca1",border:"2px solid #b58a49",padding:"12px",borderRadius:"12px"});
+  const definition=p.card||(p.cardId==="__coin__"?window.MW_SYS001_COIN?.definition():null);
+  if(definition)window.MW_BATTLE_CARD_RENDERER?.request(definition,"full",{}).then(url=>{
+   if(url&&ghost.isConnected&&!signal.aborted){const img=document.createElement("img");img.src=url;img.style.width="100%";ghost.replaceChildren(img);}
+  }).catch(()=>{});
+ }
+ Object.assign(ghost.style,{position:"fixed",left:rect?rect.left+"px":"calc(50% - 80px)",top:rect?rect.top+"px":"20%",
+  width:rect?rect.width+"px":"160px",height:rect?rect.height+"px":"240px",margin:"0",zIndex:"10000",pointerEvents:"none",transformOrigin:"center",transform:"none"});
+ document.body.appendChild(ghost);
+ const cleanup=()=>ghost.remove();signal.addEventListener("abort",cleanup,{once:true});
+ try{await animatePresentationNode(ghost,[{transform:"translateY(0)",opacity:1},{transform:"translateY(-48px) scale(1.06)",opacity:0}],signal,source?window.MW_BATTLE_MOTION.DEFAULTS.playerPlay:window.MW_BATTLE_MOTION.DEFAULTS.opponentReveal);}
+ finally{signal.removeEventListener("abort",cleanup);cleanup();}
+}
+let presentationMotionBatch={};
+function executePresentation(type,args){
+ if(networkPaused)return {ok:false,reason:"Партия приостановлена до восстановления соединения."};
+ if(presentationBusy)return {ok:false,reason:"Дождитесь завершения действия."};
+ const api=window.MW_BATTLE_PRESENTATION;
+ if(!api)return eng[type](game,...args);
+ if(presentationGame!==game){
+  presentationGame=game;
+  const engine=Object.fromEntries(["playCard","attack","endTurn","useHeroPower","confirmMulligan"].map(name=>[name,
+   (state,...values)=>(gameRunningAI&&values[0]===1?window.MW_BATTLE_REPLAY?.botEngine?.[name]||eng[name]:eng[name])(state,...values)]));
+  engine.captureCombat=eng.captureCombat;engine.captureCardMovements=eng.captureCardMovements;engine.currentCost=eng.currentCost;
+  presentationSession=api.createSession(engine,game,{battleId:"local-view-"+(++presentationCounter)});
+ }
+ const session=presentationSession,epoch=presentationEpoch;
+ const projection=api.createProjection({battleId:session.battleId,view:session.view(),revision:session.revision});
+ const before=window.MW_BATTLE_REPLAY?.snapshot(game)||clone(game);
+ turnTimer.sync(timerToken(),false);
+ const result=session.execute({commandId:"command-"+(++presentationCounter),type,args,expectedRevision:session.revision});
+ if(!result.ok){updateTurnTimer();return result;}
+ presentationMotionBatch={publicBefore:projection.view,release:cardRelease,isCurrent:()=>epoch===presentationEpoch,played:result.events.find(e=>e.type==="cardPlayDeclared")?.payload,
+  movements:result.events.filter(e=>e.type==="cardDrawn"||e.type==="cardCreated").map(e=>e.payload)};
+ cardRelease=null;
+ window.MW_HAND_MOTION?.clearSlots(document);
+ turnTimer.sync(timerToken(),false);
+ pending=null;presentationBusy=true;presentationDisplay=before;$("battleCancelTarget").hidden=true;
+ $("battleWorkspace").setAttribute("aria-busy","true");
+ window.MW14_HAND_UI?.live?.render(before,{busy:true});
+ persistBattleSession();
+ presentationQueue=api.createQueue({timeoutMs:12000,handle:presentEvent,apply(event){
+  projection.apply(event);
+  if(event.type==="stateCommitted"&&epoch===presentationEpoch){presentationDisplay=null;renderGame({presentationCommit:true});}
+ },onError(err){console.warn("Battle presentation recovered:",err.message);}});
+ const queue=presentationQueue;
+ presentationDone=queue.enqueue(result.events).finally(()=>{
+  if(epoch!==presentationEpoch)return;
+  window.MW_COMBAT_MOTION?.reset(document);
+  presentationBusy=false;presentationDisplay=null;$("battleWorkspace").removeAttribute("aria-busy");
+  updateTurnTimer();
+  renderGame();if(!gameRunningAI)maybeBot();
+ });
+ return result;
+}
+function playPlayerCard(uid,target=null,choices=null,position=null){return executePresentation("playCard",[0,uid,target,choices,position]);}
+function battleSavePayload(){
+ const payload=eng.exportBattle(game);
+ // A partially presented bot turn is a valid gameplay checkpoint, not a complete replay action.
+ if(gameRunningAI)delete payload.game.battleReplay;
+ payload.turnTimer=turnTimer.save();
+ payload.presentationUI=window.MW_BATTLE_PRESENTATION?.captureInput(game,{pendingChoice,choiceDraft})||null;
+ return payload;
+}
+
 try{
   const z=Number(localStorage.getItem("mw-card-zoom-v1.9"));
   if([1,1.15,1.3].includes(z))visualScale=z;
@@ -69,14 +264,14 @@ function updateHeroPortrait(o,cls,profile){
 window.MW_HERO_PORTRAIT_BRIDGE=Object.freeze({get:(owner,cls,phase)=>readHeroPortrait(owner,cls,phase)});
 
 function targetClass(owner,kind,uid=null){
-  if(!pending||!game)return "";
+  if(!pending||!game||pending.kind==="place")return "";
   const target={kind,owner,uid};let eligible=false;
   if(pending.kind==="hero-power")eligible=eng.heroPowerTargetValid(game,0,target);
   else if(pending.kind==="spell"){
     const h=game.players[0].hand.find(x=>x.uid===pending.uid);
     eligible=!!h&&eng.targetValid(game,0,h.cardId,target);
   }else if(pending.kind==="attack")
-    eligible=eng.eligibleAttackTargets(game,0).some(t=>t.owner===owner&&t.kind===kind&&(kind==="hero"||t.uid===uid));
+    eligible=eng.attackStatus(game,0,pending.uid,target,pending.hero).ok;
   return eligible?" battle-valid-target":" battle-invalid-target";
 }
 function battleAppearance(s){
@@ -93,6 +288,7 @@ function popBattleNumber(node,n){
  node.appendChild(span);span.addEventListener("animationend",()=>span.remove(),{once:true});
 }
 function updateCombatVisualEffects(){
+ if(window.MW_COMBAT_MOTION){lastBattleVisual=game?battleAppearance(game):null;return;}
  if(!game){lastBattleVisual=null;return;}
  const now=battleAppearance(game),prev=lastBattleVisual;lastBattleVisual=now;
  if(!prev||prev.game!==game)return;
@@ -129,10 +325,12 @@ function openCardInspect(owner,kind,uid){
  $("battleInspectSupport").textContent=!coin&&c.cardId&&eng.abilitySupport(c)!=="complete"?
    "Часть игровой механики пока не реализована полностью.":"";
  window.MW_BATTLE_CARD_RENDERER?.hydrateInspect(game,owner,kind,uid);
- $("battleCardInspect").hidden=false;inspectOpen=true;
+ if(!inspectOpen)inspectReturnFocus=document.activeElement;
+ $("battleCardInspect").hidden=false;inspectOpen=true;$("battleInspectClose").focus({preventScroll:true});
 }
 function closeCardInspect(){
- inspectOpen=false;$("battleCardInspect").hidden=true;
+ const wasOpen=inspectOpen;inspectOpen=false;$("battleCardInspect").hidden=true;
+ if(wasOpen&&inspectReturnFocus?.isConnected)inspectReturnFocus.focus({preventScroll:true});inspectReturnFocus=null;
 }
 
 let pendingChoice=null,choiceDraft={};
@@ -418,18 +616,18 @@ function timeLabel(s){
  return "◷ "+hh+" · "+eng.phaseOfHour(s.time);
 }
 function pName(owner){return owner===0?"Игрок":"Бот";}
-function battleCard(h,owner,kind){
+function battleCard(h,owner,kind,state=game){
  const coin=h.cardId==="__coin__";
- const c=coin?window.MW_SYS001_COIN?.definition():game.cards[h.cardId]||(kind==="minion"?window.MW14_BOARD_STATUS?.cardDefinition(game,h,eng.TOKEN_DATA):null);
+ const c=coin?window.MW_SYS001_COIN?.definition():state.cards[h.cardId]||(kind==="minion"?window.MW14_BOARD_STATUS?.cardDefinition(state,h,eng.TOKEN_DATA):null);
  const name=coin?"Монетка":c?.name||h.name||"Неизвестная карта";
  const cost=coin?"0":owner===0&&kind==="hand"&&c?
-   String(eng.currentCost(game,owner,h)):String(c?.costValue??"—");
+   String(eng.currentCost(state,owner,h)):String(c?.costValue??"—");
  const rarity=dm.rarityLabel[c?.rarityId]||"";
- const status=owner===0&&kind==="hand"?eng.actionStatus(game,owner,h.uid):{ok:true};
+ const status=owner===0&&kind==="hand"?eng.actionStatus(state,owner,h.uid):{ok:true};
  const notSupported=owner===0&&kind==="hand"&&!status.ok;
  const active=pending?.uid===h.uid&&pending.owner===owner;
- const atk=kind==="minion"?eng.effectiveAttack(game,h):c?.attack;
- const hp=kind==="minion"?h.health:c?.health;
+ const atk=kind==="minion"?eng.effectiveAttack(state,h):c?.attack;
+ const hp=kind==="minion"?Math.max(0,h.health):c?.health;
  const taunt=kind==="minion"&&h.taunt;
  const ready=kind==="minion"&&owner===0&&h.ready&&!h.attacked;
  const more=coin?"Мана +1":kind==="minion"?(h.unsupported?"Эффект частично":h.timed?.some(t=>t.kind==="frozen")?
@@ -453,7 +651,7 @@ function battleCard(h,owner,kind){
    '<span class="mw14-deathrattle" title="'+esc(deathIcon.label)+'" aria-hidden="true">'+esc(deathIcon.glyph)+'</span>':"";
  const guardCrest=taunt?'<span class="mw14-guard-emblem" title="Провокация" aria-hidden="true">⛨</span>':"";
  const boardTooltip=name+" · атака "+atk+", здоровье "+hp+
-   (taunt?" · Провокация":"")+(affinity?" · "+affinity:"")+
+   (h.armor>0?" · броня "+h.armor:"")+(taunt?" · Провокация":"")+(affinity?" · "+affinity:"")+
    (statusIcons.length?" · "+statusIcons.map(x=>x.label).join(", "):"")+(label?" · "+label:"");
  const affinityMark=kind==="minion"&&["Ноч","Дзень"].includes(affinity)?
    '<span class="mw14-affinity" title="'+esc(affinity)+'" aria-hidden="true">'+(affinity==="Ноч"?"☾":"☀")+"</span>":"";
@@ -465,7 +663,7 @@ function battleCard(h,owner,kind){
    (h.cardId==="KNZ-002"?"assets/art_malady_druzhynnik.png":"");
  const icon=coin?"✦":type==="spell"?"✧":type==="weapon"?"⚔":"✥";
  const pick=kind==="minion"?owner+"|"+h.uid:h.uid;
- const dragEnabled=owner===0&&game.phase==="battle"&&game.turn===0&&!gameRunningAI&&!pendingChoice&&
+ const dragEnabled=owner===0&&state.phase==="battle"&&state.turn===0&&!gameRunningAI&&!pendingChoice&&
   (kind==="hand"?status.ok:kind==="minion"&&h.ready&&!h.attacked&&!frozen);
  const burn=kind==="hand"&&h.burnTurnsLeft!=null;
  return `<div class="battle-card ${kind==="minion"?"minion":"hand"} ${notSupported?"disabled":""} ${active?"selected":""}
@@ -478,7 +676,7 @@ function battleCard(h,owner,kind){
      `<span class="bc-fallback" aria-hidden="true">${icon}</span>`}</span>
   <span class="bc-name">${esc(kind==="minion"?h.name:name)}</span>
   ${affinityMark}
-  ${guardCrest}${deathBadge}${effectBadge}
+  ${guardCrest}${deathBadge}${effectBadge}${kind==="minion"&&h.armor>0?`<span class="mw6-minion-armor" aria-label="Броня ${esc(h.armor)}">◈ ${esc(h.armor)}</span>`:""}
   <span class="bc-stats">${coin?"":`<span class="bc-attack">${atk??"—"} ⚔</span><span class="bc-health">${hp??(c?.durability??"—")} ♥</span>`}</span>
   <span class="bc-status">${esc(more)}</span></div>`;
 }
@@ -506,7 +704,7 @@ function updateBattleSessionStatus(){
 function persistBattleSession(){
  if(!game){updateBattleSessionStatus();return false;}
  try{
-  const raw=JSON.stringify(eng.exportBattle(game));
+  const raw=JSON.stringify(battleSavePayload());
   localStorage.setItem(BATTLE_SAVE_KEY,raw);
   lastSavedAt=new Date().toLocaleTimeString("ru-RU");
   battleSaveError="";updateBattleSessionStatus();return true;
@@ -518,7 +716,11 @@ function persistBattleSession(){
 function loadBattleSave(input){
  let restored;
  try{restored=eng.importBattle(input);}catch(err){message("Ошибка сохранения: "+err.message);return false;}
- game=restored;
+ resetPresentation();
+ game=restored;window.MW_BATTLEFIELD_V02?.resetClock();
+ const inputPayload=typeof input==="string"?JSON.parse(input):input;
+ turnTimer=window.MW_TURN_TIMER.create();turnTimer.restore(inputPayload.turnTimer);timerExpiredPending=false;
+ const inputState=window.MW_BATTLE_PRESENTATION?.restoreInput(game,inputPayload.presentationUI,eng);
  window.MW_BATTLE_REPLAY?.ensureCapture(game);
  loadedReplay=null;
  pending=null;pendingChoice=null;choiceDraft={};
@@ -527,14 +729,15 @@ function loadBattleSave(input){
  $("battleMulligan").hidden=game.phase!=="mulligan";
  closeCardInspect();
  if(game.phase==="mulligan")selectMulligan();
- setMode("battle");renderGame();
+ if(inputState){pendingChoice=inputState.pendingChoice;choiceDraft=inputState.choiceDraft;}
+ setMode("battle");renderGame();if(pendingChoice)renderChoiceDialog();
  if(game.phase==="battle"&&game.turn===1)maybeBot();
  message("Партия восстановлена: ход "+game.turns+" · "+String(game.time).padStart(2,"0")+":00.");
  return true;
 }
 function exportBattleSave(){
  if(!game){message("Сначала начните или восстановите партию.");return;}
- try{downloadText(JSON.stringify(eng.exportBattle(game),null,2),
+ try{downloadText(JSON.stringify(battleSavePayload(),null,2),
    "MW_battle_turn_"+game.turns+"_v2.0.json");message("Резервная копия боя сохранена в JSON.");}
  catch(err){message("Экспорт партии: "+err.message);}
 }
@@ -696,6 +899,9 @@ function runDeveloperCommand(){
  else{renderGame();message("Тестовая команда выполнена (помечена в журнале).");}
 }
 function renderGame(options={}){
+ if(presentationBusy&&!options.presentationCommit)return;
+ const visualGame=syncPresentationView();
+ if(!pending||pending.kind!=="attack")window.MW_COMBAT_MOTION?.clearAim(document);
  const workspace=$("battleWorkspace"),hour=game?Number(game.time):12,
        phase=game?eng.phaseOfHour(hour):"День";
  workspace.dataset.phase=phase==="Утро"?"morning":phase==="День"?"day":phase==="Вечер"?"evening":"night";
@@ -756,12 +962,12 @@ function renderGame(options={}){
  if($("battleManaValue"))$("battleManaValue").textContent=me.mana+"/"+me.maxMana;
  if($("battleManaCounter"))$("battleManaCounter").setAttribute("aria-label","Мана "+me.mana+" из "+me.maxMana);
  $("botStats").textContent=bot.deck.length+" карт в колоде · "+bot.hand.length+" в руке";
- $("myBoard").innerHTML=me.board.map(m=>battleCard(m,0,"minion")).join("")||
-    '<span class="deck-small-muted">На поле нет существ</span>';
- $("botBoard").innerHTML=bot.board.map(m=>battleCard(m,1,"minion")).join("")||
-    '<span class="deck-small-muted">На поле нет существ</span>';
- $("myHand").innerHTML=me.hand.map(h=>battleCard(h,0,"hand")).join("")||
-    '<span class="deck-small-muted">Рука пуста</span>';
+ for(const [id,items,owner,kind,empty]of [
+  ["myBoard",me.board,0,"minion","На поле нет существ"],["botBoard",bot.board,1,"minion","На поле нет существ"],
+  ["myHand",me.hand,0,"hand","Рука пуста"]]){
+  window.MW_BATTLE_DOM.reconcile($(id),items,{key:item=>owner+"|"+kind+"|"+item.uid,
+   html:item=>battleCard(item,owner,kind),empty:`<span class="deck-small-muted">${empty}</span>`});
+ }
  $("botHand").innerHTML=Array(bot.hand.length).fill("<span></span>").join("");
  $("myBoard").classList.toggle("board-empty",me.board.length===0);
  $("botBoard").classList.toggle("board-empty",bot.board.length===0);
@@ -771,7 +977,7 @@ function renderGame(options={}){
    ?game.winner==="draw"?"Оба героя погибли":game.winner===0?"Победа игрока!":"Победа бота."
    :game.phase==="mulligan"?"Начальная замена":
      game.turn===0?"Ваш ход":"Ход бота";
- $("battleActionHint").textContent=pending?.kind==="hero-power"?
+ $("battleActionHint").textContent=pending?.kind==="place"?"Выберите место между существами · Escape — отмена без оплаты":pending?.kind==="hero-power"?
       "ФАКЕЛ: выберите своё существо «Чалавек» (Esc — отмена).":
     pending?.kind==="spell"?"Выберите обязательную цель для карты (Esc — отмена).":
      pending?.kind==="attack"?"Выберите цель атаки (учитывается Правакацыя).":
@@ -785,9 +991,9 @@ function renderGame(options={}){
  }
  updateCombatVisualEffects();
  window.MW_ARENA_ART?.render(game);
- window.MW_ARENA_3D?.render(game);
+ window.MW_ARENA_3D?.render(visualGame);
  window.MW_BATTLE_CARD_RENDERER?.hydrate(game,$("battleWorkspace"));
- window.MW14_HAND_UI?.live?.render(game,{busy:gameRunningAI,pendingChoice:!!pendingChoice,pending:!!pending});
+ window.MW14_HAND_UI?.live?.render(game,{busy:gameRunningAI||presentationBusy,pendingChoice:!!pendingChoice,pending:!!pending});
  window.MW_HERO_HUD_V0511?.render2D(game);
  window.MW_BATTLEFIELD_V02?.render(game); window.MW_BF_LAYOUT_FIXES?.render(game);
  refreshDeveloperControls();
@@ -815,6 +1021,7 @@ function selectMulligan(){
     </span>
    </button>`;
  }).join("");
+ window.MW_HAND_MOTION?.opening(document,game,false);
  const renderer=window.MW_BATTLE_CARD_RENDERER;
  if(!renderer?.request)return;
  for(const h of me.hand){
@@ -838,6 +1045,9 @@ function startBattle(){
  const source=battleCatalog();
  if(!a||!b||!dm.validateDeck(a,source).ok||!dm.validateDeck(b,source).ok){message("Выберите две допустимые колоды.");return;}
  if(previous)try{localStorage.setItem(BATTLE_PREVIOUS_KEY,JSON.stringify(previous));}catch(_){}
+ resetPresentation();
+ window.MW_BATTLEFIELD_V02?.resetClock();
+ turnTimer=window.MW_TURN_TIMER.create({durationMs:Number($("battleTimerMode").value)});timerExpiredPending=false;
  try{game=eng.makeGame(clone(a),clone(b),source,{
    timeMode:$("battleTimeMode").value,
    heroProfiles:[$("battleHeroProfile").value,$("battleBotHeroProfile").value]
@@ -846,27 +1056,28 @@ function startBattle(){
     pending=null;pendingChoice=null;choiceDraft={};graveOpenOwner=null;lastBattleVisual=null;closeCardInspect();
      $("battleGraveyardDialog").hidden=true;
      $("battleChoiceDialog").hidden=true;mulliganSelection=new Set();gameRunningAI=false;
-    $("battleMulligan").hidden=false;selectMulligan();renderGame();}
+    $("battleMulligan").hidden=false;selectMulligan();renderGame();window.MW_HAND_MOTION?.opening(document,game);}
  catch(e){console.error(e);message("Не удалось начать бой: "+e.message);}
 }
 function confirmMulligan(){
- if(!game)return;
- const result=eng.confirmMulligan(game,[...mulliganSelection]);
+ if(!game||game.phase!=="mulligan"||presentationBusy)return;
+ const result=executePresentation("confirmMulligan",[[...mulliganSelection]]);
  if(!result.ok){message(result.reason);return;}
- $("battleMulligan").hidden=true;mulliganSelection.clear();renderGame();maybeBot();
+ $("mulliganConfirm").disabled=true;
+ presentationDone.finally(()=>{$("mulliganConfirm").disabled=false;mulliganSelection.clear();});
 }
 
-function openChoice(uid,spec){
- pending=null;
- pendingChoice={uid,cardId:spec.cardId};
+function openChoice(uid,spec,position=null){
+ choiceReturnFocus=document.activeElement;pending=null;
+ pendingChoice={uid,cardId:spec.cardId,position};
  choiceDraft=Object.fromEntries(spec.steps.map(step=>
    [step.key,step.locked?step.options.map(x=>x.id):[]]));
- renderGame();renderChoiceDialog();
+ renderGame();renderChoiceDialog();persistBattleSession();
 }
 function closeChoice(){
  pendingChoice=null;choiceDraft={};
  $("battleChoiceDialog").hidden=true;
- renderGame();
+ renderGame();if(choiceReturnFocus?.isConnected)choiceReturnFocus.focus({preventScroll:true});choiceReturnFocus=null;
 }
 function renderChoiceDialog(){
  const modal=$("battleChoiceDialog"),panel=$("battleChoiceSections");
@@ -891,7 +1102,7 @@ function renderChoiceDialog(){
  $("battleChoiceConfirm").disabled=spec.steps.some(st=>{
   const chosen=choiceDraft[st.key]||[];return chosen.length<st.min||chosen.length>st.max;
  })||!eng.validateChoices(game,0,game.cards[pendingChoice.cardId],choiceDraft).ok;
- modal.hidden=false;
+ const opening=modal.hidden;modal.hidden=false;if(opening)$("battleChoiceCancel").focus({preventScroll:true});
 }
 function toggleChoice(stepKey,id){
  if(!pendingChoice||!game)return;
@@ -907,11 +1118,11 @@ function toggleChoice(stepKey,id){
   }
   choiceDraft[stepKey]=step.max===1?[id]:current.length<step.max?[...current,id]:[...current.slice(1),id];
  }
- renderChoiceDialog();
+ renderChoiceDialog();persistBattleSession();
 }
 function confirmChoice(){
  if(!pendingChoice||!game)return;
- const result=eng.playCard(game,0,pendingChoice.uid,null,choiceDraft);
+ const result=playPlayerCard(pendingChoice.uid,null,choiceDraft,pendingChoice.position??null);
  if(!result.ok){
   message(result.reason);
   renderChoiceDialog();
@@ -923,38 +1134,58 @@ function confirmChoice(){
 }
 
 function onHandClick(uid){
- if(!game||game.phase!=="battle"||game.turn!==0||gameRunningAI)return;
+ if(!game||game.phase!=="battle"||game.turn!==0||gameRunningAI||presentationBusy)return;
+ window.MW_HAND_MOTION?.clearSlots(document);
  const status=eng.actionStatus(game,0,uid);
  if(!status.ok){message(status.reason);return;}
+ const hand=game.players[0].hand.find(h=>h.uid===uid);
+ if(game.cards[hand?.cardId]?.cardType==="creature"&&!$("battleWorkspace").classList.contains("mw3d-active")){
+  pending={kind:"place",owner:0,uid};renderGame();
+  window.MW_HAND_MOTION.showSlots(document,index=>placePlayerCard(uid,index));
+  message("Выберите место между существами. Escape — отмена без оплаты.");return;
+ }
  if(status.choice){openChoice(uid,status.choice);return;}
  if(status.targetType){pending={kind:"spell",owner:0,uid};renderGame();return;}
- const result=eng.playCard(game,0,uid);
+ const result=playPlayerCard(uid);
  pending=null;if(!result.ok)message(result.reason);renderGame();
 }
+function placePlayerCard(uid,position){
+ if(presentationBusy||!game||game.turn!==0)return;
+ window.MW_HAND_MOTION?.clearSlots(document);
+ const status=eng.actionStatus(game,0,uid);
+ if(!status.ok){pending=null;message(status.reason);renderGame();return;}
+ if(status.choice){openChoice(uid,status.choice,position);return;}
+ if(status.targetType){pending={kind:"spell",owner:0,uid,position};renderGame();return;}
+ const result=playPlayerCard(uid,null,null,position);
+ if(!result.ok)message(result.reason);pending=null;renderGame();
+}
 function onMinionClick(owner,uid){
- if(!game||game.phase!=="battle"||game.turn!==0||gameRunningAI)return;
+ if(!game||game.phase!=="battle"||game.turn!==0||gameRunningAI||presentationBusy)return;
+ if(pending?.kind==="place"){if(owner===0)placePlayerCard(pending.uid,game.players[0].board.findIndex(m=>m.uid===uid));return;}
  if(pending){
   const target={kind:"minion",owner,uid};
-  const result=pending.kind==="spell"?eng.playCard(game,0,pending.uid,target):
-       pending.kind==="hero-power"?eng.useHeroPower(game,0,target):
-       eng.attack(game,0,pending.uid,target,pending.hero);
+  const result=pending.kind==="spell"?playPlayerCard(pending.uid,target,null,pending.position??null):
+       pending.kind==="hero-power"?executePresentation("useHeroPower",[0,target]):
+       executePresentation("attack",[0,pending.uid,target,pending.hero]);
   if(result.ok)pending=null;else message(result.reason);
   renderGame();return;
  }
  if(owner===0){
   const m=game.players[0].board.find(x=>x.uid===uid);
   if(!m)return;
-  if(!m.ready||m.attacked){message("Существо пока не готово атаковать.");return;}
+  if(eng.effectiveAttack(game,m)<=0){message("Атака равна 0.");return;}
+  if(!m.ready||m.attacked||m.timed?.some(t=>t.kind==="frozen")){message("Существо пока не готово атаковать.");return;}
   pending={kind:"attack",owner:0,uid,hero:false};renderGame();
  }else message("Сначала выберите атакующее существо или карту заклинания.");
 }
 function onHeroClick(owner){
- if(!game||game.phase!=="battle"||game.turn!==0||gameRunningAI)return;
+ if(pending?.kind==="place")return;
+ if(!game||game.phase!=="battle"||game.turn!==0||gameRunningAI||presentationBusy)return;
  if(pending){
   const target={kind:"hero",owner};
-  const result=pending.kind==="spell"?eng.playCard(game,0,pending.uid,target):
+  const result=pending.kind==="spell"?playPlayerCard(pending.uid,target,null,pending.position??null):
     pending.kind==="hero-power"?{ok:false,reason:"ФАКЕЛ требует выбрать дружелюбное существо «Чалавек»."}:
-    eng.attack(game,0,pending.uid,target,pending.hero);
+    executePresentation("attack",[0,pending.uid,target,pending.hero]);
   if(result.ok)pending=null;else message(result.reason);
   renderGame();return;
  }
@@ -964,7 +1195,7 @@ function onHeroClick(owner){
  }
 }
 function activateHeroPower(){
- if(!game||game.phase!=="battle"||game.turn!==0||gameRunningAI)return;
+ if(!game||game.phase!=="battle"||game.turn!==0||gameRunningAI||presentationBusy)return;
  if(pendingChoice){message("Сначала закончите выбор карты.");return;}
  const status=eng.heroPowerStatus(game,0);
  if(!status.ok){message(status.reason);renderGame();return;}
@@ -973,7 +1204,7 @@ function activateHeroPower(){
   renderGame();
   return;
  }
- const outcome=eng.useHeroPower(game,0);
+ const outcome=executePresentation("useHeroPower",[0]);
  if(!outcome.ok)message(outcome.reason);
  pending=null;renderGame();
 }
@@ -1015,16 +1246,16 @@ function renderGraveyardDialog(){
   <details><summary>Журнал трупов (${summary.corpseLedger.length})</summary>${ledger}</details>`;
 }
 function finishTurn(){
- if(!game||game.phase!=="battle"||game.turn!==0)return;
+ if(!game||game.phase!=="battle"||game.turn!==0||presentationBusy)return;
  if(pendingChoice){closeChoice();return;}
- pending=null;const result=eng.endTurn(game,0);
+ pending=null;const result=executePresentation("endTurn",[0]);
  if(!result.ok)message(result.reason);
  renderGame();maybeBot();
 }
 async function maybeBot(){
- if(!game||game.phase!=="battle"||game.turn!==1||gameRunningAI)return;
+ if(!game||game.phase!=="battle"||game.turn!==1||gameRunningAI||presentationBusy)return;
  gameRunningAI=true;
- const snapshot=game,caption=$("mw16BotAction");
+ const snapshot=game,caption=$("mw16BotAction");let failed=false;
  const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
  const show=text=>{
   if(!caption)return;
@@ -1042,25 +1273,27 @@ async function maybeBot(){
  try{
   show("Ход соперника");
   await pause(800);
-  if(snapshot!==game)return;
-  const frames=eng.botTurnFrames?.(snapshot,1);
+  if(snapshot!==game||document.hidden||networkPaused)return;
+  if(botStepper?.game!==snapshot)botStepper={game:snapshot,iterator:window.MW_BATTLE_REPLAY?.recordedBotFrames(snapshot,1,(type,args)=>executePresentation(type,args))||eng.botTurnFrames?.(snapshot,1)};
+  const frames=botStepper.iterator;
   if(!frames){eng.runBotTurn(snapshot,1);return;}
   // The stepwise iterator runs exactly the published AI policy, but presents each mutation separately.
-  while(snapshot===game){
+  while(snapshot===game&&!document.hidden&&!networkPaused){
    const step=frames.next();
-   if(step.done)break;
+   await presentationDone;
+   if(step.done){botStepper=null;break;}
    show(describe(step.value));
    renderGame({save:false});
-   await pause(1350);
   }
-  if(snapshot===game&&snapshot.phase==="battle"&&snapshot.turn===1)
+  if(snapshot===game&&!document.hidden&&!networkPaused&&snapshot.phase==="battle"&&snapshot.turn===1)
    throw new Error("Бот не завершил ход.");
  }catch(e){
-  console.error(e);message("Ошибка бота: "+e.message);
+  failed=true;console.error(e);message("Ошибка бота: "+e.message);
  }finally{
   if(snapshot===game){
    if(caption){caption.hidden=true;caption.classList.remove("is-visible");}
    gameRunningAI=false;renderGame();
+   if(!failed&&!document.hidden&&!networkPaused&&game.phase==="battle"&&game.turn===1)queueMicrotask(maybeBot);
   }
  }
 }
@@ -1097,7 +1330,7 @@ function setSideOpen(open){
  button.setAttribute("aria-expanded",String(open));
  button.textContent=open?"✕ Закрыть журнал":"☰ Журнал и тесты";
 }
-function readBattleDropTarget(node,source){
+function readBattleDropTarget(node,source,clientX=null){
  if(!(node instanceof Element))return null;
  const card=node.closest("[data-battle-minion]");
  const hero=node.closest("[data-hero-owner]");
@@ -1106,7 +1339,8 @@ function readBattleDropTarget(node,source){
    const h=game?.players?.[0]?.hand?.find(x=>x.uid===source.uid);
    const action=h?eng.actionStatus(game,0,source.uid):null;
    // Обычная карта кладётся на свою сторону даже поверх уже лежащего существа.
-   if(!action?.targetType)return {kind:"board",owner:board.id==="myBoard"?0:1,node:board};
+   if(!action?.targetType)return {kind:"board",owner:board.id==="myBoard"?0:1,node:board,
+    position:clientX===null?null:window.MW_HAND_MOTION.insertionIndex([...board.querySelectorAll("[data-battle-minion]")].map(n=>n.getBoundingClientRect()),clientX)};
  }
  if(card){
    const [owner,...uid]=card.dataset.battleMinion.split("|");
@@ -1117,6 +1351,7 @@ function readBattleDropTarget(node,source){
  return null;
 }
 function clearBattleDropDecoration(finished=true){
+ if(finished)window.MW_COMBAT_MOTION?.clearAim(document);
  const area=$("battleWorkspace");
  area.querySelectorAll(".drag-over,.drag-invalid")
    .forEach(n=>n.classList.remove("drag-over","drag-invalid"));
@@ -1141,21 +1376,41 @@ function highlightBattleDropTargets(source){
 function processBattleDrop(source,target){
  const plan=window.MW_BATTLE_DRAG_RULES?.plan(game,source,target,eng) || {ok:false,reason:"Модуль переноса не загрузился."};
  if(!plan.ok){message(plan.reason);return false;}
- if(plan.mode==="choose"){const action=eng.actionStatus(game,0,plan.uid);openChoice(plan.uid,action.choice);return true;}
+ if(plan.mode==="choose"){const action=eng.actionStatus(game,0,plan.uid);openChoice(plan.uid,action.choice,target.position??null);return true;}
  if(plan.mode==="await-target"){
-   pending={kind:"spell",owner:0,uid:plan.uid};renderGame();
+   pending={kind:"spell",owner:0,uid:plan.uid,position:target.position??null};renderGame();
    message("Карта выбрана. Нажмите на подсвеченную допустимую цель.");
    return true;
  }
  let result;
- if(plan.mode==="play")result=eng.playCard(game,0,plan.uid);
- else if(plan.mode==="spell-target")result=eng.playCard(game,0,plan.uid,plan.target);
- else if(plan.mode==="attack")result=eng.attack(game,0,plan.uid,plan.target,false);
- if(!result?.ok){message(result?.reason||"Действие не удалось.");renderGame();return false;}
+ cardRelease=source.release?{uid:plan.uid,...source.release}:null;
+ if(plan.mode==="play")result=playPlayerCard(plan.uid,null,null,target.position??null);
+ else if(plan.mode==="spell-target")result=playPlayerCard(plan.uid,plan.target);
+ else if(plan.mode==="attack")result=executePresentation("attack",[0,plan.uid,plan.target,false]);
+ if(!result?.ok){cardRelease=null;message(result?.reason||"Действие не удалось.");renderGame();return false;}
  pending=null;renderGame();return true;
 }
 function wireBattleDragAndDrop(){
+ $("battleWorkspace").addEventListener("pointermove",e=>{
+  const source=pending?.kind==="attack"?pending:battleDragSession?.kind==="minion"?{...battleDragSession,owner:0,hero:false}:null;
+  const allowed=source&&game&&!presentationBusy?eng.eligibleAttackTargets(game,0).filter(t=>eng.attackStatus(game,0,source.uid,t,source.hero).ok):[];
+  window.MW_COMBAT_MOTION?.aim(document,source,{x:e.clientX,y:e.clientY},allowed);
+ });
+
+ const reposition=()=>{if(pending?.kind==="place"&&!presentationBusy)
+  window.MW_HAND_MOTION?.showSlots(document,index=>placePlayerCard(pending.uid,index));else window.MW_HAND_MOTION?.clearSlots(document);};
+ window.addEventListener("resize",()=>{if(presentationBusy){resetPresentation();renderGame();}battleDragSession=null;cardRelease=null;returnDrag=null;window.MW_COMBAT_MOTION?.clearAim(document);clearBattleDropDecoration();reposition();},{passive:true});document.addEventListener("scroll",reposition,{passive:true,capture:true});
  const area=$("battleWorkspace");
+ area.addEventListener("pointerdown",e=>{handGrabPoint={x:e.clientX,y:e.clientY};});
+ for(const type of ["click","keydown","dragstart","drop"])area.addEventListener(type,e=>{
+  if(presentationBusy){e.preventDefault();e.stopImmediatePropagation();}
+ },true);
+ window.addEventListener("offline",()=>{networkPaused=true;turnTimer.sync(timerToken(),false);persistBattleSession();});
+ window.addEventListener("online",()=>{networkPaused=false;updateTurnTimer();maybeBot();});
+ window.addEventListener("pagehide",()=>{turnTimer.sync(timerToken(),false);persistBattleSession();});
+ document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){turnTimer.sync(timerToken(),false);if(presentationBusy){resetPresentation();renderGame();}persistBattleSession();}else{updateTurnTimer();maybeBot();}
+ });
  area.addEventListener("dragstart",e=>{
    const card=e.target.closest?.(".battle-card[draggable=true]");
    if(!card||!game||game.turn!==0||game.phase!=="battle"||gameRunningAI||pendingChoice)return;
@@ -1174,32 +1429,48 @@ function wireBattleDragAndDrop(){
      e.dataTransfer.setData("application/x-mw-battle",JSON.stringify(battleDragSession));
      e.dataTransfer.setData("text/plain","MYTHICAL_WARS_BATTLE_DRAG");
    }
+   returnDrag=battleDragSession.kind==="hand"?{node:card,point:handGrabPoint||{x:e.clientX,y:e.clientY},grab:handGrabPoint||{x:e.clientX,y:e.clientY}}:null;
    card.classList.add("battle-dragging");
    area.classList.add("mw14-drag-active");
-   window.MW14_HAND_UI?.live?.dragStarted(card,e.dataTransfer);
+   window.MW14_HAND_UI?.live?.dragStarted(card,e.dataTransfer,handGrabPoint||{x:e.clientX,y:e.clientY});
    highlightBattleDropTargets(battleDragSession);
  });
  area.addEventListener("dragover",e=>{
    if(!battleDragSession||!game)return;
+   if(returnDrag)returnDrag.point={x:e.clientX,y:e.clientY};
    clearBattleDropDecoration(false);
-   const target=readBattleDropTarget(e.target,battleDragSession);
+   window.MW_HAND_MOTION?.clearSlots(document);
+   if(battleDragSession.kind==="minion")window.MW_COMBAT_MOTION?.aim(document,{...battleDragSession,owner:0,hero:false},
+    {x:e.clientX,y:e.clientY},eng.eligibleAttackTargets(game,0).filter(t=>eng.attackStatus(game,0,battleDragSession.uid,t,false).ok));
+   const target=readBattleDropTarget(e.target,battleDragSession,e.clientX);
    if(!target)return;
    const plan=window.MW_BATTLE_DRAG_RULES.plan(game,battleDragSession,target,eng);
    e.preventDefault();
    if(e.dataTransfer)e.dataTransfer.dropEffect=plan.ok?"move":"none";
-   if(plan.ok)target.node.classList.add("drag-over");
+   if(plan.ok){target.node.classList.add("drag-over");
+    const h=game.players[0].hand.find(h=>h.uid===battleDragSession.uid);
+    if(target.kind==="board"&&target.owner===0&&game.cards[h?.cardId]?.cardType==="creature")
+     window.MW_HAND_MOTION.showSlots(document,index=>placePlayerCard(battleDragSession.uid,index),target.position);
+   }
    else target.node.classList.add("drag-invalid");
  });
  area.addEventListener("drop",e=>{
    if(!battleDragSession)return;
    e.preventDefault();e.stopPropagation();
-   const source=battleDragSession,target=readBattleDropTarget(e.target,source);
-   battleDragSession=null;clearBattleDropDecoration();
+   const source=battleDragSession,target=readBattleDropTarget(e.target,source,e.clientX);
+   battleDragSession=null;window.MW_HAND_MOTION?.clearSlots(document);clearBattleDropDecoration();
    if(!target){message("Перетащите карту на своё поле или на допустимую цель.");return;}
-   processBattleDrop(source,target);
+   if(source.kind==="hand")source.release={point:{x:e.clientX,y:e.clientY},grab:handGrabPoint};
+   if(processBattleDrop(source,target))returnDrag=null;
  });
  area.addEventListener("dragend",()=>{
-   battleDragSession=null;clearBattleDropDecoration();
+   if(returnDrag){
+    const r=returnDrag;returnDrag=null;
+    const bounds=r.node.getBoundingClientRect();
+    const offset=window.MW_HAND_MOTION.grabOffset(bounds,r.grab,bounds.width,bounds.height);
+    window.MW_HAND_MOTION.returnCard(document,r.node,{...r.point,offset}).catch(()=>{});
+   }
+   battleDragSession=null;window.MW_HAND_MOTION?.clearSlots(document);clearBattleDropDecoration();
    window.MW14_HAND_UI?.live?.hide();
  });
 }
@@ -1257,6 +1528,8 @@ function wire(){
  $("deckImportBtn").onclick=()=>$("deckImportFile").click();
  $("deckImportFile").onchange=async e=>{await importDecks(e.target.files[0]);e.target.value="";};
  $("battleUseLocal").onchange=renderBattleDeckOptions;
+ $("battleReduceMotion").checked=window.MW_MOTION_RUNTIME.reduced(document);
+ $("battleReduceMotion").onchange=e=>{window.MW_MOTION_RUNTIME.setReduced(e.target.checked);try{localStorage.setItem("mw-reduce-motion",String(e.target.checked));}catch(_){}if(presentationBusy){resetPresentation();renderGame();}};
  $("battleStartBtn").onclick=startBattle;
  $("battleSaveBtn").onclick=()=>{if(persistBattleSession())message("Бой сохранён локально.");else message("Сохранение недоступно: скачайте «Бой JSON».");};
  function resumeBattle(previous=false){
@@ -1313,6 +1586,7 @@ function wire(){
  $("mulliganConfirm").onclick=confirmMulligan;
  $("mulliganCards").addEventListener("click",e=>{
   const c=e.target.closest("[data-mulligan]");if(!c)return;
+  if(presentationBusy||game?.phase!=="mulligan"||c.disabled)return;
   const uid=c.dataset.mulligan;
   if(mulliganSelection.has(uid))mulliganSelection.delete(uid);else mulliganSelection.add(uid);
   selectMulligan();
@@ -1320,7 +1594,8 @@ function wire(){
  $("myHand").addEventListener("click",e=>{const c=e.target.closest("[data-battle-hand]");if(c)onHandClick(c.dataset.battleHand);});
  for(const id of ["myBoard","botBoard"]){
   $(id).addEventListener("click",e=>{
-   const c=e.target.closest("[data-battle-minion]");if(!c)return;
+   const c=e.target.closest("[data-battle-minion]");
+   if(!c){if(id==="myBoard"&&pending?.kind==="place")placePlayerCard(pending.uid,window.MW_HAND_MOTION.insertionIndex([...$(id).querySelectorAll("[data-battle-minion]")].map(n=>n.getBoundingClientRect()),e.clientX));return;}
    const [owner,uid]=c.dataset.battleMinion.split("|");onMinionClick(Number(owner),uid);
   });
  }
@@ -1339,9 +1614,13 @@ function wire(){
  $("battleChoiceCancel").onclick=closeChoice;
  $("battleChoiceCancelBottom").onclick=closeChoice;
  $("battleEndTurn").onclick=finishTurn;
- $("battleCancelTarget").onclick=()=>{pending=null;renderGame();};
+ $("battleCancelTarget").onclick=()=>{pending=null;window.MW_HAND_MOTION?.clearSlots(document);renderGame();};
  document.addEventListener("keydown",e=>{
+  const dialog=inspectOpen?$("battleCardInspect"):pendingChoice?$("battleChoiceDialog"):null;
+  if(e.key==="Tab"&&dialog&&!dialog.hidden){const nodes=[...dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),[tabindex="0"]')].filter(n=>n.getClientRects().length),first=nodes[0],last=nodes.at(-1);
+   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}
   if(currentMode==="battle"&&e.key==="Escape"){
+   battleDragSession=null;window.MW_HAND_MOTION?.clearSlots(document);clearBattleDropDecoration();
    if(inspectOpen){e.stopPropagation();closeCardInspect();}
    else if(pendingChoice){e.stopPropagation();closeChoice();}
    else if(graveOpenOwner!==null){e.stopPropagation();closeGraveyard();}
@@ -1464,13 +1743,14 @@ async function init(){
   // v2.1H: a second presentation of the SAME game, using existing checked actions.
   // Nothing here changes cards, rules, save formats, bot decisions or randomness.
   window.MW_BATTLE_VIEW_BRIDGE={
-    state:()=>game,
-    ui:()=>({pending:pending?{...pending}:null,busy:gameRunningAI,mode:currentMode,choice:!!pendingChoice}),
-    plan:(source,target)=>gameRunningAI||pendingChoice?
+    state:()=>presentationView||presentationDisplay||game,
+    ui:()=>({pending:pending?{...pending}:null,busy:gameRunningAI||presentationBusy,mode:currentMode,choice:!!pendingChoice}),
+    plan:(source,target)=>gameRunningAI||presentationBusy||pendingChoice?
       {ok:false,reason:"Сначала завершите текущее действие."}:
       window.MW_BATTLE_DRAG_RULES.plan(game,source,target,eng),
     dispatch(action){
       if(!game)return {ok:false,reason:"Сначала начните партию."};
+      if(presentationBusy)return {ok:false,reason:"Дождитесь завершения розыгрыша."};
       if(gameRunningAI)return {ok:false,reason:"Сейчас ход бота."};
       if(pendingChoice && action.type!=="cancel")return {ok:false,reason:"Сначала завершите выбор карты в открытом окне."};
       const before=game.eventSerial||0;
@@ -1490,7 +1770,7 @@ async function init(){
       else if(action.type==="cancel"){pending=null;closeChoice();renderGame();}
       else return {ok:false,reason:"Неизвестная команда интерфейса."};
       const events=(game.events||[]).filter(e=>(e.id||0)>before);
-      if(events.some(e=>e.kind==="attack")){
+      if(!window.MW_BATTLE_PRESENTATION&&events.some(e=>e.kind==="attack")){
         const source=action.type==="drop"?action.source:
           {kind:previous?.hero?"hero":"minion",owner:0,uid:previous?.uid};
         const target=action.type==="drop"?action.target:

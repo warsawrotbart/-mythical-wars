@@ -9,7 +9,7 @@ test('only canonical battlefield v02 can be selected in 2D',()=>{
   const html=read('index.html'),art=read('arena-art-v2.1D.js'),v02=read('battlefield-v02.js');
   assert.doesNotMatch(html,/id="battleArtToggle"/);
   assert.doesNotMatch(html,/id="battleLayoutToggle"/);
-  assert.match(html,/battlefield-v02\.css\?v=0521/);
+  assert.match(html,/battlefield-v02\.css\?v=0522/);
   assert.match(html,/battlefield-v02\.js\?v=0521/);
   assert.match(v02,/workspace\.classList\.add\('mw02-field'\)/);
   assert.match(art,/workspace\.classList\.remove\("mw-art-off"\)/);

@@ -19,6 +19,41 @@ function give(g,id,owner=0){
 function summon(g,owner,n){
   for(let i=0;i<n;i++)assert.equal(E.debugAction(g,{type:'summon',owner,cardId:'KNZ-002',definition:cards.get('KNZ-002')}).ok,true);
 }
+const {turnState}=require('../battlefield-v02.js');
+test('2D turn button follows legal plays, powers and attacks without mutating battle',()=>{
+ const g=fixture(),p=g.players[0];p.heroPowerUsed=true;
+ assert.equal(turnState(g,E).state,'complete');
+ const h=give(g,'KNZ-002');p.mana=1;
+ assert.equal(turnState(g,E).state,'ready');
+ p.hand=[];p.heroPowerUsed=false;p.mana=2;
+ assert.equal(turnState(g,E).state,'ready');
+ p.heroPowerUsed=true;p.weapon={attack:2,durability:2};
+ assert.equal(turnState(g,E).state,'ready');
+ p.heroAttacked=true;
+ assert.equal(turnState(g,E).state,'complete');
+ summon(g,0,1);const m=p.board[0];m.ready=true;m.attacked=false;
+ assert.equal(turnState(g,E).state,'ready');
+ m.timed.push({kind:'frozen',remaining:1,untilOwner:0});
+ const before=JSON.stringify(E.exportBattle(g).game);
+ assert.equal(turnState(g,E).state,'complete');
+ assert.equal(JSON.stringify(E.exportBattle(g).game),before);
+});
+test('2D turn button uses green on zero mana and grey outside the player turn',()=>{
+ const g=fixture();g.players[0].mana=0;give(g,'__coin__');
+ assert.equal(turnState(g,E).state,'complete');
+ assert.equal(turnState(g,E).disabled,false);
+ g.turn=1;assert.deepEqual(turnState(g,E),{state:'opponent',text:'Ход противника',disabled:true});
+ g.phase='mulligan';assert.equal(turnState(g,E).disabled,true);
+ g.phase='ended';g.winner=0;assert.equal(turnState(g,E).text,'Победа');
+});
+test('2D turn button does not suggest an attack without a legal target',()=>{
+ const g=fixture();g.players[0].heroPowerUsed=true;
+ assert.equal(E.debugAction(g,{type:'summon',owner:0,cardId:'NCR-009',definition:cards.get('NCR-009')}).ok,true);
+ const m=g.players[0].board[0];m.ready=true;m.attacked=false;
+ assert.equal(turnState(g,E).state,'complete');
+ summon(g,1,1);
+ assert.equal(turnState(g,E).state,'ready');
+});
 test('BF-02: both full sides reject the eighth before spending a card or mana',()=>{
   for(const owner of [0,1]){
     const g=fixture();g.turn=owner;summon(g,owner,7);

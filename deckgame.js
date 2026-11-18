@@ -192,6 +192,7 @@ function executePresentation(type,args){
  turnTimer.sync(timerToken(),false);
  pending=null;presentationBusy=true;presentationDisplay=before;$("battleCancelTarget").hidden=true;
  $("battleWorkspace").setAttribute("aria-busy","true");
+ window.MW_BATTLEFIELD_V02?.renderTurnControl(before,{busy:true});
  window.MW14_HAND_UI?.live?.render(before,{busy:true});
  persistBattleSession();
  presentationQueue=api.createQueue({timeoutMs:12000,handle:presentEvent,apply(event){
@@ -928,6 +929,7 @@ function renderGame(options={}){
   $("myClassLabel").textContent="—";$("botClassLabel").textContent="—";
   window.MW_ARENA_ART?.render(null);
   window.MW_ARENA_3D?.render(null);
+  window.MW_BATTLEFIELD_V02?.renderTurnControl(null);
   return;
  }
  const me=game.players[0],bot=game.players[1];
@@ -1000,6 +1002,7 @@ function renderGame(options={}){
  window.MW14_HAND_UI?.live?.render(game,{busy:gameRunningAI||presentationBusy,pendingChoice:!!pendingChoice,pending:!!pending});
  window.MW_HERO_HUD_V0511?.render2D(game);
  window.MW_BATTLEFIELD_V02?.render(game); window.MW_BF_LAYOUT_FIXES?.render(game);
+ window.MW_BATTLEFIELD_V02?.renderTurnControl(game,{busy:presentationBusy||gameRunningAI});
  refreshDeveloperControls();
  updateReplayUI();
  if(options.save!==false)persistBattleSession();

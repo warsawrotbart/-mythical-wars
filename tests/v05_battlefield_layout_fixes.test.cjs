@@ -7,7 +7,7 @@ const root=path.join(__dirname,'..');
 const read=x=>fs.readFileSync(path.join(root,x),'utf8');
 test('BF layout fixes are wired after battlefield v02 and after game re-render',()=>{
   const html=read('index.html'),battle=read('deckgame.js');
-  assert.match(html,/href="battlefield-layout-fixes-v01\.css\?v=0522"/);
+  assert.match(html,/href="battlefield-layout-fixes-v01\.css\?v=0523"/);
   assert.match(html,/src="battlefield-layout-fixes-v01\.js\?v=0521"/);
   assert.ok(html.indexOf('battlefield-v02.css')<html.indexOf('battlefield-layout-fixes-v01.css'));
   assert.ok(html.indexOf('battlefield-v02.js')<html.indexOf('battlefield-layout-fixes-v01.js'));

@@ -43,7 +43,7 @@ test('one uniformly scaled 1920x1080 canvas, centered at 4 target resolutions',(
 test('sole v02 battlefield CSS/JS loaded at the end of the real entrypoint',()=>{
  const html=read('index.html'),css=read('battlefield-v02.css'),js=read('battlefield-v02.js');
  assert.match(html,/href="battlefield-v02\.css\?v=0522"/);
- assert.match(html,/src="battlefield-v02\.js\?v=0521"/);
+ assert.match(html,/src="battlefield-v02\.js\?v=0523"/);
  assert.ok(html.indexOf('arena-v05S16.css')<html.indexOf('battlefield-v02.css'));
  assert.ok(html.indexOf('arena-layout-v05S13.js')<html.indexOf('battlefield-v02.js'));
  assert.match(css,/left:372px!important;right:auto!important;width:1176px/);

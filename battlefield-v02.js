@@ -33,7 +33,19 @@
   function markerSrc(day,active){
     return path('clock_assets/ART-15_clock_'+(day?'day':'night')+'_marker_'+(active?'on':'off')+'_v2.png');
   }
-  if(typeof module==='object'&&module.exports)module.exports={plan,viewportFit,frame,BOARD_WIDTH,MAX_CREATURES};
+  function turnState(game,engine=global.MW_GAME_ENGINE){
+    if(!game)return {state:'waiting',text:'Начать бой',disabled:true};
+    if(game.phase==='ended')return {state:'waiting',text:game.winner==='draw'?'Ничья':game.winner===0?'Победа':'Поражение',disabled:true};
+    if(game.phase!=='battle')return {state:'waiting',text:'Подготовка к бою',disabled:true};
+    if(game.turn!==0)return {state:'opponent',text:'Ход противника',disabled:true};
+    const me=game.players[0],targets=engine.eligibleAttackTargets(game,0);
+    const available=me.hand.some(h=>engine.actionStatus(game,0,h.uid).ok)||
+      engine.heroPowerStatus(game,0).ok||
+      targets.some(t=>engine.attackStatus(game,0,null,t,true).ok||
+        me.board.some(m=>engine.attackStatus(game,0,m.uid,t).ok));
+    return {state:me.mana<=0||!available?'complete':'ready',text:'Завершить ход',disabled:false};
+  }
+  if(typeof module==='object'&&module.exports)module.exports={plan,viewportFit,frame,turnState,BOARD_WIDTH,MAX_CREATURES};
   const document=global.document;
   if(!document||typeof document.getElementById!=='function')return;
   const byId=(id)=>document.getElementById(id);
@@ -77,7 +89,7 @@
       panel.setAttribute('role','status');panel.setAttribute('aria-live','off');
       const value=element('strong','mw02-mana-value');
       const gems=element('div','mw02-mana-gems');
-      Object.assign(gems.style,{display:'flex',gap:'3px',alignItems:'center',marginLeft:'56px'});
+      Object.assign(gems.style,{display:'flex',gap:'3px',alignItems:'center',marginLeft:'66px'});
       for(let i=0;i<11;i++){const gem=element('span','mw02-mana-gem');gem.hidden=true;gems.append(gem);}
       panel.append(value,gems);stage.append(panel);manaPanels.push({owner,panel,value,gems});
     }
@@ -204,6 +216,16 @@
     if(byId('mwArtBotDeckCount'))byId('mwArtBotDeckCount').textContent=String(opponent?.deck?.length??0);
     if(byId('mwArtMyDeckCount'))byId('mwArtMyDeckCount').textContent=String(player?.deck?.length??0);
   }
+  function renderTurnControl(game,{busy=false}={}){
+    const button=byId('battleEndTurn');if(!button||!workspace)return;
+    if(workspace.classList.contains('mw3d-active')){button.textContent='Завершить ход';return;}
+    // Keep the displayed owner/color until the current animation has finished.
+    // Disable immediately, including on the first frame of an end-turn command.
+    if(busy&&button.dataset.mw02Turn){button.disabled=true;return;}
+    const current=turnState(game);
+    button.dataset.mw02Turn=current.state;button.textContent=current.text;
+    button.disabled=busy||current.disabled;
+  }
   function init(){
     if(initialized)return true;
     workspace=byId('battleWorkspace');stage=workspace?.querySelector('.battle-main');
@@ -230,7 +252,7 @@
     syncVisibility();syncHand();
     return true;
   }
-  const api=Object.freeze({init,render,plan,viewportFit,frame,syncScale,resetClock,MAX_CREATURES,BOARD_WIDTH});
+  const api=Object.freeze({init,render,renderTurnControl,turnState,plan,viewportFit,frame,syncScale,resetClock,MAX_CREATURES,BOARD_WIDTH});
   global.MW_BATTLEFIELD_V02=api;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(typeof window!=='undefined'?window:globalThis);

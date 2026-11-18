@@ -277,7 +277,17 @@ body.mw02-battle-open{overflow:hidden!important}
   position:absolute;left:67.8px;top:69px;width:199.2px;height:199.2px;object-fit:contain;
 }
 #battleWorkspace.mw02-field:not(.mw3d-active) .mw02-clock-frame{
+  position:absolute;inset:0;width:336px;height:336px;
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-clock-frame-half{
   position:absolute;inset:0;width:336px;height:336px;object-fit:contain;
+  clip-path:inset(0 50% 0 0);
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-clock-frame-half.mirrored{
+  transform:scaleX(-1);
+}
+#battleWorkspace.mw02-field:not(.mw3d-active) .mw02-clock-face[data-phase="night"] .mw02-clock-frame-half{
+  clip-path:inset(0 0 0 50%);
 }
 #battleWorkspace.mw02-field:not(.mw3d-active) .mw02-clock-marker{
   position:absolute;width:31.2px;height:31.2px;object-fit:contain;

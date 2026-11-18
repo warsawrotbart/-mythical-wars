@@ -52,7 +52,12 @@
     face=element('div','mw02-clock-face');face.setAttribute('role','img');
     face.setAttribute('aria-label','Игровое время, циферблат на 12 делений');
     dial=addPicture(face,'mw02-clock-dial','clock_assets/ART-16_clock_day_dial_v2.png');
-    addPicture(face,'mw02-clock-frame','clock_assets/ART-15_clock_frame_v2.png');
+    // The supplied frame has a gold day half and a blue night half. Mirror
+    // the current phase's half so the whole ring matches the live dial.
+    const ring=element('div','mw02-clock-frame');
+    addPicture(ring,'mw02-clock-frame-half','clock_assets/ART-15_clock_frame_v2.png');
+    addPicture(ring,'mw02-clock-frame-half mirrored','clock_assets/ART-15_clock_frame_v2.png');
+    face.append(ring);
     markers=CLOCK_CENTERS.map(([cx,cy],i)=>{
       const m=addPicture(face,'mw02-clock-marker', 'clock_assets/ART-15_clock_day_marker_off_v2.png');
       m.dataset.index=String(i);
@@ -128,18 +133,18 @@
   function renderClock(game){
     if(!face||!game)return;
     const current=frame(game.time),hh=String(current.hour).padStart(2,'0')+':00';
+    face.dataset.phase=current.day?'day':'night';
     dial.src=path('clock_assets/ART-16_clock_'+(current.day?'day':'night')+'_dial_v2.png');
     const forward=clockTurns!==null&&(game.turns===clockTurns||game.turns===clockTurns+1)&&current.hour===(clockHour+1)%24;
     if(forward)clockAngle+=30;
     else if(clockTurns===null||current.hour!==clockHour||Math.abs(game.turns-clockTurns)>1){clockAngle=current.angle;pointer.style.transition='none';}
     pointer.style.transform='rotate('+clockAngle+'deg)';clockTurns=game.turns;clockHour=current.hour;
     if(pointer.style.transition==='none'){void pointer.offsetWidth;pointer.style.transition='';}
-    // Color each socket from the real gaming hour of its half-dial, never
-    // from the non-canonical `socket.type` in the artist layout JSON.
+    // All twelve sockets share the current phase; the active hour and real
+    // hour labels keep their original positions on the twelve-hour clock.
     for(let i=0;i<12;i++){
       const socketHour=current.half*12+i;
-      const markerDay=dayOf(socketHour);
-      markers[i].src=markerSrc(markerDay,i===current.index);
+      markers[i].src=markerSrc(current.day,i===current.index);
       markers[i].title=String(socketHour).padStart(2,'0')+':00';
     }
     if(clockText)clockText.textContent=hh;

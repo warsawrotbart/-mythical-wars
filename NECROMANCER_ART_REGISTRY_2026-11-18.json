@@ -1,0 +1,516 @@
+{
+  "version": "2026-11-18",
+  "sourceFolder": "https://drive.google.com/drive/folders/1bGSEY0LQ4Z055SPLUlLUebMJC0Qg8EX4",
+  "conversion": {
+    "format": "WebP",
+    "quality": 90,
+    "maxDimension": 1536
+  },
+  "entries": [
+    {
+      "id": "NCR-007",
+      "sourceFileId": "1Hogj2tovgiwr2ly5NmuPFbaCkJAUipz4",
+      "sourceName": "NCR-007_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1Hogj2tovgiwr2ly5NmuPFbaCkJAUipz4/view?usp=drivesdk",
+      "size": 2634285,
+      "sourceSha256": "2fb6d9e4d55510e79d437ef680a47e1fef0dd7f1ece196619ec59ddb0cd416b9",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-007.webp",
+      "runtimeSha256": "14348bec7522f31b3780f1a649e300a25235083e59880477067db0b2a94b3869",
+      "runtimeBytes": 297286,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-008",
+      "sourceFileId": "1ha33jqJSCM4VvTN1seW9e3CPTxMlTVAZ",
+      "sourceName": "NCR-008_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1ha33jqJSCM4VvTN1seW9e3CPTxMlTVAZ/view?usp=drivesdk",
+      "size": 2751001,
+      "sourceSha256": "446a12f3577c39a0dce287c07a7631e35025dafc82f35e691c3fe8ebfe7e8f24",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-008.webp",
+      "runtimeSha256": "23a6362eecf4bfd842ac241f6802f9c3348acce357e2274073498642b905a438",
+      "runtimeBytes": 330444,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-009",
+      "sourceFileId": "17dYecYqO20grFM0V_SM3vvr2FnSY3y9D",
+      "sourceName": "NCR-009_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/17dYecYqO20grFM0V_SM3vvr2FnSY3y9D/view?usp=drivesdk",
+      "size": 2618358,
+      "sourceSha256": "2985343d57f8d2c349d82155c06c0f9fc283fe06328a8e3cee64fe2bf63be8da",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-009.webp",
+      "runtimeSha256": "7a7ffbee69b6536c975b3edf1f67903296d3d153ae95bdb65d9ceac61f3093b3",
+      "runtimeBytes": 302796,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-010",
+      "sourceFileId": "1thmYzGZjdvji09tGeP1Cc0UU8L4Fnzgg",
+      "sourceName": "NCR-010_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1thmYzGZjdvji09tGeP1Cc0UU8L4Fnzgg/view?usp=drivesdk",
+      "size": 2485518,
+      "sourceSha256": "18e660db2a44cecddce35bfbe454fff854c3452df6c78760289e3527293d29e0",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-010.webp",
+      "runtimeSha256": "fa554731b95ede0b7bf52d58de4e4751228455690e105eb5eb83eab0dbe75e8f",
+      "runtimeBytes": 266348,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-011",
+      "sourceFileId": "1C_VJz9LHbgRg2Iv3Vmr9p0uyEPdjfahM",
+      "sourceName": "NCR-011_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1C_VJz9LHbgRg2Iv3Vmr9p0uyEPdjfahM/view?usp=drivesdk",
+      "size": 2840414,
+      "sourceSha256": "5eb8ea365deccdec64cb1a4e07019252dd34483c97dd76f09cedc725be995661",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-011.webp",
+      "runtimeSha256": "63f5733e8e40e9121cda8d17b1de8512daad472071728c09533b79072d94a1a5",
+      "runtimeBytes": 328052,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-012",
+      "sourceFileId": "1qCoRnkx54SYti6r5kaHCCwZt-_FzVtYr",
+      "sourceName": "NCR-012_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1qCoRnkx54SYti6r5kaHCCwZt-_FzVtYr/view?usp=drivesdk",
+      "size": 2789796,
+      "sourceSha256": "c88afa010af7baf30266dc0546b0573148bc7e6356796ce8c4710d533d448b5e",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-012.webp",
+      "runtimeSha256": "09ce0e498cdc327862e89c8adcd2604f58219c0d36708105d6d7993c622d2068",
+      "runtimeBytes": 355208,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-013",
+      "sourceFileId": "1Ta8nbYBIUN6h8SESu837lYpRgakT9HPg",
+      "sourceName": "NCR-013_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1Ta8nbYBIUN6h8SESu837lYpRgakT9HPg/view?usp=drivesdk",
+      "size": 2663435,
+      "sourceSha256": "e2818321e92feda859692a80972592471a6c42a520858e19f0ac420c5b13e561",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-013.webp",
+      "runtimeSha256": "ea9dc720e1efb3b2ffe23ddb11068acc620a8d82467eb787571791cc22586e24",
+      "runtimeBytes": 324572,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-014",
+      "sourceFileId": "17K7DdGCq4jxUbrJbVyQgM5T1qwZZR7wK",
+      "sourceName": "NCR-014_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/17K7DdGCq4jxUbrJbVyQgM5T1qwZZR7wK/view?usp=drivesdk",
+      "size": 2428774,
+      "sourceSha256": "a416fb815da6549bb4dacc64e47288367ac99961a47a0c798c2c424d0724a152",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-014.webp",
+      "runtimeSha256": "b989097e3eacb99703fc795c73140868ab51345e40a84fde3f77703c74fc4aed",
+      "runtimeBytes": 235284,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-015",
+      "sourceFileId": "1KBXUTC7aFif0Smw98f40qiGm9quWPWiG",
+      "sourceName": "NCR-015_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1KBXUTC7aFif0Smw98f40qiGm9quWPWiG/view?usp=drivesdk",
+      "size": 2432653,
+      "sourceSha256": "5d4496baadfcafa8009cead4c13f6b344d0826be1571e4eb862a6dd63a3b2c71",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-015.webp",
+      "runtimeSha256": "5c7b092351d6bebf3850fb9a3f288e6989a2afb66170ea2ffff4d772b4ab5c68",
+      "runtimeBytes": 258418,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-017",
+      "sourceFileId": "1HGfUiUsqv63bKu8dVcBKV_aTdsm066y_",
+      "sourceName": "NCR-017_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1HGfUiUsqv63bKu8dVcBKV_aTdsm066y_/view?usp=drivesdk",
+      "size": 2466535,
+      "sourceSha256": "037be3cec7270055ca192c2d7aa7aaa1d08c453c2f233f4bc2818dc0e2b63002",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-017.webp",
+      "runtimeSha256": "7fc6014342b2163375985c048ec67b662a02d73414350ac9323c64bec9fc567c",
+      "runtimeBytes": 285924,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-018",
+      "sourceFileId": "1zw-BCPWfb3H9KlO_cyVWUTpGvP9G9GH5",
+      "sourceName": "NCR-018_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1zw-BCPWfb3H9KlO_cyVWUTpGvP9G9GH5/view?usp=drivesdk",
+      "size": 2488505,
+      "sourceSha256": "0ab9eccb9dcb16d93b6260160bf44fe1ef9eb498fee1347a7f5e2e7080176eb1",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-018.webp",
+      "runtimeSha256": "6679caf724e890414273bb321ae8cf02ae7cec3d80ba3ae61cf0c6c77561677a",
+      "runtimeBytes": 273192,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-019",
+      "sourceFileId": "1w-zx3lVviBtqAYvGQUGNWzYvgRDwOWr7",
+      "sourceName": "NCR-019_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1w-zx3lVviBtqAYvGQUGNWzYvgRDwOWr7/view?usp=drivesdk",
+      "size": 2909032,
+      "sourceSha256": "d9851bdfe4b703814616649d10392390a05b00ec6e7f4bca9fac4a4c50cdba9a",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-019.webp",
+      "runtimeSha256": "83116ced20572dc6eb80629ca58f1bc709032bf8900501303a5f5650ace9c7b2",
+      "runtimeBytes": 375056,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-020",
+      "sourceFileId": "1UALNGcSxpKBttOgkIk1_dU9Nv96JAmOh",
+      "sourceName": "NCR-020_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1UALNGcSxpKBttOgkIk1_dU9Nv96JAmOh/view?usp=drivesdk",
+      "size": 2271706,
+      "sourceSha256": "4b8e47fbfeba5a72583f2ea50b5f74aeac2fd570d4ade28fc59669c6acd475e0",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-020.webp",
+      "runtimeSha256": "21e02611e754b09a474b469a549fbf1ccd54311042f5d943ca7f6731e7f2a421",
+      "runtimeBytes": 229272,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-021",
+      "sourceFileId": "1cbuirdDg1g3HiUzVm15Omk9F-ZdI6Vpu",
+      "sourceName": "NCR-021_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1cbuirdDg1g3HiUzVm15Omk9F-ZdI6Vpu/view?usp=drivesdk",
+      "size": 2729475,
+      "sourceSha256": "8d8fdb4fb14773dbfc4312fcca354e345051eabd4540b88b0885310e0fab4779",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-021.webp",
+      "runtimeSha256": "2b24b5d6a29c568cd11062e1791fc3e1198e6ab474974c1c5dc83d6386bbbaa5",
+      "runtimeBytes": 323306,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-022",
+      "sourceFileId": "15ixPu7la0YoNBqPsHuA9ZjPj01iL0OrJ",
+      "sourceName": "NCR-022_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/15ixPu7la0YoNBqPsHuA9ZjPj01iL0OrJ/view?usp=drivesdk",
+      "size": 2910138,
+      "sourceSha256": "d63b3bd0d683779d74be6b2aa44f9217f6f94433b0553e994b7bbcf331a43f16",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-022.webp",
+      "runtimeSha256": "830630fb2c5591da905f6714cbe95f04cede3ff4a811281935f42ae30d2f494e",
+      "runtimeBytes": 400264,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-023",
+      "sourceFileId": "1yc8i1X6d_-jN1J09pWg2dwY_oyQPkQAU",
+      "sourceName": "NCR-023_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1yc8i1X6d_-jN1J09pWg2dwY_oyQPkQAU/view?usp=drivesdk",
+      "size": 2780468,
+      "sourceSha256": "956c5c10a0639ef9ce143d331508f63abfd52eae6f219cd69ee92036bcc66d4d",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-023.webp",
+      "runtimeSha256": "d47f23221373cbc30356f36d851a3ea2a0f6ae65f43d81525780200d87695467",
+      "runtimeBytes": 325778,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-024",
+      "sourceFileId": "1C4n1jryHWPCO9fsH7uFTeRGyNuJHXZ5X",
+      "sourceName": "NCR-024_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1C4n1jryHWPCO9fsH7uFTeRGyNuJHXZ5X/view?usp=drivesdk",
+      "size": 2937327,
+      "sourceSha256": "a32a84c1b6274a020a205c6839e5b840c5b5830d870d2899f992c3f0f35f15d2",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-024.webp",
+      "runtimeSha256": "32b36ea39b9a224e6c7733586caf445230e5c39351f775b9b543b814b8202c0c",
+      "runtimeBytes": 411496,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-025",
+      "sourceFileId": "1P4OHPFz4eqYUgFeMCXkKtS35112bDKhU",
+      "sourceName": "NCR-025_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1P4OHPFz4eqYUgFeMCXkKtS35112bDKhU/view?usp=drivesdk",
+      "size": 2353555,
+      "sourceSha256": "bbe249362ebd8e25f391635f6f9487036c13cc7e7399652b4cd73a21488cec20",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-025.webp",
+      "runtimeSha256": "8c2f23ff91dc075ba2a527498eb974d54b14121a709f1dbef4ef5362a5c04a29",
+      "runtimeBytes": 256368,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-026",
+      "sourceFileId": "14vRrIbeo8e8rxj26sfXdDbD9tyXWlmAH",
+      "sourceName": "NCR-026_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/14vRrIbeo8e8rxj26sfXdDbD9tyXWlmAH/view?usp=drivesdk",
+      "size": 2394893,
+      "sourceSha256": "3e263abc3d02663437cfbc230c1d281b805b6b7e6241eb894462c9d6b6c559f3",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-026.webp",
+      "runtimeSha256": "a6ce55732412c809624c231530548126241dfffc76112b1b3b962c0055204f91",
+      "runtimeBytes": 250274,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-027",
+      "sourceFileId": "1xLQOxxTH2c6grXTjdi0uHXA_g1p2fEup",
+      "sourceName": "NCR-027_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1xLQOxxTH2c6grXTjdi0uHXA_g1p2fEup/view?usp=drivesdk",
+      "size": 2606435,
+      "sourceSha256": "529c0ca65edb636dafed456fe2ccf5f19f9a6aba004d6ee0a709e4a2ff73b7a0",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-027.webp",
+      "runtimeSha256": "bb9bff13dba362b497459260b353e6dcd452ccb5222dee2d987693295fdfa347",
+      "runtimeBytes": 298946,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-028",
+      "sourceFileId": "1apv5BvkyS1btNLVbejFZv80OkrOJGBJT",
+      "sourceName": "NCR-028_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1apv5BvkyS1btNLVbejFZv80OkrOJGBJT/view?usp=drivesdk",
+      "size": 2491585,
+      "sourceSha256": "951cb3a6a18bacb62ee1a2da31944e530fa492ca0f812a5ad719e3edaef1de55",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-028.webp",
+      "runtimeSha256": "9803609dbe54aa36d8bfe89c3a9332369f0f08cca7638a1de9e1fb854033a3ab",
+      "runtimeBytes": 270702,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-029",
+      "sourceFileId": "1Tua9Yb2uaDb77mnyZ4Yi31suiAcSwnms",
+      "sourceName": "NCR-029_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1Tua9Yb2uaDb77mnyZ4Yi31suiAcSwnms/view?usp=drivesdk",
+      "size": 2611798,
+      "sourceSha256": "1bbd3567cda5e261f0484080540ea1b25d46ee52482789d78a28839420664005",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-029.webp",
+      "runtimeSha256": "ff3e9041c92ebdfb2cbbbb090c7bdd24003cb551efc490b679e9ea1e239ba27b",
+      "runtimeBytes": 317994,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    },
+    {
+      "id": "NCR-030",
+      "sourceFileId": "1UIKaMpt7gIq4urmpL8wLCbj01Yac8f_0",
+      "sourceName": "NCR-030_art_v01.png",
+      "sourceUrl": "https://drive.google.com/file/d/1UIKaMpt7gIq4urmpL8wLCbj01Yac8f_0/view?usp=drivesdk",
+      "size": 2351848,
+      "sourceSha256": "c2bbc3714559d1b2f71c26021cf78f2d673accdad8e78bb03866c208c50962cb",
+      "sourceWidth": 1024,
+      "sourceHeight": 1536,
+      "runtimePath": "test-art/NCR-030.webp",
+      "runtimeSha256": "08c152166612464f0ed3a5a0278136a9353b68c42ccb5d1e172af3266cc8ec47",
+      "runtimeBytes": 237466,
+      "width": 1024,
+      "height": 1536,
+      "crop": {
+        "x": 0.48,
+        "y": 0,
+        "zoom": 1,
+        "verified": false
+      }
+    }
+  ],
+  "reusedIds": [
+    "NCR-001",
+    "NCR-002",
+    "NCR-003",
+    "NCR-004",
+    "NCR-005",
+    "NCR-006",
+    "TKN-007",
+    "TKN-010",
+    "TKN-011"
+  ],
+  "alternateOnly": {
+    "id": "TKN-007",
+    "sourceFileId": "1CW9dGORpIZugmZdrMH8M52fX3-TfJqWJ",
+    "sourceName": "TKN-007_window_v01.png",
+    "note": "Window preview; not a separate card and not a replacement for the source illustration."
+  },
+  "absentIds": [
+    "NCR-016"
+  ],
+  "cropReview": "pending-visual-review",
+  "gameplayChanges": false
+}

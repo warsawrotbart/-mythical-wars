@@ -22,6 +22,16 @@ class Assets(HTMLParser):
 
 def check(root):
     errors=[]; checked=0
+    # The source registry stays out of Pages; verify every imported runtime file in both trees.
+    necro_registry=json.loads((ROOT/'NECROMANCER_ART_REGISTRY_2026-11-18.json').read_text(encoding='utf8'))
+    for entry in necro_registry['entries']:
+        rel=entry['runtimePath']
+        asset=(root/rel).resolve()
+        if not asset.is_relative_to(root.resolve()) or not asset.is_file():
+            errors.append('Missing Necromancer art: '+rel)
+        elif hashlib.sha256(asset.read_bytes()).hexdigest()!=entry['runtimeSha256']:
+            errors.append('Incorrect Necromancer art: '+rel)
+        checked+=1
     for name in ('index.html','v05-dynamic.html')+(() if root.name=='_site' else ('v05-studio.html',)):
         f=root/name
         if not f.is_file():errors.append('Missing entrypoint: '+name);continue

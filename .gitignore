@@ -19,6 +19,7 @@ __pycache__/
 Thumbs.db
 *.log
 *.zip
+!/template-archives/MW_Card_Templates_v05A_source.zip
 *.xlsx
 *.xls
 

@@ -11,6 +11,7 @@
 const MAX_IMAGES=165,MAX_FACES=92, WIDTH=1024,HEIGHT=1536;
 const images=new Map(),faces=new Map(),profiles=new Map();
 const stats={drawn:0,failed:0,hit:0};
+const getFinish=()=>root.MW_V05_CARD_FINISH;
 const CLASS={"Воин":"Warrior","Чернокнижник":"Warlock","Некромант":"Necromancer",
  "Чародей":"Wizard","Ведун":"Seer","Заклинатель":"Conjurer","Разбойник":"Rogue",
  "Нейтральная":"Neutral","Нейтральные":"Neutral"};
@@ -107,6 +108,11 @@ function fonts(){
  })();return fontPromise;
 }
 function inkCenteredNumber(ctx,text,bind,manifest){
+ const finish=getFinish();
+ if(finish){
+  finish.drawNumber(ctx,text,bind,manifest,'"MWv05Text", "DejaVu Serif", Georgia, serif');
+  return;
+ }
  const [baseX,baseY]=bind.center;
  // Match attack, health, and weapon durability in one visual plane.
  // The approved numeric values and source icon assets are unchanged.
@@ -144,7 +150,8 @@ function inkCenteredTitle(ctx,card,model,m){
  ctx.restore();
 }
 function drawLabels(ctx,card,m,core){
- const model=core.analyzeText(card,m,ctx);
+ const finish=getFinish();
+ const model=finish?finish.analyzeText(core,card,m,ctx):core.analyzeText(card,m,ctx);
  inkCenteredTitle(ctx,card,model,m);
  ctx.save();ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#2b2119";
  const lines=model.description.lines;
@@ -152,7 +159,8 @@ function drawLabels(ctx,card,m,core){
  const [cx,cy]=m.text_anchors.description_center_by_type[card.type];
  const top=cy-(lines.length-1)*step/2;
  ctx.font=`${model.description.px}px "MWv05Text", "DejaVu Serif", Georgia, serif`;
- lines.forEach((txt,i)=>ctx.fillText(txt,cx,top+i*step,m.text_anchors.description_wrap_width));
+ if(finish)finish.drawDescription(ctx,model.description,[cx,cy],'"MWv05Text", "DejaVu Serif", Georgia, serif');
+ else lines.forEach((txt,i)=>ctx.fillText(txt,cx,top+i*step,m.text_anchors.description_wrap_width));
  if(model.flavor){
   ctx.font=`italic ${model.flavor.px}px "DejaVu Serif", Georgia, serif`;
   model.flavor.lines.forEach((t,i)=>ctx.fillText(t,m.text_anchors.flavor_first_line_center[0],
@@ -171,10 +179,12 @@ async function drawArt(ctx,part,artUrl,crop,missing){
  if(!mask)throw Error("Нет маски арта: "+part.mask);
  const buffer=document.createElement("canvas");buffer.width=WIDTH;buffer.height=HEIGHT;
  const g=buffer.getContext("2d");g.imageSmoothingQuality="high";
+ let photo,placement;
  if(artUrl){
   const img=await image(artUrl);
   const d=root.MW_V05_CORE.imagePlacement(img.width,img.height,part.viewport,crop);
   g.drawImage(img,d.dx,d.dy,d.dw,d.dh);
+  photo=img;placement=d;
  }else{
   // Explicit unavailable-art state, never reuses another card's illustration.
   const [x,y,w,h]=part.viewport;
@@ -187,10 +197,13 @@ async function drawArt(ctx,part,artUrl,crop,missing){
  }
  g.globalCompositeOperation="destination-in";
  g.drawImage(mask,0,0);g.globalCompositeOperation="source-over";
- ctx.drawImage(buffer,0,0);
+ const finish=getFinish();
+ if(finish&&part.lens){finish.extendCrown(g,photo,placement,part.lens);finish.drawLens(ctx,buffer,part.lens);}
+ else ctx.drawImage(buffer,0,0);
 }
 async function render(card,view="full",opt={}){
- const manifest=root.MW_V05_MANIFEST,core=root.MW_V05_CORE;
+ const base=root.MW_V05_MANIFEST,core=root.MW_V05_CORE,finish=getFinish();
+ const manifest=base&&(finish?finish.manifest(base):base);
  if(!manifest||!core||!document?.createElement)return "";
  const c=toV05(card,opt.cost);
  if(!c)return "";
@@ -210,7 +223,7 @@ async function render(card,view="full",opt={}){
   }finally{if(artSource.startsWith("blob:"))URL.revokeObjectURL(artSource);}
  }
  await fonts();
- const plan=core.drawPlan(c,manifest);
+ const plan=finish?finish.drawPlan(core,c,manifest):core.drawPlan(c,manifest);
  const fileKeys=[...new Set(plan.filter(p=>p.kind==="asset").map(p=>p.key))];
  // Preload in parallel; lazy per-ID art, layers and mask remain local to the GitHub archive.
  await Promise.all([...fileKeys.map(asset),...plan.filter(p=>p.kind==="art").map(p=>image("v05/runtime/"+p.mask+"_alpha.png")),
@@ -226,7 +239,8 @@ async function render(card,view="full",opt={}){
     if(!tinted.has(part.key))tinted.set(part.key,tint(pic,part.key,c.class_key));
     item=tinted.get(part.key);
    }
-   if(part.fullCanvas)ctx.drawImage(item,0,0);
+   if(part.lens&&finish)finish.drawLens(ctx,item,part.lens,true);
+   else if(part.fullCanvas)ctx.drawImage(item,0,0);
    else contain(ctx,item,part.slot);
   }else if(part.kind==="art"){
    await drawArt(ctx,part,artSource,crop,!artSource);
@@ -240,8 +254,8 @@ async function render(card,view="full",opt={}){
   const width=304*WIDTH/HEIGHT;
   g.drawImage(canvas,(256-width)/2,0,width,304);
  }else{
-  small.width=512;small.height=768;
-  small.getContext("2d").drawImage(canvas,0,0,512,768);
+  small.width=opt.nativeSize===true?WIDTH:512;small.height=opt.nativeSize===true?HEIGHT:768;
+  small.getContext("2d").drawImage(canvas,0,0,small.width,small.height);
  }
  if(artSource.startsWith("blob:"))URL.revokeObjectURL(artSource);
  return small.toDataURL("image/png");
@@ -264,7 +278,7 @@ function safeCardFallback(card,view){
 }
 function request(card,view="full",opt={}){
  if(!card?.cardId)return Promise.resolve("");
- const key=[card.cardId,view,opt.cost??"",card.name,card.ability,card.attack,card.health,card.durability,card.costValue,card.artImage?.length||0].join("|");
+ const key=[card.cardId,view,opt.nativeSize===true,opt.cost??"",card.name,card.ability,card.attack,card.health,card.durability,card.costValue,card.artImage?.length||0].join("|");
  if(faces.has(key)){stats.hit++;return faces.get(key);}
  const promise=render(card,view,opt).then(data=>{if(data)stats.drawn++;return data;}).catch(e=>{
   stats.failed++;console.warn("MW v05 battle card fallback:",card.cardId,e);

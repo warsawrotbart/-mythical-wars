@@ -13,6 +13,12 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const finite=(v,d)=>Number.isFinite(Number(v))?Number(v):d;
 const copy=v=>JSON.parse(JSON.stringify(v));
 const boxFromArray=a=>({x:a[0],y:a[1],w:a[2]-a[0],h:a[3]-a[1]});
+const layerBox=(coords,part)=>{
+  const box=boxFromArray(coords);
+  if(!part.lens)return box;
+  const t=part.lens;
+  return {x:box.x*t.scaleX+t.x,y:box.y*t.scaleY+t.y,w:box.w*t.scaleX,h:box.h*t.scaleY};
+};
 const center=box=>[box.x+box.w/2,box.y+box.h/2];
 const nameFor={mana:'Мана',class_badge:'Класс',subtype_badge:'Подтип',race_badge:'Раса',time_badge:'Время',rarity:'Редкость',rarity_side_decor:'Декор редкости',creature_attack:'Атака существа',weapon_attack:'Атака оружия',health:'Здоровье',durability:'Прочность',armor:'Броня',header_divider:'Разделитель заголовка',lower_divider:'Разделитель описания'};
 const numberFor={cost:'Стоимость',attack:'Атака',health:'Здоровье',durability:'Прочность',armor:'Броня'};
@@ -27,10 +33,10 @@ function descriptors(plan,card,manifest){
     }else if(part.kind==='asset'){
       const a=manifest.assets[part.key];
       const b=a?.alpha_bbox||[0,0,1024,1536];
-      entries.push({id:'base:'+part.key,label:'Слой · '+part.key.replaceAll('_',' '),kind:'asset',box:boxFromArray(b),parts:[part]});
+      entries.push({id:'base:'+part.key,label:'Слой · '+part.key.replaceAll('_',' '),kind:'asset',box:layerBox(b,part),parts:[part]});
     }else if(part.kind==='art'){
       const b=part.viewport;
-      entries.push({id:'art',label:'Иллюстрация (маска)',kind:'art',box:boxFromArray(b),parts:[part]});
+      entries.push({id:'art',label:'Иллюстрация (маска)',kind:'art',box:layerBox(b,part),parts:[part]});
     }else if(part.kind==='dynamic_text'){
       const r=manifest.text_regions;
       entries.push({id:'text:title',label:'Текст · Название',kind:'text',subtype:'title',box:boxFromArray(r.title)});

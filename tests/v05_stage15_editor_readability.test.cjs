@@ -17,12 +17,13 @@ test("editor has large sticky card and compact on-demand help",()=>{
  assert.match(css,/\.editor-stage \.template-workbench\{position:sticky/);
  assert.match(html,/class="editor-help"/);
 });
-test("single masked art paint, with curved name and existing gold trim",()=>{
+test("single masked art paint, with a raised rim and the curved name",()=>{
  const src=read("v05-dynamic.js");
- assert.match(src,/z\.globalCompositeOperation="source-over";ctx\.drawImage\(tmp,0,0\)/);
+ assert.match(src,/z\.globalCompositeOperation="source-over";/);
+ assert.match(src,/finish\.drawLens\(ctx,tmp,part\.lens\)/);
  assert.doesNotMatch(src,/artCrown/);
  assert.match(src,/polish\.drawCurvedTitle/);
- assert.match(src,/Common_Outer_Gold_Trim/);
+ assert.match(src,/finish\.drawPlan/);
 });
 test("hover preview uses card alone without duplicate explanatory title",()=>{
  const src=read("battle-hand-v05S14.js"),css=read("card-readability-v05S15.css");

@@ -52,10 +52,28 @@ test('one v05 manifest for editor, 2D, initial replacement and 3D',()=>{
 test('font-aware digit alignment and contrast present in editor and battle',()=>{
  const battle=source('battle-v05-card-bridge.js'),editor=source('v05-dynamic.js');
  for(const item of [battle,editor]){
-  assert.match(item,/actualBoundingBoxAscent/);
-  assert.match(item,/actualBoundingBoxDescent/);
+  assert.match(item,/finish\.drawNumber/);
   assert.match(item,/#ffdf9c/);
   assert.match(item,/#351920/);
+ }
+});
+test('v05A uses the immutable v05 base and aligns optical centers by card type',()=>{
+ const finish=require('../v05-card-finish.js'),core=require('../v05-dynamic-core.js');
+ const base=require('../v05/production/editor_manifest.json');
+ const oldSlots=JSON.stringify(base.slots),layout=finish.manifest(base);
+ assert.equal(JSON.stringify(base.slots),oldSlots);
+ for(const [type,second] of [['Creature','health'],['Weapon','durability']]){
+  const [a,b]=['attack',second].map(field=>layout.number_bindings.find(item=>item.field===field&&item.types.includes(type)));
+  assert.ok(Math.abs(a.center[1]-b.center[1])<.001);
+ }
+ for(const type of ['Creature','Spell','Weapon']){
+  const plan=finish.drawPlan(core,{type,class_key:'Warrior',cost:2},layout);
+  const body=plan.findIndex(part=>part.key==='Common_Outer_Body');
+  const rim=plan.findIndex(part=>part.key===type+'_Inner_Art_Frame');
+  const illustration=plan.findIndex(part=>part.kind==='art');
+  const title=plan.findIndex(part=>part.key==='Common_Title_Curl_Left_Color');
+  assert.ok(body<illustration&&illustration<rim&&rim<title);
+  assert.equal(plan.filter(part=>part.lens).length,2);
  }
 });
 test('3D can show a readable face while texture is loading',()=>{

@@ -1,7 +1,8 @@
 /* Mythical Wars v05 — dynamic art/text compositor, isolated from battle engine. */
 (function(){
 "use strict";
-const manifest=window.MW_V05_MANIFEST, core=window.MW_V05_CORE, samples=window.MW_V05_CONTROL_SAMPLES;
+const finish=window.MW_V05_CARD_FINISH,base=window.MW_V05_MANIFEST;
+const manifest=base&&finish?.manifest(base),core=window.MW_V05_CORE,samples=window.MW_V05_CONTROL_SAMPLES;
 const $=id=>document.getElementById(id);
 if(!manifest||!core||!samples){$("status").textContent="Ошибка: нет манифеста v05";return}
 const state={card:null,art:null,artSource:"",artBlob:null,artLabel:"",sampleIndex:null,origin:"sample",
@@ -79,20 +80,7 @@ function colored(img,key,palette){
 }
 function renderNumber(ctx,value,bind){
   if(value==null)return;
-  const [x,y]=bind.center;
-  const s=String(value),px=s.length>1?bind.two_digit_font_px:bind.font_px;
-  ctx.save();ctx.textAlign="center";ctx.textBaseline="alphabetic";
-  ctx.font=`bold ${px}px "DejaVu Serif", Georgia, serif`;
-  const metrics=ctx.measureText(s);
-  // Centre the rendered glyph ink, not the font-dependent middle baseline.
-  const ascent=metrics.actualBoundingBoxAscent||px*.72;
-  const descent=metrics.actualBoundingBoxDescent||px*.09;
-  const baseline=y+(ascent-descent)/2;
-  ctx.fillStyle=manifest.text_rules.numbers.fill;
-  ctx.strokeStyle=manifest.text_rules.numbers.outline;
-  ctx.lineWidth=manifest.text_rules.numbers.outline_px*2;ctx.lineJoin="round";
-  ctx.strokeText(s,x,baseline);ctx.fillText(s,x,baseline);
-  ctx.restore()
+  finish.drawNumber(ctx,String(value),bind,manifest,'"DejaVu Serif", Georgia, serif');
 }
 function renderText(ctx,textModel,only=null){
   const card=state.card;
@@ -104,11 +92,8 @@ function renderText(ctx,textModel,only=null){
       manifest.text_regions.title[2]-manifest.text_regions.title[0]);
   }
   if(!only||only==="description"){
-    ctx.fillStyle="#2b2119";const body=textModel.description;
-    const pos=manifest.text_anchors.description_center_by_type[card.type];
-    ctx.font=`${body.px}px "DejaVu Serif", Georgia, serif`;
-    const step=body.px*1.18,top=pos[1]-(body.lines.length-1)*step/2;
-    body.lines.forEach((t,i)=>ctx.fillText(t,pos[0],top+i*step));
+    finish.drawDescription(ctx,textModel.description,manifest.text_anchors.description_center_by_type[card.type],
+      '"DejaVu Serif", Georgia, serif');
   }
   if((!only||only==="flavor")&&textModel.flavor){
     ctx.fillStyle="#2b2119";const f=textModel.flavor;
@@ -146,7 +131,7 @@ async function paint(){
   const canvas=$("cardCanvas");const ctx=canvas.getContext("2d",{willReadFrequently:false});
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   try{
-    const plan=core.drawPlan(state.card,manifest).filter(part=>!polish.skipLayer(part,state.card.type));
+    const plan=finish.drawPlan(core,state.card,manifest).filter(part=>!polish.skipLayer(part,state.card.type));
     const layers=templateEditor.compose(plan,state.card);
     const palette=paletteKey();
     if(!manifest.class_palettes[palette])throw Error("Класс не найден в палитрах v05");
@@ -157,7 +142,7 @@ async function paint(){
     await Promise.all(required);
     if(document.fonts&&document.fonts.ready)await document.fonts.ready;
     if(current!==state.epoch)return;
-    const model=core.analyzeText(state.card,manifest,ctx);
+    const model=finish.analyzeText(core,state.card,manifest,ctx);
     ctx.clearRect(0,0,canvas.width,canvas.height);
     for(const layer of layers){
       if(!layer.transform.visible)continue;
@@ -170,7 +155,8 @@ async function paint(){
             const visible=part.tint?colored(pic,part.key,palette):pic;
             if(part.fullCanvas){
               const lift=polish.liftTop(part,state.card.type);
-              if(lift)ctx.drawImage(visible,0,lift,canvas.width,canvas.height);
+              if(part.lens)finish.drawLens(ctx,visible,part.lens,true);
+              else if(lift)ctx.drawImage(visible,0,lift,canvas.width,canvas.height);
               else ctx.drawImage(visible,0,0);
             }else contain(ctx,visible,part.slot);
           }
@@ -181,7 +167,8 @@ async function paint(){
           const loc=core.imagePlacement(img.width,img.height,part.viewport,state.crop);
           z.drawImage(img,loc.dx,loc.dy,loc.dw,loc.dh);
           z.globalCompositeOperation="destination-in";z.drawImage(await mask(part.mask),0,0);
-          z.globalCompositeOperation="source-over";ctx.drawImage(tmp,0,0);
+          z.globalCompositeOperation="source-over";
+          finish.extendCrown(z,img,loc,part.lens);finish.drawLens(ctx,tmp,part.lens);
         }else if(layer.kind==='text'){
           renderText(ctx,model,layer.subtype);
         }else if(layer.kind==='number'){
@@ -192,10 +179,6 @@ async function paint(){
         }
       }finally{ctx.restore()}
 
-    }
-    if(state.card.type==="Creature"){
-      ctx.save();ctx.globalAlpha=.25;ctx.globalCompositeOperation="screen";
-      ctx.drawImage(await asset("Common_Outer_Gold_Trim"),0,0);ctx.restore();
     }
     if(current!==state.epoch)return;
     const issues=core.validateCard(state.card,manifest,{hasArt:!!state.artSource})

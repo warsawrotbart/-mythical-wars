@@ -1,0 +1,19 @@
+<!doctype html><meta charset="utf-8"><title>MW — проверка хранилища</title>
+<h1>Проверка хранилища партий</h1><button id="run">Проверить переполнение и миграцию</button><pre id="result">Готово</pre>
+<script src="../battle-storage.js"></script><script>
+run.onclick=async()=>{run.disabled=true;const log=[];let db;const own=[];try{
+ const req=indexedDB.open('MW_Storage_QA_20261118',1);req.onupgradeneeded=()=>req.result.createObjectStore('meta',{keyPath:'key'});
+ db=await new Promise((ok,no)=>{req.onsuccess=()=>ok(req.result);req.onerror=()=>no(req.error);});
+ const legacyMap=new Map(),legacy={getItem:k=>legacyMap.get(k)||null,removeItem:k=>legacyMap.delete(k)};
+ const old={format:'mythical-wars-battle',version:2,game:{turns:1,battleReplay:{actions:[1,2]},cards:{art:'preserve'}},turnTimer:{remainingMs:12345},presentationUI:{pendingChoice:{uid:'x'}}};
+ legacyMap.set(MW_BATTLE_STORAGE.keys.current,JSON.stringify(old));legacyMap.set(MW_BATTLE_STORAGE.keys.previous,JSON.stringify({...old,game:{...old.game,turns:0}}));
+ for(let i=0;i<100;i++){const k='mw-storage-qa-fill-'+i;try{localStorage.setItem(k,'x'.repeat(128*1024));own.push(k);}catch(e){if(e.name!=='QuotaExceededError')throw e;log.push('PASS: реальный лимит localStorage достигнут ('+own.length+' блоков)');break;}}
+ let s=await MW_BATTLE_STORAGE.create({backend:MW_BATTLE_STORAGE.indexedDBBackend(db),legacy}).open();
+ if(s.read().game.turns!==1||s.read(true).game.turns!==0||legacyMap.size)throw Error('migration');log.push('PASS: оба старых слота перенесены без потерь');
+ const large={...old,game:{...old.game,turns:2,large:'x'.repeat(6*1024*1024)}};await s.save(large);await s.backup();await s.save({...old,game:{...old.game,turns:3}});
+ s=await MW_BATTLE_STORAGE.create({backend:MW_BATTLE_STORAGE.indexedDBBackend(db),legacy}).open();
+ if(s.read().game.turns!==3||s.read(true).game.turns!==2||s.read(true).game.large.length!==6*1024*1024)throw Error('reload');
+ if(s.read().turnTimer.remainingMs!==12345||s.read().presentationUI.pendingChoice.uid!=='x'||s.read().game.battleReplay.actions.length!==2)throw Error('lost fields');
+ log.push('PASS: сохранение 6 МиБ и восстановление обоих слотов при полном localStorage');log.push('PASS: повторы, арты, таймер и незавершённый выбор сохранены');
+ }catch(e){log.push('FAIL: '+e.stack);}finally{for(const k of own)localStorage.removeItem(k);db?.close();indexedDB.deleteDatabase('MW_Storage_QA_20261118');result.textContent=log.join('\n');run.disabled=false;}};
+</script>

@@ -15,8 +15,7 @@ let botStepper=null;
 let game=null,pending=null,mulliganSelection=new Set(),gameRunningAI=false,notifyTimeout=null;
 let labLastSummary=null,labBusy=false,loadedReplay=null,lastAuditReport="";
 // v2.0: local battle save is separate from cards, assets and deck storage.
-const BATTLE_SAVE_KEY="mw-active-battle-v2.0";
-const BATTLE_PREVIOUS_KEY="mw-previous-battle-v2.0";
+let battleStore=null,battleStarting=false,battleSaveSerial=0;
 let battleSaveError="",lastSavedAt="";
 
 let graveOpenOwner=null;
@@ -685,17 +684,14 @@ function battleCard(h,owner,kind,state=game){
 }
 
 function readBattleSnapshot(previous=false){
- try{
-  const text=localStorage.getItem(previous?BATTLE_PREVIOUS_KEY:BATTLE_SAVE_KEY);
-  return text?JSON.parse(text):null;
- }catch(_){return null;}
+ return battleStore?.read(previous)||null;
 }
 function updateBattleSessionStatus(){
- const badge=$("battleSessionStatus"),resume=$("battleResumeBtn"),stored=readBattleSnapshot();
+ const badge=$("battleSessionStatus"),resume=$("battleResumeBtn"),stored=battleStore?.has();
  if(resume)resume.disabled=!stored;
  if($("battleQuickResume"))$("battleQuickResume").disabled=!stored;
  const previousBtn=$("battleResumePrevious");
- if(previousBtn)previousBtn.hidden=!readBattleSnapshot(true);
+ if(previousBtn)previousBtn.hidden=!battleStore?.has(true);
  if(!badge)return;
  if(battleSaveError){badge.textContent="Автосохранение недоступно: "+battleSaveError+
    " · Используйте кнопку «Бой JSON» для переноса.";}
@@ -704,16 +700,20 @@ function updateBattleSessionStatus(){
    " · JSON-резервная копия доступна отдельной кнопкой.";}
  else badge.textContent=stored?"Есть сохранённая партия · нажмите «Продолжить».":"Сохранённой партии пока нет.";
 }
-function persistBattleSession(){
+async function persistBattleSession(){
  if(!game){updateBattleSessionStatus();return false;}
+ const serial=++battleSaveSerial;
  try{
-  const raw=JSON.stringify(battleSavePayload());
-  localStorage.setItem(BATTLE_SAVE_KEY,raw);
-  lastSavedAt=new Date().toLocaleTimeString("ru-RU");
-  battleSaveError="";updateBattleSessionStatus();return true;
+  if(!battleStore)throw new Error("Хранилище ещё не готово");
+  await battleStore.save(battleSavePayload());
+  if(serial===battleSaveSerial){
+   lastSavedAt=new Date().toLocaleTimeString("ru-RU");
+   battleSaveError="";updateBattleSessionStatus();
+  }
+  return true;
  }catch(err){
-  battleSaveError=err?.message||"ошибка хранилища";
-  updateBattleSessionStatus();return false;
+  if(serial===battleSaveSerial){battleSaveError=err?.message||"ошибка хранилища";updateBattleSessionStatus();}
+  return false;
  }
 }
 function loadBattleSave(input){
@@ -1044,14 +1044,19 @@ function selectMulligan(){
   }).catch(()=>{/* visible card-name fallback remains */});
  }
 }
-function startBattle(){
+async function startBattle(){
+ if(battleStarting||!battleStore)return;
+ battleStarting=true;$("battleStartBtn").disabled=true;
+ try{
  const previous=readBattleSnapshot();
  if(((game&&game.phase!=="ended")||(!game&&previous))&&
     !window.confirm("Начать новую партию? Предыдущее состояние сохранится в резервном слоте. Для надёжности используйте «Бой JSON»."))return;
  const a=decks.get($("battleMyDeck").value),b=decks.get($("battleBotDeck").value);
  const source=battleCatalog();
  if(!a||!b||!dm.validateDeck(a,source).ok||!dm.validateDeck(b,source).ok){message("Выберите две допустимые колоды.");return;}
- if(previous)try{localStorage.setItem(BATTLE_PREVIOUS_KEY,JSON.stringify(previous));}catch(_){}
+ // Finish the latest autosave before rotating its committed value into the reserve slot.
+ if(game&&!(await persistBattleSession())){message("Не удалось сохранить текущий бой. Скачайте «Бой JSON» перед новой партией.");return;}
+ try{await battleStore.backup();}catch(err){battleSaveError=err.message;updateBattleSessionStatus();message("Резервная партия не записана. Скачайте «Бой JSON» перед новой партией.");return;}
  resetPresentation();
  window.MW_BATTLEFIELD_V02?.resetClock();
  turnTimer=window.MW_TURN_TIMER.create({durationMs:Number($("battleTimerMode").value)});timerExpiredPending=false;
@@ -1065,6 +1070,7 @@ function startBattle(){
      $("battleChoiceDialog").hidden=true;mulliganSelection=new Set();gameRunningAI=false;
     $("battleMulligan").hidden=false;selectMulligan();renderGame();window.MW_HAND_MOTION?.opening(document,game);}
  catch(e){console.error(e);message("Не удалось начать бой: "+e.message);}
+ }finally{battleStarting=false;$("battleStartBtn").disabled=false;}
 }
 function confirmMulligan(){
  if(!game||game.phase!=="mulligan"||presentationBusy)return;
@@ -1540,8 +1546,9 @@ function wire(){
  $("battleReduceMotion").checked=window.MW_MOTION_RUNTIME.reduced(document);
  $("battleReduceMotion").onchange=e=>{window.MW_MOTION_RUNTIME.setReduced(e.target.checked);try{localStorage.setItem("mw-reduce-motion",String(e.target.checked));}catch(_){}if(presentationBusy){resetPresentation();renderGame();}};
  $("battleStartBtn").onclick=startBattle;
- $("battleSaveBtn").onclick=()=>{if(persistBattleSession())message("Бой сохранён локально.");else message("Сохранение недоступно: скачайте «Бой JSON».");};
- function resumeBattle(previous=false){
+ $("battleSaveBtn").onclick=async()=>{if(await persistBattleSession())message("Бой сохранён локально.");else message("Сохранение недоступно: скачайте «Бой JSON».");};
+ async function resumeBattle(previous=false){
+  await battleStore?.flush();
   const snapshot=readBattleSnapshot(previous);
   if(!snapshot)return message("Локального сохранения нет.");
   if(game&&game.phase!=="ended"&&!window.confirm("Заменить текущую партию сохранённой?"))return;
@@ -1691,6 +1698,15 @@ async function init(){
    if(Array.isArray(saved))for(const d of saved)if(d&&d.deckId)decks.set(d.deckId,d);
    storageMode="localStorage";
   }catch(e){storageMode="memory";}
+ }
+ let legacy=null;try{legacy=window.localStorage;}catch(_){}
+ try{
+  battleStore=window.MW_BATTLE_STORAGE.create({backend:deckDB?window.MW_BATTLE_STORAGE.indexedDBBackend(deckDB):null,legacy});
+  await battleStore.open();
+ }catch(err){
+  // Leave old keys intact if migration fails; never clear unrelated storage.
+  battleStore=window.MW_BATTLE_STORAGE.create({legacy});await battleStore.open();
+  battleSaveError="Не удалось открыть IndexedDB: "+err.message;
  }
  let seeded=false;
  try{seeded=deckDB?await dbMeta("samples-seeded")===true:localStorage.getItem("mw-decks-seeded")==="1";}catch(e){}

@@ -40,7 +40,7 @@ const TYPE_MAP={"существо":"Creature","оружие":"Weapon","закл�
 const TIME_MAP={"дзень":"Day","ноч":"Night","day":"Day","night":"Night"};
 const RACE_MAP={"чалавек":"Human","нежыць":"Undead","дух":"Spirit","дракон":"Dragon","нечысць":"Demon","абаротні":"Shapeshifter","звер":"Beast","human":"Human","undead":"Undead","spirit":"Spirit","dragon":"Dragon","demon":"Demon","shapeshifter":"Shapeshifter","beast":"Beast"};
 const KIND_LABEL={cards:"Карты",tokens:"Токены"};
-const REQUIRED={cards:162,tokens:7};
+const REQUIRED={cards:162,tokens:12};
 function key(v){return String(v??"").trim().toLocaleLowerCase("ru").replace(/ё/g,"е").replace(/[\s\p{P}\p{S}_]+/gu,"")}
 function clean(v){if(v===null||v===undefined)return null;const s=String(v).replace(/\r\n?/g,"\n").trim();return EMPTY.has(s)?null:s}
 function own(obj,k){return Object.prototype.hasOwnProperty.call(obj||{},k)}
@@ -82,14 +82,14 @@ function normalizeOne(row,map,kind,rowNumber,manifest){
  for(const [field] of FIELDS){const raw=row[map[field]];data[field]=NUMERIC.has(field)?parseInteger(raw,FIELDS.find(x=>x[0]===field)[1],clean(row[map.id]),rowNumber,issues):clean(raw)}
  const id=data.id;
  if(!id){issues.push(issue("error","missing-id","В строке с данными отсутствует ID",null,rowNumber));return {data:null,issues}}
- if(!new RegExp(kind==="tokens"?"^TKN-[0-9]{3}$":"^(?:KNZ|CHR|NEU|NCR|ZAV)-[0-9]{3}$").test(id))issues.push(issue("error","id",`${id}: неверный формат ID для раздела «${KIND_LABEL[kind]}»`,id,rowNumber));
+ if(!new RegExp(kind==="tokens"?"^(?:TKN-[0-9]{3}|SYS-001)$":"^(?:KNZ|CHR|NEU|NCR|ZAV)-[0-9]{3}$").test(id))issues.push(issue("error","id",`${id}: неверный формат ID для раздела «${KIND_LABEL[kind]}»`,id,rowNumber));
  if(!data.name)issues.push(issue("error","name",id+": пустое название",id,rowNumber));
  const type=TYPE_MAP[key(data.type)];
  if(!type)issues.push(issue("error","type",id+": неизвестный тип «"+data.type+"»",id,rowNumber));
  const classKey=CLASS_MAP[key(data.class)];
  if(!classKey||!own(manifest.class_palettes,classKey))issues.push(issue("error","class",id+": неизвестный класс «"+data.class+"»",id,rowNumber));
  let rarityKey=RARITIES[key(data.rarity)]||null;
- if(kind==="tokens"&&["токен","неутверждена"].includes(key(data.rarity))){rarityKey=null;
+ if(kind==="tokens"&&["токен","неутверждена","служебная"].includes(key(data.rarity))){rarityKey=null;
   if(key(data.rarity)!=="токен")issues.push(issue("warning","token-rarity",id+": редкость токена не утверждена; значок v05 скрыт",id,rowNumber));}
  else if(!rarityKey)issues.push(issue("error","rarity",id+": неизвестная редкость «"+data.rarity+"»",id,rowNumber));
  const resourceKey=key(data.resource);

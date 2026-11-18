@@ -59,13 +59,14 @@ test("CHR-031 infects a selected enemy; takes one damage at its next start",()=>
  assert.equal(m.health,old-1);
  assert.ok(s.events.some(e=>e.kind==="effect"&&e.cardId==="CHR-031"));
 });
-test("CHR-031 requires target before charging mana or changing hand",()=>{
+test("CHR-031 can be played without a battlecry target under rules 0.6",()=>{
  const s=game("CHR-031","Чернокнижник");
  const before=s.players[0].mana;
  const r=E.playCard(s,0,"h-test");
- assert.equal(r.ok,false);
- assert.equal(s.players[0].mana,before);
- assert.equal(s.players[0].hand.length,1);
+ assert.equal(r.ok,true);
+ assert.equal(s.players[0].mana,before-3);
+ assert.equal(s.players[0].hand.length,0);
+ assert.equal(s.players[0].board[0].cardId,"CHR-031");
 });
 test("NEU-040 unique minimum gets +1/+1 at end of own turn",()=>{
  const s=game("NEU-040");

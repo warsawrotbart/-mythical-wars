@@ -11,7 +11,7 @@ if(root)root.MW14_BOARD_STATUS=api;
 "use strict";
 const DEATHRATTLE_IDS=Object.freeze([
  "CHR-002","CHR-023","CHR-034","KNZ-010","CHR-030",
- "NEU-003","NEU-005","NEU-037","NEU-042","ZAV-004","NCR-002","NCR-013"
+ "NEU-003","NEU-005","NEU-037","NEU-042","ZAV-004","NCR-002","NCR-013","NCR-015"
 ]);
 const DEATHRATTLE_SET=new Set(DEATHRATTLE_IDS);
 const TOKEN_ID=/^TKN-\d{3}$/;
@@ -41,7 +41,7 @@ function boardUnit(game,identifier){
 function statusIcons(unit){
  if(!unit)return [];
  const r=[];
- if(DEATHRATTLE_SET.has(unit.cardId))r.push({id:"deathrattle",glyph:"☠",label:"Предсмертный хрип"});
+ if(DEATHRATTLE_SET.has(unit.cardId)&&!unit.silenced&&!unit.noDeathrattle)r.push({id:"deathrattle",glyph:"☠",label:"Предсмертный хрип"});
  if(unit.charge)r.push({id:"charge",glyph:"➤",label:"Рывок"});
  if(unit.stealth)r.push({id:"stealth",glyph:"◉",label:"Маскировка"});
  if(unit.reborn)r.push({id:"reborn",glyph:"✧",label:"Перерождение"});

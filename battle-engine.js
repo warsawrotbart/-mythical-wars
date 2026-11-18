@@ -10,6 +10,8 @@
  if(typeof module!=="undefined"&&module.exports)module.exports=exported;
 })(typeof window!=="undefined"?window:globalThis,function(){
 "use strict";
+const APPROVED=typeof module!=="undefined"&&module.exports?require("./approved-test-content.js"):globalThis.MW_APPROVED_TEST_CONTENT;
+if(!APPROVED)throw Error("Missing approved-test-content.js");
 // Ephemeral observers never enter saves, replay checksums or RNG state.
 const movementSinks=new WeakMap();
 function captureCardMovements(s){
@@ -83,13 +85,15 @@ const CREATURE_IDS=[
  "NEU-003","NEU-004","NEU-005","NEU-006","NEU-007","NEU-009","NEU-010","NEU-019",
  "NEU-001","NEU-024","NEU-025","NEU-026","NEU-027","NEU-029",
  "ZAV-001","ZAV-002","ZAV-003","ZAV-004","ZAV-005","NEU-031","NEU-034","NEU-035","NEU-036","NEU-037","NEU-038","NEU-039","NEU-041","NEU-042","NEU-043","NEU-044",
- "NCR-001","NCR-002","NCR-003","NCR-004","NCR-007","NCR-008","NCR-009","NCR-010","NCR-011","NCR-013","NCR-014","KNZ-010","KNZ-022","KNZ-007","CHR-031"
+ "NCR-001","NCR-002","NCR-003","NCR-004","NCR-007","NCR-008","NCR-009","NCR-010","NCR-011","NCR-013","NCR-014","KNZ-010","KNZ-022","KNZ-007","CHR-031",
+ "CHR-029","CHR-039","CHR-040","CHR-041","CHR-045","NCR-015","NEU-033","NEU-028"
 ];
 const WEAPON_IDS=[
  "KNZ-006","KNZ-018","KNZ-021","KNZ-029","KNZ-032","KNZ-033",
  "NEU-011","NEU-012","CHR-006","CHR-011","CHR-015","CHR-019","NCR-029","NCR-030"
 ];
 const SUPPORTED_SPELLS=new Set(SPELL_IDS);
+SUPPORTED_SPELLS.add("TKN-007");
 const SUPPORTED_CREATURES=new Set(CREATURE_IDS);
 const SUPPORTED_WEAPONS=new Set(WEAPON_IDS);
 const PURE_ABILITIES=new Set(["","Правакацыя.","Правакацыя","Рывок.","Рывок","Маскіроўка.","Маскіроўка"]);
@@ -109,6 +113,7 @@ const TOKENS={
  "TKN-004":{cardId:"TKN-004",name:"СЕЛЯНІН",cardType:"creature",attack:1,health:1,timeAffinityId:"Дзень",creatureTypeId:"Чалавек",subtype:"Селянін",ability:"",origin:"token"},
  "TKN-006":{cardId:"TKN-006",name:"ХАТНІ КОТ",cardType:"creature",attack:1,health:1,timeAffinityId:"Ноч",creatureTypeId:"Звер",subtype:"Кот",ability:"",origin:"token"}
 };
+Object.assign(TOKENS,APPROVED.tokens);
 const TOKEN_DATA=TOKENS;
 const ZAV_IDS=["ZAV-001","ZAV-002","ZAV-003","ZAV-004","ZAV-005"];
 const PLAYABLE_PARTIAL_SPELLS=new Set(["KNZ-037"]);
@@ -156,10 +161,11 @@ const isUndead=m=>m.creatureType==="Нежыць";
 const isPeasant=m=>isHuman(m)&&m.subtype==="Селянін";
 const isDruzhina=m=>m.subtype==="Дружына"||m.subtype==="Дружыннік";
 const isCat=m=>m.subtype==="Кот";
-const isKasna=m=>/КАСН/i.test(m.name)||/Касна/i.test(m.subtype||"");
-/* v1.7 — персональные кладбища, история и учёт явно полученных/потраченных трупов.
- * Каждая гибель записывается отдельно. Без утверждения правил токены остаются в
- * истории и не становятся автоматическим ресурсом для оживления.
+const isKasna=m=>m.subtype==="Касны";
+const hasSwarm=(s,o,m)=>player(s,o).board.some(x=>x!==m&&isKasna(x));
+const hasKasnaRush=(s,o,m)=>m.cardId==="CHR-029"&&!m.silenced&&hasSwarm(s,o,m);
+/* Personal graveyard, approved base corpses and explicit extra corpse effects.
+ * Tokens record deaths too; resurrection still follows the source's restrictions.
  */
 function graveyardView(s,o){
  const p=player(s,o);
@@ -167,7 +173,8 @@ function graveyardView(s,o){
   owner:o,corpses:p.corpses,
   available:p.graveyard.map(g=>({...g,canRevive:!g.token&&!!s.cards[g.cardId]})),
   history:p.graveyardHistory.map(x=>({...x})),
-  corpseLedger:p.corpseLedger.map(x=>({...x}))
+  corpseLedger:p.corpseLedger.map(x=>({...x})),
+  waitingRituals:[...s.rituals.filter(r=>r.owner===o),...s.scheduled.filter(r=>r.owner===o&&r.ritual)].map(r=>({...r,name:s.cards[r.cardId]?.name||r.cardId}))
  };
 }
 function adjustCorpses(s,o,delta,source){
@@ -222,39 +229,43 @@ function abilitySupport(card){
 /* v1.7 — силы героев из правил v0.4, раздел 17.
  * В кампании обе силы Воина закрыты до квестов. Для проверки есть отдельный
  * профиль demo-unlocked; он не меняет прогресс кампании.
- * Сила Чернобога зависит от не утверждённых типа/времени токена — по умолчанию
- * не активна. Её можно испытать только после явного предоставления этих полей.
+ * approved-three-decks выбирает согласованных героев, не меняя кампанию.
  */
 function heroPowerStatus(s,o){
  const p=player(s,o);
  const bright=isBright(s.time);
  const warrior=p.classId==="Воин";
+ const warlock=p.classId==="Чернокнижник";
  const necro=p.classId==="Некромант";
  const name=warrior?(bright?"Призыв рекрута":"ФАКЕЛ"):
-  necro?(bright?"Призыв идола":"Призыв мертвеца"):"Сила героя";
+  necro?(bright?"Призыв идола":"Призыв мертвеца"):
+  warlock?(bright?"Броня Веліміра":"Тёмный удар Веліміра"):"Сила героя";
  const cost=warrior?(bright?2:3):2;
  const id=warrior?(bright?"warrior-recruit":"warrior-torch"):
-  necro?(bright?"necro-idol":"necro-undead"):"unavailable";
- const targeted=id==="warrior-torch";
+  necro?(bright?"necro-idol":"necro-undead"):
+  warlock?(bright?"warlock-armor":"warlock-drain"):"unavailable";
+ const targeted=id==="warrior-torch"||id==="warlock-drain";
  const fail=reason=>({ok:false,id,name,cost,targeted,reason,
    used:!!p.heroPowerUsed,profile:p.heroProfile});
- if(!warrior&&!necro)return fail("Сила героя для класса «"+p.classId+"» не утверждена.");
+ if(!warrior&&!necro&&!warlock)return fail("Сила героя для класса «"+p.classId+"» не утверждена.");
+ const testUnlocked=["demo-unlocked","approved-three-decks",APPROVED.heroes[p.classId]?.id].includes(p.heroProfile);
+ if(!testUnlocked)return fail("Сила закрыта для текущего профиля кампании.");
  if(necro){
   const def=p.necroTokens?.[bright?"idol":"undead"];
   if(!def||!["Дзень","Ноч"].includes(def.timeAffinityId)||!def.creatureTypeId)
    return fail("Силы Чернобога: тип и временная принадлежность новых токенов ещё не утверждены.");
  }
- if(warrior&&!["ragvalod","demo-unlocked"].includes(p.heroProfile))
-   return fail("Закрыто: Призыв рекрута — после лагеря, ФАКЕЛ — после кузни.");
  if(s.phase!=="battle"||s.turn!==o)return fail("Сейчас не ваш ход.");
  if(p.heroPowerUsed)return fail("Сила героя уже использована в этом ходу.");
  if(p.mana<cost)return fail("Недостаточно маны.");
  if((id==="warrior-recruit"||id.startsWith("necro-"))&&p.board.length>=7)
    return fail("Нет свободного места на поле.");
- if(targeted&&!p.board.some(isHuman))return fail("Нет дружелюбного существа «Чалавек» для ФАКЕЛА.");
+ if(id==="warrior-torch"&&!p.board.some(isHuman))return fail("Нет дружелюбного существа «Чалавек» для ФАКЕЛА.");
  return {ok:true,id,name,cost,targeted,reason:"",profile:p.heroProfile,used:false};
 }
 function heroPowerTargetValid(s,o,target){
+ if(player(s,o).classId==="Чернокнижник")return !!(target&&target.owner===other(o)&&
+   (target.kind==="hero"||(target.kind==="minion"&&minion(s,target.owner,target.uid)&&!minion(s,target.owner,target.uid).stealth)));
  return !!(target&&target.kind==="minion"&&target.owner===o
    &&minion(s,o,target.uid)&&isHuman(minion(s,o,target.uid)));
 }
@@ -262,7 +273,7 @@ function useHeroPowerResolved(s,o,target=null){
  const check=heroPowerStatus(s,o);
  if(!check.ok)return check;
  if(check.targeted&&!heroPowerTargetValid(s,o,target))
-  return {ok:false,reason:"Для ФАКЕЛА выберите дружелюбное существо «Чалавек»."};
+  return {ok:false,reason:"Выберите допустимую цель силы героя."};
  const p=player(s,o);
  // Валидируем всю цель до изменения ресурсов.
  let summoned=null;
@@ -274,13 +285,7 @@ function useHeroPowerResolved(s,o,target=null){
  }
  if(check.id.startsWith("necro-")){
   const key=check.id==="necro-idol"?"idol":"undead",def=p.necroTokens[key];
-  const card={
-   cardId:"HERO-"+key.toUpperCase(),name:key==="idol"?"ІДАЛ":"МЯРЦВЯК",
-   cardType:"creature",attack:key==="idol"?0:1,
-   health:key==="idol"?2:1,timeAffinityId:def.timeAffinityId,
-   creatureTypeId:def.creatureTypeId,subtype:def.subtype||"",
-   ability:key==="idol"?"Правакацыя. Завеса тьмы":"Рывок.",origin:"token"
-  };
+  const card={...TOKENS[key==="idol"?"TKN-010":"TKN-011"],...def};
   summoned=summon(s,o,card,key==="undead"?{charge:true}:{taunt:true});
   if(summoned){
     summoned.heroPowerToken=key;
@@ -290,6 +295,11 @@ function useHeroPowerResolved(s,o,target=null){
  if((check.id==="warrior-recruit"||check.id.startsWith("necro-"))&&!summoned)
   return {ok:false,reason:"Не удалось призвать токен."};
  p.mana-=check.cost;p.heroPowerUsed=true;
+ if(check.id==="warlock-armor")p.armor+=2;
+ if(check.id==="warlock-drain"){
+  const done=target.kind==="hero"?damageHero(s,target.owner,1):damageMinion(s,target.owner,target.uid,1,"power");
+  if(done>0)healHero(s,o,1);
+ }
  combatEvent(s,"heroPowerUsed",{owner:o,id:check.id,target});
  log(s,(o===0?"Игрок":"Бот")+" использует силу героя «"+check.name+"» ("+check.cost+" маны).",{kind:"hero-power",owner:o});
  return {ok:true,id:check.id};
@@ -304,20 +314,22 @@ function makeGame(deckA,deckB,catalog,opts={}){
   cards[id]=clean(c);
  }
  // Related cards: can be created by effects, never put in starting decks.
- for(const id of [...ZAV_IDS,"CHR-029"]){const related=get(id);if(related&&!cards[id])cards[id]=clean(related);}
+ for(const id of ZAV_IDS){const related=get(id);if(related&&!cards[id])cards[id]=clean(related);}
+ for(const [id,card]of Object.entries(TOKENS))cards[id]=clean(card);
  const players=[deckA,deckB].map((d,owner)=>({
    classId:d.classId,deckName:d.name,health:30,
-   armor:d.classId==="Воин"&&opts.heroProfiles?.[owner]==="ragvalod"?10:0,
+   heroName:["approved-three-decks","demo-unlocked",APPROVED.heroes[d.classId]?.id].includes(opts.heroProfiles?.[owner])?APPROVED.heroes[d.classId]?.name||d.classId:d.classId,
+   armor:d.classId==="Воин"&&["ragvalod","approved-three-decks"].includes(opts.heroProfiles?.[owner])?10:0,
    deck:shuffle(Object.entries(d.counts).flatMap(([id,q])=>Array(num(q)).fill(id)),rng),
    hand:[],board:[],discarded:[],graveyard:[],graveyardHistory:[],corpseLedger:[],
    heroPowerUsed:false,heroProfile:opts.heroProfiles?.[owner]||"campaign",
-   necroTokens:opts.necroTokens||null,
+   necroTokens:opts.necroTokens||{idol:clean(TOKENS["TKN-010"]),undead:clean(TOKENS["TKN-011"])},
    weapon:null,maxMana:0,mana:0,corpses:0,
    fatigue:0,heroAttacked:false,lastDamageTurn:-1,deathTriggerTurn:-1,
    nextSpiritDiscount:0,spiritDiscountThisTurn:0,nextSpellDiscount:0,enemySpellTax:0
  }));
  const s={serial:0,graveSerial:0,eventSerial:0,players,cards,turn:first,firstPlayer:first,
-    time:opts.hour??Math.floor(rng()*24),timeMode:opts.timeMode||"off",
+    contentVersion:"three-decks-2026-11-18",time:opts.hour??Math.floor(rng()*24),timeMode:opts.timeMode||"off",
     phase:"mulligan",winner:null,logs:[],events:[],turns:0,rng:opts.rng||null,randomState:seedHolder.randomState,
     rituals:[],scheduled:[],effectDepth:0,discoveryOffers:{},debugged:false,debugMode:false};
  log(s,"Подготовка партии. "+(first===0?"Первым ходит игрок.":"Первым ходит бот."));
@@ -357,6 +369,7 @@ function damageHero(s,o,amount){
 }
 function healHero(s,o,amount){
  const p=player(s,o),before=p.health;
+ if(before<=0)return 0;
  p.health=Math.min(30,p.health+Math.max(0,num(amount)));
  const restored=p.health-before;
  if(restored)combatEvent(s,"healing",{target:{kind:"hero",owner:o},actual:restored});
@@ -428,15 +441,16 @@ function times(s,m){
  return m.affinity||"";
 }
 function auraAttack(s,m,owner){
- const p=player(s,owner);let atk=0;
+ const p=player(s,owner);let atk=s.turn===owner?-num(p.turnAttackReduction):0;
  for(const source of p.board){
+  if(source.silenced)continue;
   if(source.cardId==="KNZ-005"&&isDruzhina(m))atk++;
   if(source.cardId==="NEU-007"&&source!==m&&isPeasant(m))atk++;
   if(source.cardId==="NEU-004"&&source===m&&p.board.some(isPeasant))atk++;
   if(source.cardId==="NCR-014"&&source!==m&&isUndead(m))atk++;
-  if(source.cardId==="NEU-027"&&isCat(m)&&
-     p.board.find(x=>x.cardId==="NEU-027")===source)atk+=2; // не суммируем несколько Стай без решения автора
+  if(source.cardId==="NEU-027"&&isCat(m))atk+=2;
  }
+ if(!m.silenced&&["CHR-029","CHR-039"].includes(m.cardId)&&hasSwarm(s,owner,m))atk++;
  for(const source of s.players[other(owner)].board)if(source.cardId==="CHR-027"&&source!==m)atk-=2;
  return atk;
 }
@@ -451,6 +465,8 @@ function auraHealth(s,m,owner){
 }
 function syncAuras(s){
  withOwner(s,(m,o)=>{
+  if(m.cardId==="CHR-029"&&m.summonedTurn===s.turns&&s.turn===o&&!m.attacked)
+    m.ready=m.charge||hasKasnaRush(s,o,m);
   const desired=auraHealth(s,m,o),delta=desired-num(m.auraHealth);
   if(delta){m.maxHealth+=delta;m.health+=delta;m.auraHealth=desired;
    combatEvent(s,"attributesChanged",{target:{kind:"minion",owner:o,uid:m.uid},attack:0,maxHealth:delta,aura:true});}
@@ -463,7 +479,7 @@ function localBright(s,m){
  if((m.timed||[]).some(t=>t.kind==="night"))return false;
  const o=boardOwner(s,m);if(o<0)return isBright(s.time);
  const p=player(s,o),pos=p.board.indexOf(m);
- return p.board.some((source,index)=>source.heroPowerToken==="idol"&&Math.abs(index-pos)===1)
+ return p.board.some((source,index)=>!source.silenced&&(source.heroPowerToken==="idol"||source.cardId==="TKN-010")&&Math.abs(index-pos)===1)
     ?false:isBright(s.time);
 }
 function effectiveAttack(s,m){
@@ -476,7 +492,7 @@ function effectiveAttack(s,m){
  return unfavorable?(s.timeMode==="ceil"?Math.ceil(amount/2):Math.floor(amount/2)):amount;
 }
 function incomingMultiplier(s,m,kind="combat"){
- if(kind!=="combat"||s.timeMode==="off")return 1;
+ if(s.timeMode==="off")return 1;
  const affinity=times(s,m);
  if(!affinity)return 1;
  return (affinity==="Дзень"&&!localBright(s,m))||(affinity==="Ноч"&&localBright(s,m))?2:1;
@@ -519,7 +535,7 @@ function makeMinion(s,card,bonus=0,opts={}){
  return {uid:uid(s),cardId:card.cardId,name:card.name,attack:num(card.attack)+bonus,
   health:num(card.health)+bonus,maxHealth:num(card.health)+bonus,
   affinity:card.timeAffinityId||"",creatureType:card.creatureTypeId||"",subtype:card.subtype||"",
-  taunt,charge,stealth,reborn:false,ready:charge,attacked:false,timed:[],auraHealth:0,
+  taunt,charge,stealth,silenced:false,reborn:false,ready:charge,attacked:false,timed:[],auraHealth:0,
   unsupported:support==="partial",token:card.origin==="token"||card.cardId.startsWith("TKN-"),
   summonedWithCorpses:!!opts.summonedWithCorpses,summonedTurn:s.turns,
   healTriggeredTurn:-1,graveId:card.cardId};
@@ -561,6 +577,9 @@ function damageMinion(s,o,id,amount,kind="spell",batch=false){
  const m=minion(s,o,id);if(!m)return 0;
  const dmg=Math.max(0,num(amount))*incomingMultiplier(s,m,kind);
  const actual=applyDamage(s,m,dmg,{kind:"minion",owner:o,uid:id});
+ if(actual>0&&m.health>0&&!m.silenced&&m.cardId==="CHR-041"&&hasSwarm(s,o,m)&&m.damageTriggeredTurn!==s.turns){
+  m.damageTriggeredTurn=s.turns;buff(s,m,1,0);
+ }
  if(actual)log(s,m.name+" получает "+actual+" урона.",
     {kind:"damage",owner:o,cardId:m.cardId,amount:actual});
  if(!batch)removeDead(s);return actual;
@@ -576,6 +595,7 @@ function destroyMinion(s,o,id){
 function chooseWounded(s,o){return player(s,o).board
  .filter(m=>m.health<m.maxHealth).sort((a,b)=>(a.health-a.maxHealth)-(b.health-b.maxHealth))[0];}
 function deathrattle(s,o,m){
+ if(m.silenced||m.noDeathrattle)return;
  const supported=new Set(["CHR-002","CHR-023","CHR-034","KNZ-010","NEU-003","NEU-005","NEU-037","NEU-042","ZAV-004","NCR-002","NCR-013"]);
  if(supported.has(m.cardId))combatEvent(s,"deathrattleTriggered",{owner:o,instance:m});
  switch(m.cardId){
@@ -591,12 +611,13 @@ function deathrattle(s,o,m){
    case "ZAV-004":draw(s,o);break;
   case "NCR-002":adjustCorpses(s,o,1,"Предсмертный эффект NCR-002");break;
   case "NCR-013":adjustCorpses(s,o,2,"Предсмертный эффект NCR-013");break;
+  case "NCR-015":addHandCard(s,o,{uid:uid(s),cardId:"TKN-007",costAdjustment:0},"deathrattle");break;
  }
 }
 function friendlyDeath(s,o,m){
  const p=player(s,o);
  for(const source of [...p.board]){
-  if(source.uid===m.uid)continue;
+  if(source.uid===m.uid||source.silenced)continue;
   if(source.cardId==="NCR-003"&&s.turn===o&&source.healTriggeredTurn!==s.turns){
     source.healTriggeredTurn=s.turns;healHero(s,o,2);
   }
@@ -613,6 +634,7 @@ function friendlyDeath(s,o,m){
  s.rituals=s.rituals.filter(r=>!r.done);
 }
 function removeDead(s){
+ s.scheduled=s.scheduled.filter(t=>!t.ritual||!!minion(s,t.owner,t.targetUid));
  const active=deathResolvers.get(s);
  if(active){collectDeaths(s,active);return;}
  const context={queue:[],waves:0};deathResolvers.set(s,context);
@@ -625,6 +647,7 @@ function removeDead(s){
   }
   if(context.waves>=35)log(s,"Защитное ограничение цепочки смертей.");
  }finally{deathResolvers.delete(s);}
+ s.scheduled=s.scheduled.filter(t=>!t.ritual||!!minion(s,t.owner,t.targetUid));
  checkEnd(s);
 }
 function collectDeaths(s,context){
@@ -644,6 +667,7 @@ function collectDeaths(s,context){
     combatEvent(s,"legacyRebirth",{owner:o,instance:m});log(s,m.name+": Перараджэнне — восстановлено здоровье.");
    }else{
     departed.push({owner:o,instance:clean(m)});recordDeath(s,o,m);
+    if(!m.summonedWithCorpses)adjustCorpses(s,o,1,"Гибель "+m.cardId);
     log(s,m.name+" погибает.",{kind:"death",owner:o,cardId:m.cardId});context.queue.push({o,m});
    }
   }
@@ -690,7 +714,7 @@ function targetsAvailable(s,o,card){
  */
 // Only cards that actually require a player decision should open the selection dialog.
  // "Вазьміце з калоды" is an automatic random draw among eligible deck entries.
-const CHOICE_SPELLS=new Set(["KNZ-015","CHR-014","CHR-021","NEU-017","NCR-021","NCR-027"]);
+const CHOICE_SPELLS=new Set(["KNZ-015","CHR-014","CHR-021","NEU-017","NCR-021","NCR-027","TKN-007"]);
 function choiceSpec(s,o,c){
  if(!c||!(CHOICE_SPELLS.has(c.cardId)||c.cardId==="NEU-001"))return null;
  const pl=player(s,o),freeSlots=7-pl.board.length;
@@ -753,6 +777,8 @@ function choiceSpec(s,o,c){
     graveWhere(c=>c.cardType==="creature"&&c.costType==="mana"&&num(c.costValue)<=4),1)];break;
   case "NCR-027":steps=[step("grave","Собственное нетокенное существо стоимостью до 5 маны",
     graveWhere(c=>c.cardType==="creature"&&c.costType==="mana"&&num(c.costValue)<=5),1)];break;
+  case "TKN-007":steps=[step("grave","Кашчэй Бессмяротны на своём кладбище",
+    graveWhere(c=>c.cardId==="NCR-015"),1)];break;
  }
  if(!steps.length)return null;
  const blocked=steps.some(st=>st.min===0||st.options.length<st.min)
@@ -839,7 +865,8 @@ function resolveChoices(s,o,c,choices){
  }
  function revive(x,transform=null){
   const definition=s.cards[x.cardId];if(!definition)return;
-  const m=summon(s,o,definition);if(!m)return;
+  const m=summon(s,o,definition,{summonedWithCorpses:c.costType==="corpses"});if(!m)return;
+  if(c.cardId==="TKN-007")m.noDeathrattle=true;
   if(transform==="night"){m.creatureType="Дух";m.affinity="Ноч";}
   if(c.cardId==="CHR-021")addTimed(m,"night",0,o,2);
   return m;
@@ -858,10 +885,10 @@ function resolveChoices(s,o,c,choices){
     if(i>=0){takeFromGrave(s,o,x.id.slice(6),"Карта NCR-021");toHand(x.cardId);}
    }
    break;
-  case "NCR-027":
+  case "NCR-027":case "TKN-007":
    for(const x of entries){
     const i=pl.graveyard.findIndex(g=>"grave:"+g.uid===x.id);
-    if(i>=0){takeFromGrave(s,o,x.id.slice(6),"Карта NCR-027");revive(x);}
+    if(i>=0&&revive(x))takeFromGrave(s,o,x.id.slice(6),"Карта "+c.cardId);
    }
    break;
   case "CHR-021":case "NEU-017":entries.forEach(x=>revive(x,c.cardId==="NEU-017"?"night":null));break;
@@ -887,8 +914,13 @@ function actionStatus(s,o,uidValue){
  }else if(c.cardType==="spell"){
   if(abilitySupport(c)!=="complete"&&!(PLAYABLE_PARTIAL_SPELLS.has(c.cardId)&&!c.effectModified))return {ok:false,reason:"Эффект заклинания ещё не реализован или текст изменён относительно библиотеки."};
   if(c.cardId==="NCR-025"&&p.corpses<3)return {ok:false,reason:"Условие ритуала: минимум три трупа."};
+  if(["NCR-027","TKN-007"].includes(c.cardId)&&p.board.length>=7)return {ok:false,reason:"Нет места для оживления."};
+  if(["NCR-026","NCR-028"].includes(c.cardId)&&
+    s.rituals.filter(r=>r.owner===o).length+s.scheduled.filter(r=>r.owner===o&&r.ritual).length>=3)
+    return {ok:false,reason:"Уже ожидают три Ритуала."};
  }else return {ok:false,reason:"Неизвестный вид карты."};
- const mode=targetMode(s,o,c);
+ let mode=targetMode(s,o,c);
+ if(c.cardType==="creature"&&mode&&!targetsAvailable(s,o,c))mode=null;
  if(mode&&!targetsAvailable(s,o,c))return {ok:false,reason:"Нет подходящей цели для карты."};
  const choice=choiceSpec(s,o,c);
  if(choice?.blocked)return {ok:false,reason:choice.reason};
@@ -937,13 +969,7 @@ function resolveSpell(s,o,c,t,choices=null){
     if(!isDay(s))damageHero(s,other(o),2);
     break;
   }
-  case "CHR-044":{
-    const kasna=s.cards["CHR-029"];
-    if(!kasna)throw new Error("Отсутствует определение CHR-029 — КАСНЫ.");
-    for(let i=0;i<3;i++)summon(s,o,kasna);
-    log(s,"Призваны Касны 1/1; «Стая/Націск» частично поддержаны.");
-    break;
-  }
+  case "CHR-044":summonTokens(s,o,"TKN-008",3);break;
   case "KNZ-004":buff(s,m,0,2);if(isDay(s))m.taunt=true;break;
   case "KNZ-011":healMinion(s,t.owner,t.uid,4);if(isSpirit(m))buff(s,m,1,0);break;
   case "KNZ-014":damageMinion(s,t.owner,t.uid,p.weapon?5:3);break;
@@ -996,7 +1022,7 @@ function resolveSpell(s,o,c,t,choices=null){
   case "NCR-024":destroyMinion(s,t.owner,t.uid);break;
   case "NCR-025":draw(s,o);draw(s,o);healHero(s,o,3);break;
   case "NCR-026":s.rituals.push({cardId:c.cardId,owner:o,progress:0});break;
-  case "NCR-028":s.scheduled.push({kind:"second-turn",owner:o,targetUid:m.uid,remainingStarts:2});break;
+  case "NCR-028":s.scheduled.push({kind:"second-turn",cardId:c.cardId,ritual:true,owner:o,targetUid:m.uid,remainingStarts:2});break;
   default:throw new Error("Нет обработчика заклинания "+c.cardId);
  }
 }
@@ -1019,11 +1045,16 @@ function onMinionPlayed(s,o,m,target,choices=null){
   }
   case "NEU-001":resolveChoices(s,o,s.cards[m.cardId],choices);break;
   case "NEU-028":{
-    areaDamage(s,s.players.flatMap((pl,i)=>pl.board.map(x=>[i,x])),5);
-    igniteHands(s);
-    log(s,"ЛЕПЕЛЬСКІ ЦМОК: тестово урон существам; охват героев требует утверждения.");
+    combatBatch(s,"area",()=>{
+     for(const [owner,pl]of s.players.entries())for(const x of [...pl.board])if(x.uid!==m.uid)damageMinion(s,owner,x.uid,5,"spell",true);
+     damageHero(s,0,5);damageHero(s,1,5);
+    });
+    removeDead(s);
+    for(const [owner,pl]of s.players.entries())for(const h of [...pl.hand])discardCard(s,owner,h.cardId,"burn","NEU-028");
+    s.players.forEach(pl=>pl.hand=[]);removeDead(s);
     break;
   }
+  case "NEU-033":player(s,other(o)).nextTurnAttackReduction=num(player(s,other(o)).nextTurnAttackReduction)+2;break;
   case "ZAV-001":{
     healHero(s,o,3);
     if(!isDay(s))for(const x of [...p.board])healMinion(s,o,x.uid,2);
@@ -1150,13 +1181,14 @@ function onCardPlayed(s,o,card){
 function onEndTurn(s,o){
  const p=player(s,o);
  // Призванный силой Чернобога Мертвец погибает в конце текущего хода.
- // Приобретение трупов от смерти токенов не вводится без утверждения.
+ // Own token deaths also grant the approved base corpse.
  const expiring=p.board.filter(m=>m.heroPowerToken==="undead"&&m.expiresEndTurn===o);
  for(const m of expiring)m.health=0;
  if(expiring.length)removeDead(s);
  for(const src of [...p.board]){
-  if(!minion(s,o,src.uid))continue;
+  if(!minion(s,o,src.uid)||src.silenced)continue;
   switch(src.cardId){
+   case "CHR-045":summonTokens(s,o,"TKN-009",7-p.board.length);break;
    case "KNZ-023":for(const x of p.board.filter(x=>isHuman(x)||isSpirit(x)))healMinion(s,o,x.uid,1);break;
    case "NEU-006":for(const x of p.board.filter(x=>x.uid!==src.uid&&isPeasant(x)))healMinion(s,o,x.uid,1);break;
    case "NEU-031":healHero(s,o,4);for(const x of p.board)healMinion(s,o,x.uid,4);break;
@@ -1211,6 +1243,7 @@ function startTurn(s,o){
  if(s.phase!=="battle")return;
  const p=player(s,o);
  s.turn=o;s.turns++;
+ p.turnAttackReduction=num(p.nextTurnAttackReduction);p.nextTurnAttackReduction=0;
  // At start of turn pending ritual/temporary effects resolve before mana/draw.
  p.heroAttacked=false;p.heroPowerUsed=false;
  p.board.forEach(m=>{m.ready=true;m.attacked=false;});
@@ -1247,6 +1280,7 @@ function endTurn(s,o){
  }
  for(const task of s.scheduled)if(task.kind==="remove-hp"&&task.owner===o){} // start-turn task
  const p=player(s,o);
+ p.turnAttackReduction=0;
  p.nextSpellDiscount=0;
  // Discount "next Spirit this turn" expires on its current owner's turn.
  p.spiritDiscountThisTurn=0;
@@ -1269,7 +1303,7 @@ function playCardResolved(s,o,uidValue,target=null,choices=null,position=null){
  const p=player(s,o),idx=p.hand.findIndex(x=>x.uid===uidValue),h=p.hand[idx];
  if(h.cardId==="__coin__"){p.hand.splice(idx,1);p.mana++;log(s,"Монетка: +1 временная мана.");return {ok:true};}
  const c=s.cards[h.cardId];
- if(check.targetType&&!targetValid(s,o,c.cardId,target))return {ok:false,reason:"Нужна подходящая цель.",requiresTarget:true};
+ if((check.targetType||(target&&TARGETS[c.cardId]))&&(target||c.cardType==="spell")&&!targetValid(s,o,c.cardId,target))return {ok:false,reason:"Нужна подходящая цель.",requiresTarget:true};
  const verified=validateChoices(s,o,c,choices);
  if(!verified.ok)return verified; // Не оплачивать карту до проверки полного выбора.
  const payment=check.cost;
@@ -1284,7 +1318,7 @@ function playCardResolved(s,o,uidValue,target=null,choices=null,position=null){
  if(c.cardType==="creature"){
   const m=summon(s,o,c,{summonedWithCorpses:c.costType==="corpses",position});
   if(m?.unsupported)log(s,c.name+": способность реализована не полностью.");
-   if(m&&(!m.unsupported||PLAYABLE_PARTIAL_CREATURES.has(c.cardId)))
+   if(m&&(!m.unsupported||PLAYABLE_PARTIAL_CREATURES.has(c.cardId))&&(!TARGETS[c.cardId]||target))
      combatCause(s,{kind:"card",owner:o,uid:m.uid,cardId:c.cardId},()=>onMinionPlayed(s,o,m,target,choices));
  }else if(c.cardType==="weapon"){
   const weapon={cardId:c.cardId,name:c.name,attack:num(c.attack),durability:num(c.durability),lastTriggerTurn:-1};
@@ -1319,6 +1353,7 @@ function attackStatus(s,o,attackerUid,target,hero=false){
   a=minion(s,o,attackerUid);
   if(!a||!a.ready||a.attacked||a.timed.some(t=>t.kind==="frozen"))return {ok:false,reason:"Существо не готово атаковать."};
   if(a.cardId==="NCR-009"&&target.kind==="hero")return {ok:false,reason:"Касцяны ваяр не атакует героев."};
+  if(hasKasnaRush(s,o,a)&&a.summonedTurn===s.turns&&target.kind==="hero")return {ok:false,reason:"Націск в ход появления разрешает атаковать только существ."};
   damage=effectiveAttack(s,a);if(damage<=0)return {ok:false,reason:"Атака равна 0."};
  }
  return {ok:true};
@@ -1327,16 +1362,20 @@ function attackResolved(s,o,attackerUid,target,hero=false){
  const status=attackStatus(s,o,attackerUid,target,hero);if(!status.ok)return status;
  const p=player(s,o),a=hero?null:minion(s,o,attackerUid),weaponUsed=p.weapon,wasMinion=target.kind==="minion";
  const damage=hero?p.weapon.attack:effectiveAttack(s,a);
- let died=false,dealt=0;
+ let died=false,dealt=0,counterDealt=0,defender=null;
  combatCause(s,{kind:"attack",owner:o,uid:hero?null:attackerUid,hero,target},()=>combatBatch(s,"combat",()=>{
   if(target.kind==="hero")dealt=damageHero(s,other(o),damage);
   else{
-   const m=minion(s,other(o),target.uid),counter=effectiveAttack(s,m),before=m.health;
+   const m=minion(s,other(o),target.uid),counter=effectiveAttack(s,m),before=m.health;defender=m;
    dealt=damageMinion(s,other(o),m.uid,damage,"combat",true);
-   if(hero)damageHero(s,o,counter);else damageMinion(s,o,a.uid,counter,"combat",true);
+   if(hero)counterDealt=damageHero(s,o,counter);else counterDealt=damageMinion(s,o,a.uid,counter,"combat",true);
    died=before>0&&m.health<=0;
   }
  }));
+ const steal=(owner,source,actual)=>{if(source&&!source.silenced&&["CHR-040","NCR-007"].includes(source.cardId)&&actual>0)healHero(s,owner,actual);};
+ steal(o,a,dealt);steal(other(o),defender,counterDealt);
+ if(a&&!a.silenced&&a.cardId==="CHR-040"&&died&&a.health>0&&hasSwarm(s,o,a))buff(s,a,1,1);
+ if(defender&&!defender.silenced&&defender.cardId==="CHR-040"&&a?.health<=0&&defender.health>0&&hasSwarm(s,other(o),defender))buff(s,defender,1,1);
  if(target.kind==="minion")removeDead(s);
  if(hero){
   p.heroAttacked=true;
@@ -1351,7 +1390,6 @@ function attackResolved(s,o,attackerUid,target,hero=false){
   if(a.stealth)a.stealth=false;
   if(a.cardId==="ZAV-003"&&died)buff(s,a,0,1);
    if(a.cardId==="CHR-013"&&dealt>0)healHero(s,o,2);
-  if(a.cardId==="NCR-007"&&dealt>0)healHero(s,o,dealt);
  }
  combatEvent(s,"attackConsumed",{owner:o,hero,attackerUid});
  log(s,(o===0?"Игрок":"Бот")+" атакует "+(target.kind==="hero"?"героя":"существо")+".",{kind:"attack",owner:o});
@@ -1478,7 +1516,8 @@ function* botTurnFrames(s,o=1,dispatch=null){
   if(power.ok){
    const humans=p.board.filter(isHuman);
    humans.sort((a,b)=>effectiveAttack(s,b)-effectiveAttack(s,a));
-   const target=power.targeted&&humans.length?{kind:"minion",owner:o,uid:humans[0].uid}:null;
+   const target=power.id==="warlock-drain"?{kind:"hero",owner:other(o)}:
+     power.targeted&&humans.length?{kind:"minion",owner:o,uid:humans[0].uid}:null;
    const result=invoke("useHeroPower",[o,target]);
    if(result.ok){actions.push({type:"hero-power",id:result.id});yield actions[actions.length-1];}
   }
@@ -1526,6 +1565,7 @@ function importBattle(payload,opts={}){
    throw new Error("Неизвестный формат или версия сохранения партии.");
  if(JSON.stringify(payload).length>12*1024*1024)throw new Error("Сохранение слишком большое.");
  const raw=payload.game;
+ if(raw?.contentVersion!=="three-decks-2026-11-18")throw new Error("Партия создана по другой версии правил. Старое сохранение не изменено; для новых правил начните новый тестовый бой.");
  if(!raw||!Array.isArray(raw.players)||raw.players.length!==2||
     !raw.cards||typeof raw.cards!=="object"||Array.isArray(raw.cards)||
     !["mulligan","battle","ended"].includes(raw.phase)||

@@ -64,14 +64,14 @@ test("developer commands are disabled until explicitly enabled",()=>{
  E.setDeveloperMode(s,false);
  assert.equal(E.debugAction(s,{type:"mana",value:5}).ok,false);
 });
-test("test summon and death respects personal graveyard, no free corpses",()=>{
+test("test summon and death respects personal graveyard and approved base corpse",()=>{
  const s=sandbox("KNZ-002");E.setDeveloperMode(s,true);
  assert.equal(E.debugAction(s,{type:"summon",owner:0,cardId:"KNZ-002",definition:catalog.get("KNZ-002")}).ok,true);
  const m=s.players[0].board.at(-1),uid=m.uid;
  assert.equal(E.debugAction(s,{type:"kill",owner:0,uid}).ok,true);
  assert.equal(s.players[0].board.some(x=>x.uid===uid),false);
  assert.ok(s.players[0].graveyard.find(g=>g.uid===uid));
- assert.equal(s.players[0].corpses,0);
+ assert.equal(s.players[0].corpses,1);
  assert.ok(E.eventJournal(s,{kind:"graveyard"}).length);
  assert.ok(E.eventJournal(s,{kind:"death",owner:"0"}).length);
 });

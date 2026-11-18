@@ -51,7 +51,7 @@ check("warrior sunny power calls only approved TKN-001 1/1",()=>{
  assert.equal(p.board[0].attack,1);
  assert.equal(p.board[0].health,1);
  assert.equal(p.board[0].affinity,"Дзень");
- assert.equal(p.board[0].subtype,"Дружыннік");
+ assert.equal(p.board[0].subtype,"Дружына");
 });
 check("power shared once-per-turn limit, resets next personal turn",()=>{
  const s=fixture(),p=s.players[0];
@@ -96,14 +96,14 @@ check("FAKEL does not restore HP or change printed affinity and expires at end",
  assert.equal(E.effectiveAttack(s,m),0);
  assert.equal(E.incomingMultiplier(s,m,"combat"),2);
 });
-check("unapproved Warlock power stays unavailable",()=>{
+check("approved Warlock power is available in test profile",()=>{
  const s=fixture({classId:"Чернокнижник"});
- assert.equal(E.heroPowerStatus(s,0).ok,false);
+ assert.equal(E.heroPowerStatus(s,0).ok,true);
 });
-check("Chernobog powers remain disabled without approved token metadata",()=>{
+check("Chernobog uses approved token metadata by default",()=>{
  const s=fixture({classId:"Некромант",hour:12});
  const st=E.heroPowerStatus(s,0);
- assert.equal(st.ok,false);assert.match(st.reason,/не утверждены/i);
+ assert.equal(st.ok,true);assert.equal(s.players[0].necroTokens.idol.creatureTypeId,"Конструкт");
 });
 check("custom necromancer token metadata permits configured idol, local darkness to neighbors",()=>{
  const s=fixture({classId:"Некромант",hour:12,necroTokens:{
@@ -125,7 +125,7 @@ check("custom necromancer token metadata permits configured idol, local darkness
  assert.equal(E.localBright(s,m),true);
  assert.equal(E.effectiveAttack(s,m),1);
 });
-check("configured Chernobog undead has charge, expires this turn, no auto corpse",()=>{
+check("configured Chernobog undead has charge, expires this turn, yields a corpse",()=>{
  const s=fixture({classId:"Некромант",hour:21,necroTokens:{
   idol:{creatureTypeId:"Дух",timeAffinityId:"Ноч"},
   undead:{creatureTypeId:"Нежыць",timeAffinityId:"Ноч"}
@@ -140,9 +140,9 @@ check("configured Chernobog undead has charge, expires this turn, no auto corpse
  const v=E.graveyardView(s,0);
  assert.equal(v.available.length,1);assert.equal(v.available[0].token,true);
  assert.equal(v.available[0].canRevive,false);
- assert.equal(p.corpses,0);
+ assert.equal(p.corpses,1);
 });
-check("death of own minion writes to only own graveyard, not automatic corpses",()=>{
+check("death of own minion writes to own graveyard and gives one corpse",()=>{
  const s=fixture(),p=s.players[0];
  assert.equal(cast(s,0,"KNZ-002").ok,true);
  const m=p.board[0];
@@ -152,7 +152,7 @@ check("death of own minion writes to only own graveyard, not automatic corpses",
  const g=p.graveyard[0];assert.equal(g.cardId,"KNZ-002");
  assert.equal(g.owner,0);assert.ok(g.deathId);assert.equal(g.name,"МАЛАДЫ ДРУЖЫННІК");
  assert.equal(s.players[1].graveyard.length,0);
- assert.equal(p.corpses,0);
+ assert.equal(p.corpses,1);
  assert.equal(E.graveyardView(s,0).history[0].action,"death");
 });
 check("explicit corpse spell and card cost appear in separate ledger",()=>{

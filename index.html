@@ -400,7 +400,7 @@
       <label>Моя колода <select id="battleMyDeck"></select></label>
       <label>Бот <select id="battleBotDeck"></select></label>
       <label title="Спорные правила округления/удвоения не утверждены."><span>День / Ночь</span>
-        <select id="battleTimeMode"><option value="off">Часы без штрафов</option><option value="floor">Тест: округлять вниз</option><option value="ceil">Тест: округлять вверх</option></select>
+        <select id="battleTimeMode"><option value="off">Часы без штрафов · отладка</option><option value="floor" selected>Правила: округлять вниз</option><option value="ceil">Отладка: округлять вверх</option></select>
       </label>
       <label>Таймер встречи<select id="battleTimerMode"><option value="0">Без таймера</option><option value="90000">Ускоренная · 90 с / ход</option></select></label>
       <label><input type="checkbox" id="battleReduceMotion"> Снизить движение</label>
@@ -411,6 +411,7 @@
       <label title="Не влияет на канонический прогресс кампании">
         <span>Герой игрока · тест</span>
         <select id="battleHeroProfile">
+          <option value="approved-three-decks" selected>Утверждённый герой класса · тест трёх колод</option>
           <option value="campaign">Силы закрыты (кампания)</option>
           <option value="demo-unlocked">Открыты для теста</option>
           <option value="ragvalod">Рагвалод · обучение</option>
@@ -419,6 +420,7 @@
       <label title="Силы бота активируются только при совпадении класса и утверждённых параметров">
         <span>Герой бота · тест</span>
         <select id="battleBotHeroProfile">
+          <option value="approved-three-decks" selected>Утверждённый герой класса · тест трёх колод</option>
           <option value="campaign">Силы закрыты (кампания)</option>
           <option value="demo-unlocked">Открыты для теста</option>
           <option value="ragvalod">Рагвалод · обучение</option>
@@ -806,7 +808,7 @@
 <script src="editor-default-assets-v2.1F.js"></script>
 <script src="editor-layout-v2.1F.js"></script>
 <script src="card-workflow-v2.1G.js"></script>
-<script src="card-catalog.js"></script>
+<script src="card-catalog.js?v=20261118"></script>
 <script src="collection-core-v2.1M1.js"></script>
 
 <script src="warlock-card-art-v2.1I.js"></script>
@@ -816,7 +818,8 @@
 <script src="app.js"></script>
 <script src="deck-model.js"></script>
 <script src="deck-sheet-import.js"></script>
-<script src="battle-engine.js?v=stage8"></script>
+<script src="approved-test-content.js?v=20261118"></script>
+<script src="battle-engine.js?v=20261118"></script>
 <script src="battle-replay.js"></script>
 <script src="battle-presentation.js?v=stage8"></script>
 <script src="battle-motion-runtime.js"></script>
@@ -832,7 +835,7 @@
 <script src="v05-dynamic-manifest.js"></script>
 <script src="v05-dynamic-core.js"></script>
 <script src="v05-library-core.js"></script>
-<script src="v05-library-seed.js"></script>
+<script src="v05-library-seed.js?v=20261118"></script>
 <script src="v05-art-store.js"></script>
 <script src="battle-minion-portrait-v05S14.js?v=0514a"></script>
 <script src="battle-minion-status-v05S14.js?v=0514b"></script>
@@ -847,7 +850,7 @@
 <script src="arena-3d-math-v2.1H.js"></script>
 <script src="arena-3d-v2.1H.js?v=0516"></script>
 <script src="hero-hud-v05S11.js?v=0511"></script>
-<script src="deckgame.js?v=stage8"></script>
+<script src="deckgame.js?v=20261118"></script>
 <script src="deck-sheet-ui.js"></script>
 <script src="collection-ui-v2.1M1.js"></script>
 

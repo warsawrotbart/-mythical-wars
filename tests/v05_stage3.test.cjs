@@ -11,17 +11,17 @@ const clone=x=>JSON.parse(JSON.stringify(x));
 const makeSheets=(cards=seed.cards,tokens=seed.tokens)=>[{kind:'cards',name:'Карты',rows:cards},{kind:'tokens',name:'Токены',rows:tokens}];
 const cell=(rows,id,index)=>rows.find(row=>row[0]===id)[index];
 const errors=p=>p.issues.filter(x=>x.severity==='error');
-test('read-only baseline exactly 162 cards and 7 disjoint tokens',()=>{
- assert.equal(base.cards.length,162);assert.equal(base.tokens.length,7);
+test('read-only baseline exactly 162 cards and 12 disjoint generated/service cards',()=>{
+ assert.equal(base.cards.length,162);assert.equal(base.tokens.length,12);
  assert.equal(new Set(base.cards.map(x=>x.id)).size,162);
- assert.equal(new Set(base.tokens.map(x=>x.id)).size,7);
+ assert.equal(new Set(base.tokens.map(x=>x.id)).size,12);
  assert.ok(base.cards.every(x=>!x.id.startsWith('TKN-')));
- assert.ok(base.tokens.every(x=>x.id.startsWith('TKN-')));
+ assert.ok(base.tokens.every(x=>x.id.startsWith('TKN-')||x.id==='SYS-001'));
 });
 test('unchanged workbook has no field-level diffs',()=>{
  const p=lib.prepare(base,makeSheets(),manifest);
  assert.equal(p.errors.length,0);assert.equal(p.changed,0);
- assert.equal(p.diff.length,169);assert.equal(p.ready,true);
+ assert.equal(p.diff.length,174);assert.equal(p.ready,true);
 });
 test('changing numeric attack and notes shows two exact old/new fields, not artwork',()=>{
  const rows=clone(seed.cards),rec=rows.find(x=>x[0]==='KNZ-019');
@@ -84,7 +84,7 @@ test('tokens never modify cards and vice versa',()=>{
  const p=lib.prepare(base,[{kind:'tokens',rows}],manifest);
  assert.equal(p.errors.length,0);assert.equal(p.changed,1);
  assert.deepEqual(p.next.cards,base.cards);
- assert.equal(p.diff.length,7);
+ assert.equal(p.diff.length,12);
 });
 test('supported class palette, rarity and subtype are derived from explicit dictionaries',()=>{
  const card=base.cards.find(x=>x.id==='KNZ-019');

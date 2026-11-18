@@ -20,7 +20,7 @@ test('live game objects and hooks remain on the battle page, exactly once',()=>{
  for(const id of ['battleWorkspace','botBoard','myBoard','botHand','myHand','botHeroPortrait','myHeroPortrait','botHeroPower','myHeroPower','botEquippedWeapon','myEquippedWeapon','battleClock','battleTurnInfo','mwArtBotDeckCount','mwArtMyDeckCount','battleEndTurn']){
   assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,id);
  }
- assert.match(html,/src="battle-engine\.js\?v=stage[678]"/);
+ assert.match(html,/src="battle-engine\.js\?v=20261118"/);
  assert.match(html,/src="battle-card-renderer-v2\.1C\.js\?v=(?:0510|0514a|0514b|0515|0516|0517)"/);
  assert.doesNotMatch(html,/v05-template-editor\.js/);
 });

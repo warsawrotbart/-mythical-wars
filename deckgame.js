@@ -235,8 +235,10 @@ function heroPowerDescription(status){
   switch(status?.id){
     case "warrior-recruit":return "Призывает ДРУЖЫННІКА 1/1 (Дзень) · 1 раз за ход";
     case "warrior-torch":return "Выбранный дружественный Чалавек действует как Дзень до конца хода";
-    case "necro-idol":return "Идол: тип и время токена ещё не утверждены";
-    case "necro-undead":return "Мертвец: тип и время токена ещё не утверждены";
+    case "necro-idol":return "Идол 0/2 · Конструкт · Ноч · провокация; соседям локальная ночь";
+    case "necro-undead":return "Мертвец 1/1 · Нежыць · Ноч · рывок; погибает в конце хода";
+    case "warlock-armor":return "За 2 маны получить 2 брони · общий лимит одна сила за ход";
+    case "warlock-drain":return "За 2 маны нанести 1 урон врагу; при нанесённом уроне восстановить герою 1 здоровья";
     default:return status?.reason||"Сила для этого класса ещё не утверждена";
   }
 }
@@ -838,7 +840,7 @@ async function runLaboratory(){
  const count=Number($("battleLabGames").value)||2;
  const seedRaw=Number($("battleLabSeed").value);
  const seed=Number.isSafeInteger(seedRaw)?seedRaw:20211108;
- const cases=L.schedulePairs(originals,{gamesPerPair:count,seed,maxHalfTurns:220,timeMode:"off"});
+ const cases=L.schedulePairs(originals,{gamesPerPair:count,seed,maxHalfTurns:220,timeMode:"floor",heroProfiles:["approved-three-decks","approved-three-decks"]});
  const results=[];
  try{
   for(const c of cases){
@@ -854,7 +856,7 @@ async function runLaboratory(){
   $("battleLabResult").textContent=`Завершено: ${labLastSummary.ended}/${labLastSummary.games}, `+
     `лимит ходов: ${labLastSummary.turnLimit}, ошибки: ${labLastSummary.errors}, ничьи: ${labLastSummary.draws}.\n`+
     Object.entries(labLastSummary.wins).map(([name,n])=>`${name}: ${n} побед`).join("\n")+
-    "\nРежим штрафов дня/ночи: off (округление не утверждено).";
+    "\nПравила 0.6: штрафы дня/ночи, округление вниз; утверждённые герои трёх колод.";
   $("battleLabExportBtn").disabled=false;
   message("Автоматические полные матчи завершены.");
  }catch(e){
@@ -942,6 +944,8 @@ function renderGame(options={}){
   else button.style.removeProperty("--mw-ability-image");
   const hint=$(o===0?"myHeroAbilityHint":"botHeroAbilityHint");
   hint.textContent=heroPowerDescription(status)+(status.reason?" · "+status.reason:"");
+  const ritualCount=eng.graveyardView(game,o).waitingRituals.length;
+  if(ritualCount)hint.textContent+=" · Ожидают ритуалы: "+ritualCount+"/3";
   const chassis=document.querySelector(`[data-hero-owner="${o}"]`);
   chassis.classList.toggle("hero-power-ready",status.ok);
   chassis.classList.toggle("hero-power-used",status.used);
@@ -1238,8 +1242,10 @@ function renderGraveyardDialog(){
  $("battleGraveyardBody").innerHTML=`
   <div class="grave-resource-line"><span>Трупы как отдельный ресурс</span>
   <strong>${summary.corpses}</strong></div>
-  <div class="grave-warning">Смерть существа создаёт запись на личном кладбище,
-  но не выдаёт автоматически трупы: порядок начисления для всех смертей ещё не утверждён.</div>
+  <div class="grave-warning">Гибель своего существа, включая токен, даёт 1 труп.
+  Призванные с расходом трупов не дают базовый труп; явно указанные дополнительные эффекты выполняются отдельно.</div>
+  <h3>Ожидающие ритуалы (${summary.waitingRituals.length}/3)</h3>
+  ${summary.waitingRituals.map(r=>`<div class="grave-entry">${esc(r.name)} · ${r.remainingStarts!=null?"до срабатывания: "+r.remainingStarts+" начала своего хода":"гибели: "+r.progress+"/2"}</div>`).join("")||'<p class="grave-muted">Нет ожидающих ритуалов.</p>'}
   <h3>Доступные записи (${summary.available.length})</h3>
   <div class="grave-entries">${entries}</div>
   <details><summary>История кладбища (${summary.history.length})</summary>${history}</details>

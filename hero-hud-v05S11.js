@@ -10,7 +10,7 @@
   const engine=()=>global.MW_GAME_ENGINE;
   let initialized=false;
   const state=new Map();
-  const nameFor=(game,owner)=>game.players[owner]?.classId||"Герой";
+  const nameFor=(game,owner)=>game.players[owner]?.heroName||game.players[owner]?.classId||"Герой";
   const titleFor=(game,owner)=>owner===0?"ИГРОК":"БОТ";
   const weaponArt=id=>global.MW_TEST_ART_CATALOG?.url(id)||"";
   function weaponSlot(source,cls){

@@ -31,7 +31,7 @@ test("CHR-038 damages only non-Нечысць and hits hero only at night",()=>{
 test("CHR-044 summons three canonical Kasny 1/1 without invented token stats",()=>{
  const s=fresh(),h=hand(s,"CHR-044");const r=E.playCard(s,0,h.uid);
  assert.ok(r.ok,r.reason);assert.equal(s.players[0].board.length,3);
- assert.ok(s.players[0].board.every(m=>m.cardId==="CHR-029"&&m.attack===1&&m.health===1));
+ assert.ok(s.players[0].board.every(m=>m.cardId==="TKN-008"&&m.attack===1&&m.health===1));
 });
 test("KNZ-037 cleanses modeled negative timed effects and heals, retains partial flag",()=>{
  const s=fresh(),m=creature(s,"KNZ-002");
@@ -61,15 +61,12 @@ test("NEU-001 night summons three, not in deck; restriction when board nearly fu
  assert.ok(r.ok,r.reason);assert.equal(s.players[0].board.length,4);
  assert.equal(s.players[0].deck.includes("ZAV-001")&&s.players[0].deck.length,ids.length, false);
 });
-test("NEU-028 ignites hand cards, expires on second following own end, never creates grave records",()=>{
+test("NEU-028 immediately discards both hands without creating grave records",()=>{
  const s=fresh(),h=hand(s,"NEU-028"),victim=hand(s,"KNZ-002"),enemy=hand(s,"CHR-044",1);
  const r=E.playCard(s,0,h.uid);assert.ok(r.ok,r.reason);
- assert.equal(victim.burnTurnsLeft,2);assert.equal(enemy.burnTurnsLeft,2);
- E.endTurn(s,0);assert.equal(victim.burnTurnsLeft,2);
- E.endTurn(s,1);assert.equal(enemy.burnTurnsLeft,1);
- E.endTurn(s,0);assert.equal(victim.burnTurnsLeft,1);
- E.endTurn(s,1);assert.ok(!s.players[1].hand.some(x=>x.uid===enemy.uid));
- E.endTurn(s,0);assert.ok(!s.players[0].hand.some(x=>x.uid===victim.uid));
+ assert.ok(!s.players[1].hand.some(x=>x.uid===enemy.uid));
+ assert.ok(!s.players[0].hand.some(x=>x.uid===victim.uid));
+ assert.equal(s.players[0].health,25);assert.equal(s.players[1].health,25);
  assert.equal(s.players[0].graveyard.length,0);
 });
 test("Local project original art is retained independently of the thumbnail and canonical stats",()=>{

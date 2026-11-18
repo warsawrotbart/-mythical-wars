@@ -21,3 +21,9 @@ Thumbs.db
 *.zip
 *.xlsx
 *.xls
+
+# Reconstructed from tracked battlefield-v02 source pack
+/battlefield-v02/battlefield_layout_v02.json
+/battlefield-v02/board_assets/
+/battlefield-v02/clock_assets/
+/battlefield-v02/hero/

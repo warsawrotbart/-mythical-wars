@@ -28,18 +28,18 @@ stage.innerHTML=`
  </div>
  <div class="mw3d-turn">
    <span id="mw3dTurnLabel">Начните партию</span>
-   <button type="button" id="mw3dEnd"><span>Завершить<br>ход</span></button>
+
    <button type="button" id="mw3dCancel" hidden>Отменить выбор</button>
  </div>
  <div class="mw3d-deck-panel enemy" id="mw3dEnemyDeckPanel">
     <strong id="mw3dEnemyDeckCount">Колода · —</strong>
     <span id="mw3dEnemyMana">Мана · —</span>
-    <div class="mw3d-deck-footer"><button type="button" id="mw3dEnemyGrave" class="mw3d-grave-icon" aria-label="Кладбище противника: 0" title="Кладбище противника: 0">0</button><span id="mw3dEnemyCorpses" class="mw3d-corpse-icon" aria-label="Трупы противника: 0" title="Трупы противника: 0">0</span></div>
+    <div class="mw3d-deck-footer"><button type="button" id="mw3dEnemyGrave" class="mw3d-grave-icon" aria-label="Кладбище противника: 0" title="Кладбище противника: 0"></button><span id="mw3dEnemyGraveCount" class="mw3d-resource-count" aria-hidden="true">0</span><span id="mw3dEnemyCorpses" class="mw3d-corpse-icon" aria-label="Трупы противника: 0" title="Трупы противника: 0"></span><span id="mw3dEnemyCorpsesCount" class="mw3d-resource-count" aria-hidden="true">0</span></div>
  </div>
  <div class="mw3d-deck-panel own" id="mw3dMyDeckPanel">
     <strong id="mw3dMyDeckCount">Колода · —</strong>
     <span id="mw3dMyMana">Мана · —</span>
-    <div class="mw3d-deck-footer"><button type="button" id="mw3dMyGrave" class="mw3d-grave-icon" aria-label="Моё кладбище: 0" title="Моё кладбище: 0">0</button><span id="mw3dMyCorpses" class="mw3d-corpse-icon" aria-label="Мои трупы: 0" title="Мои трупы: 0">0</span></div>
+    <div class="mw3d-deck-footer"><button type="button" id="mw3dMyGrave" class="mw3d-grave-icon" aria-label="Моё кладбище: 0" title="Моё кладбище: 0"></button><span id="mw3dMyGraveCount" class="mw3d-resource-count" aria-hidden="true">0</span><span id="mw3dMyCorpses" class="mw3d-corpse-icon" aria-label="Мои трупы: 0" title="Мои трупы: 0"></span><span id="mw3dMyCorpsesCount" class="mw3d-resource-count" aria-hidden="true">0</span></div>
  </div>
  <div class="mw3d-hero-summary enemy"><b id="mw3dEnemyName">БОТ · Противник</b><span id="mw3dEnemyResources">30 ♥</span></div>
  <div class="mw3d-hero-power enemy" id="mw3dEnemyPower" aria-label="Способность героя противника">Сила героя</div>
@@ -54,6 +54,30 @@ const workspace=$("battleWorkspace"),layout=workspace?.querySelector(".battle-la
 if(!layout||!M)return;
 layout.prepend(stage);
 // A persistent, visible 3D action now lives next to Start/Resume.
+const turnControl=stage.querySelector(".mw3d-turn");
+const endTurnButton=$("battleEndTurn");
+const endTurnHome=endTurnButton.parentElement;
+let manaHome=null;
+function placeSharedControls(){
+ if(enabled){
+  turnControl.append(endTurnButton);
+  const mana=workspace.querySelector('.mw02-mana[data-owner="0"]');
+  if(harbor&&mana&&!manaHome){
+   manaHome=mana.parentElement;
+   stage.append(mana);
+  }
+ }else{
+  endTurnHome.append(endTurnButton);
+  if(manaHome){
+   const mana=stage.querySelector('.mw02-mana[data-owner="0"]');
+   if(mana){
+    mana.style.removeProperty("left");mana.style.removeProperty("top");
+    manaHome.append(mana);
+   }
+   manaHome=null;
+  }
+ }
+}
 const toggle=$("battle3DToggle")||document.createElement("button");
 if(!toggle.id)toggle.id="battle3DToggle";
 toggle.type="button";toggle.classList.add("btn","btn-outline");
@@ -222,6 +246,7 @@ function initGL(){
    if(gl!==context||!ready||context.isContextLost())return;
    harbor=H.create(context,asset);harborError=null;
    stage.classList.add("mw3d-harbor");
+   placeSharedControls();
    if(enabled)render(game);
   }).catch(error=>{
    harborError=String(error?.message||error);
@@ -434,13 +459,30 @@ function positionHarborHUD(point){
    panel.style.left=clamp(d.x-panel.offsetWidth/2,3,cw-panel.offsetWidth-3)+"px";
    panel.style.top=clamp(d.y+10,62,ch-panel.offsetHeight-8)+"px";
    deckPanels.push(panel);
+   const footer=panel.querySelector(".mw3d-deck-footer");
+   if(footer){
+    const counterX=d.x+(own?52:12)-footer.offsetWidth/2;
+    footer.style.left=clamp(counterX,4,cw-footer.offsetWidth-4)-panel.offsetLeft+"px";
+    const counterY=own?d.y+46:d.y-footer.offsetHeight-28;
+    footer.style.top=clamp(counterY,55,ch-footer.offsetHeight-32)-panel.offsetTop+"px";
+   }
   }
   const group=stage.querySelector(".mw11-stage-hud."+(own?"own":"enemy"));
   const hero=point(H.anchors.heroes[owner]);
   if(hero&&group){
    group.style.left=clamp(hero.x-group.offsetWidth/2,3,cw-group.offsetWidth-3)+"px";
    group.style.top=clamp(hero.y-group.offsetHeight/2,55,ch-group.offsetHeight-30)+"px";
+   const mana=own&&stage.querySelector('.mw02-mana[data-owner="0"]');
+   if(mana){
+    mana.style.left=clamp(group.offsetLeft+group.offsetWidth+6,4,cw-mana.offsetWidth-4)+"px";
+    mana.style.top=group.offsetTop+(group.offsetHeight-mana.offsetHeight)/2+"px";
+   }
   }
+ }
+ if(deckPanels.length===2){
+  const deckX=Math.min(...deckPanels.map(panel=>panel.offsetLeft+panel.offsetWidth/2));
+  turn.style.left=clamp(deckX-turn.offsetWidth/2,3,cw-turn.offsetWidth-3)+"px";
+  turn.style.top=Math.round((deckPanels[0].offsetTop+deckPanels[1].offsetTop)/2)+"px";
  }
  const halfTurn=turn.offsetHeight/2;
  const overlapsDeck=deckPanels.some(panel=>
@@ -567,11 +609,6 @@ function updateNodes(s){
    else n.tex=harbor?"harbor-back":"back";
   if(kind==="hero"){
    n.label.textContent=(owner===0?"ВЫ":"БОТ")+"  ♥ "+s.players[owner].health+(s.players[owner].armor?"  ◇ "+s.players[owner].armor:"");
-   if(harbor){
-    const player=s.players[owner];
-    n.label.textContent+="  ·  "+player.mana+"/"+player.maxMana;
-    n.label.title="Здоровье: "+player.health+" · Броня: "+player.armor+" · Мана: "+player.mana+"/"+player.maxMana;
-   }
    n.label.className="mw3d-object-label hero-label "+(owner===0?"own":"enemy");
   }else if(kind==="minion"){
    const atk=E().effectiveAttack(s,item);
@@ -609,7 +646,7 @@ function updateNodes(s){
 function updateHUD(){
  const s=game;
  $("mw3dEmpty").hidden=!!s;
- $("mw3dEnd").disabled=!s||s.phase!=="battle"||s.turn!==0||B()?.ui().busy;
+ global.MW_BATTLEFIELD_V02?.renderTurnControl(s,{busy:!!B()?.ui().busy});
  if(!s)return;
  const ck=M.clock(s.time),phase=ck.day?"day":"night";
  stage.dataset.phase=phase;
@@ -639,10 +676,10 @@ function updateHUD(){
   $("mw3d"+pref+"Mana").textContent="Мана · "+p.mana+"/"+p.maxMana;
   const corpseNode=$("mw3d"+pref+"Corpses"),graveNode=$("mw3d"+pref+"Grave");
   const corpseCount=Number(p.corpses)||0,graveCount=p.graveyard?.length||0;
-  corpseNode.textContent=String(corpseCount);
+  $("mw3d"+pref+"CorpsesCount").textContent=String(corpseCount);
   corpseNode.title="Трупы: "+corpseCount;
   corpseNode.setAttribute("aria-label","Трупы: "+corpseCount);
-  graveNode.textContent=String(graveCount);
+  $("mw3d"+pref+"GraveCount").textContent=String(graveCount);
   graveNode.title="Кладбище: "+graveCount+" карт";
   graveNode.setAttribute("aria-label","Кладбище: "+graveCount+" карт");
   const abilityImage=global.MW_HERO_ART?.abilityFor(p.classId)||"";
@@ -703,6 +740,7 @@ if(panelToggle)panelToggle.onclick=()=>{
 function setEnabled(value){
  enabled=!!value;stage.hidden=!enabled;workspace.classList.toggle("mw3d-active",enabled);
  updateBattlePanel();
+ placeSharedControls();
  toggle.textContent=enabled?"◇ 3D: включено":"◇ 3D-прототип";toggle.setAttribute("aria-pressed",String(enabled));
  hover=null;focusKey=null;drag=null;pointer=null;attack=null;lockUntil=0;$("mw3dPreview").hidden=true;
  if(!enabled){cancelAnimationFrame(raf);raf=0;return false;}
@@ -766,8 +804,10 @@ function tick(stamp){
   const rx=harbor?(oval?1.01:.78):0;
   const tilt=M.rotX(rx);
   const topPos=[pos[0],pos[1]+(n.kind==="hero"?.085:.041)*tilt[5],pos[2]+(n.kind==="hero"?.085:.041)*tilt[6]];
-  drawBox(pos,[w,n.kind==="hero"?.16:.075,depth],body,null,n.ry,rx,oval,0,oval);
-  drawBox(topPos,[w*.988,.001,depth*.988],[1,1,1,n.opacity],textures.has(n.tex)?n.tex:"back",n.ry,rx,true,harbor?(n.kind==="hero"?.83:.60):(n.kind==="hero"?.10:.40),oval);
+  if(!(harbor&&n.kind==="hero"&&n.owner===0)){
+   drawBox(pos,[w,n.kind==="hero"?.16:.075,depth],body,null,n.ry,rx,oval,0,oval);
+   drawBox(topPos,[w*.988,.001,depth*.988],[1,1,1,n.opacity],textures.has(n.tex)?n.tex:"back",n.ry,rx,true,harbor?(n.kind==="hero"?.83:.60):(n.kind==="hero"?.10:.40),oval);
+  }
   n.drawPos=pos;n.poly=topPolygon(topPos,w,depth,n.ry,rx);n.screen=M.project(pos,vp,cw,ch);
   if(n.kind==="minion"&&n.poly[0]&&n.poly[1]){
    const projectedWidth=Math.abs(n.poly[1].x-n.poly[0].x);
@@ -780,7 +820,7 @@ function tick(stamp){
    const badgePoint=harbor&&n.poly.every(Boolean)?(n.kind==="hand"?
     {x:n.poly[0].x+10,y:n.poly[0].y+9}:
     {x:(n.poly[2].x+n.poly[3].x)/2,y:(n.poly[2].y+n.poly[3].y)/2-(n.kind==="hero"&&n.owner===0?31:5)}):M.project([pos[0],pos[1]+.09,pos[2]+(n.kind==="hand"?-.9:n.kind==="hero"?-.12:depth*.40)],vp,cw,ch);
-   if(badgePoint){n.label.style.transform=`translate(${badgePoint.x}px,${badgePoint.y}px) translate(-50%,-50%)`;n.label.hidden=n.kind==="back"||n.retiring;}
+   if(badgePoint){n.label.style.transform=`translate(${badgePoint.x}px,${badgePoint.y}px) translate(-50%,-50%)`;n.label.hidden=n.kind==="back"||n.retiring||(harbor&&n.kind==="hero");}
   }
  }
  ghosts=ghosts.filter(n=>n.end>now);
@@ -911,7 +951,6 @@ canvas.addEventListener("webglcontextrestored",()=>{ready=false;nodes.forEach(n=
 toggle.onclick=()=>setEnabled(!enabled);
 $("mw3dBack").onclick=()=>setEnabled(false);
 $("mw3dStart").onclick=()=>B()?.start();
-$("mw3dEnd").onclick=()=>run({type:"endTurn"});
 $("mw3dCancel").onclick=()=>{abortPointer();lockUntil=0;run({type:"cancel"});};
 $("mw3dPower").onclick=()=>run({type:"power"});
 $("mw3dMyGrave").onclick=()=>B()?.graveyard(0);$("mw3dEnemyGrave").onclick=()=>B()?.graveyard(1);

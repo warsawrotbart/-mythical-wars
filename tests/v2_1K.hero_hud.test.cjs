@@ -62,8 +62,8 @@ test('both 2D and 3D load shared hero art manifest and distinct ability image',(
 test('2D/3D counters have only a number visibly, descriptive text stays accessible',()=>{
   const scene=read('arena-3d-v2.1H.js'),source=read('deckgame.js');
   assert.match(source,/graveBtn\.textContent=String\(grave\.entries\)/);
-  assert.match(scene,/corpseNode\.textContent=String\(corpseCount\)/);
-  assert.match(scene,/graveNode\.textContent=String\(graveCount\)/);
+  assert.match(scene,/CorpsesCount"\)\.textContent=String\(corpseCount\)/);
+  assert.match(scene,/GraveCount"\)\.textContent=String\(graveCount\)/);
   assert.match(scene,/graveNode\.setAttribute\("aria-label"/);
   assert.match(source,/graveBtn\.setAttribute\("aria-label"/);
   assert.doesNotMatch(scene,/Grave"\)\.textContent="⚰ Кладбище/);

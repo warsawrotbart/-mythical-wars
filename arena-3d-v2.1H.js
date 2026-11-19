@@ -477,6 +477,19 @@ function positionHarborHUD(point){
    if(mana){
     mana.style.left=clamp(group.offsetLeft+group.offsetWidth+6,4,cw-mana.offsetWidth-4)+"px";
     mana.style.top=group.offsetTop+(group.offsetHeight-mana.offsetHeight)/2+"px";
+    const footer=!own&&panel?.querySelector(".mw3d-deck-footer");
+    if(footer){
+     const manaRight=mana.offsetLeft+mana.offsetWidth;
+     const footerLeft=panel.offsetLeft+footer.offsetLeft;
+     if(footerLeft<manaRight&&footerLeft+footer.offsetWidth>mana.offsetLeft){
+      if(manaRight+footer.offsetWidth+12<=cw){
+       footer.style.left=manaRight+8-panel.offsetLeft+"px";
+      }else{
+       const aboveMana=mana.offsetTop-footer.offsetHeight-6;
+       footer.style.top=Math.max(4,aboveMana)-panel.offsetTop+"px";
+      }
+     }
+    }
    }
   }
  }

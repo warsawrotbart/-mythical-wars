@@ -1,11 +1,11 @@
 /* Mythical Wars v2.1H — experimental 3D arena.
- * Native WebGL 1, no CDN, no library installs, no network requests.
+ * Native WebGL 1, local scene assets, no CDN or library installs.
  * The engine remains the only authority. This module reads state and sends
  * gestures through MW_BATTLE_VIEW_BRIDGE; it never changes gameplay data.
  */
 (function(global){
 "use strict";
-const M=global.MW_3D_MATH,$=id=>document.getElementById(id);
+const M=global.MW_3D_MATH,H=global.MW_3D_HARBOR,$=id=>document.getElementById(id);
 const stage=document.createElement("section");
 stage.id="mw3dStage";stage.hidden=true;stage.setAttribute("aria-label","Экспериментальное трёхмерное поле");
 stage.innerHTML=`
@@ -61,7 +61,8 @@ toggle.textContent="◇ 3D-прототип";toggle.setAttribute("aria-pressed",
 if(!toggle.isConnected)workspace.querySelector(".battle-quick-actions")?.prepend(toggle);
 const canvas=$("mw3dCanvas"),labels=$("mw3dLabels"),B=()=>global.MW_BATTLE_VIEW_BRIDGE,E=()=>global.MW_GAME_ENGINE;
 const reduced=global.matchMedia?.("(prefers-reduced-motion: reduce)");
-let enabled=false,gl=null,program=null,geo=null,uniforms=null,attributes=null;
+let enabled=false,gl=null,program=null,geo=null,ovalGeo=null,uniforms=null,attributes=null;
+let harbor=null,harborError=null;
 let game=null,lastGame=null,nodes=new Map(),ghosts=[],textures=new Map(),failedTextures=0,frame=0,raf=0;
 let vp=M.I(),inv=M.I(),cw=1,ch=1,brightness=1,lastStamp=0;
 let hover=null,focusKey=null,pointer=null,drag=null,attack=null,lockUntil=0;
@@ -99,6 +100,7 @@ function initGL(){
  if(ready&&gl&&!gl.isContextLost())return;
  gl=canvas.getContext("webgl",{alpha:false,antialias:true,premultipliedAlpha:false,preserveDrawingBuffer:false});
  if(!gl)throw Error("Браузер не предоставил WebGL.");
+ harbor=null;stage.classList.remove("mw3d-harbor");
  const vs=shader(gl.VERTEX_SHADER,`
  attribute vec3 aPos; attribute vec3 aNormal; attribute vec2 aUV;
  uniform mat4 uVP; uniform mat4 uModel;
@@ -136,6 +138,16 @@ function initGL(){
  quad([-.5,-.5,-.5],[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5],[-1,0,0]);
  quad([.5,-.5,.5],[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5],[1,0,0]);
  geo=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,geo);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(v),gl.STATIC_DRAW);
+ const oval=[];
+ for(let i=0;i<48;i++){
+  oval.push(0,0,0,0,1,0,.5,.5);
+  for(const j of [i,i+1]){
+   const a=j*Math.PI/24,x=Math.cos(a)*.5,z=Math.sin(a)*.5;
+   oval.push(x,0,z,0,1,0,x+.5,.5-z);
+  }
+ }
+ ovalGeo=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,ovalGeo);
+ gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(oval),gl.STATIC_DRAW);
  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
  // Cull disabled intentionally: projected ornament/transparent card face planes have two visible sides.
  gl.useProgram(program);gl.uniform1i(uniforms.Texture,0);ready=true;
@@ -170,6 +182,22 @@ function initGL(){
   for(let i=0;i<4;i++){c.rotate(Math.PI/4);c.strokeRect(-64,-64,128,128);}
   c.restore();c.fillStyle="#e5cd94";c.font="bold 48px Georgia";c.textAlign="center";c.fillText("MW",128,208);
  }));
+ addTexture("harbor-back",paint(256,384,c=>{
+  c.fillStyle="#703126";c.fillRect(0,0,256,384);
+  c.strokeStyle="#e4c99a";c.lineWidth=5;c.strokeRect(8,8,240,368);
+  c.lineWidth=2;c.strokeRect(16,16,224,352);
+  c.fillStyle="#edcea2";
+  for(let y=0;y<25;y++)for(let x=0;x<17;x++){
+   const dx=x-8,dy=y-12,s=Math.abs(dx)+Math.abs(dy);
+   if(s===6||s===8||(dx===0&&Math.abs(dy)<10)||(dy===0&&Math.abs(dx)<8)||
+      (Math.abs(dx)===Math.abs(dy)&&Math.abs(dx)<5)||(Math.abs(dx)===6&&dy%4===0)){
+    c.fillRect(35+x*11,53+y*11,9,9);
+   }
+  }
+  for(let y=27;y<360;y+=22){
+   c.fillRect(21,y,7,7);c.fillRect(228,y,7,7);
+  }
+ }));
  addTexture("coin",paint(256,384,c=>{
   c.fillStyle="#162c35";c.fillRect(0,0,256,384);c.strokeStyle="#cbaa67";c.lineWidth=6;c.strokeRect(8,8,240,368);
   const g=c.createRadialGradient(112,145,8,128,160,80);g.addColorStop(0,"#f6dfa0");g.addColorStop(1,"#8a602b");
@@ -188,6 +216,18 @@ function initGL(){
   const g=c.createRadialGradient(64,64,16,64,64,64);g.addColorStop(0,"rgba(0,0,0,.5)");g.addColorStop(1,"rgba(0,0,0,0)");c.fillStyle=g;c.fillRect(0,0,128,128);
  }));
  resize();
+ if(H){
+  const context=gl;
+  H.load().then(asset=>{
+   if(gl!==context||!ready||context.isContextLost())return;
+   harbor=H.create(context,asset);harborError=null;
+   stage.classList.add("mw3d-harbor");
+   if(enabled)render(game);
+  }).catch(error=>{
+   harborError=String(error?.message||error);
+   console.warn("MW 3D harbor:",harborError);
+  });
+ }
 }
 function paint(w,h,draw){const c=document.createElement("canvas");c.width=w;c.height=h;draw(c.getContext("2d"));return c;}
 function addTexture(id,image){
@@ -231,7 +271,8 @@ function genericFace(definition,kind){
 function requestFace(n,definition,cost){
  if(!definition||n.kind==="back")return;
  const signature=JSON.stringify([definition.cardId,definition.name,definition.ability,definition.attack,definition.health,definition.costValue,cost]);
- const id="face:"+artRevision+":"+(n.kind==="minion"?"compact:":"full:")+signature;
+ const view=n.kind==="minion"?(harbor?"boardPortrait":"compact"):"full";
+ const id="face:"+artRevision+":"+view+":"+signature;
  n.tex=id;
  if(pendingTextures.has(id))return;
  if(textures.has(id)&&!faceFailures.has(id))return;
@@ -242,7 +283,7 @@ function requestFace(n,definition,cost){
  if(gl&&!gl.isContextLost()&&!textures.has(id))addTexture(id,genericFace(definition,n.kind));
  const renderer=global.MW_BATTLE_CARD_RENDERER;
  if(!renderer?.request){pendingTextures.delete(id);return;}
- renderer.request(definition,n.kind==="minion"?"compact":"full",{cost})
+ renderer.request(definition,view,{cost})
  .then(url=>new Promise((resolve,reject)=>{
    if(!url){reject(Error("Empty v05 face"));return;}
    const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error("Failed to decode v05 face"));img.src=url;
@@ -294,7 +335,13 @@ function requestFace(n,definition,cost){
   for(const node of nodes.values())if(node.kind==="hero")node.tex="hero";
   if(enabled&&game)render(game);
  }
-function drawBox(p,size,color=[1,1,1,1],texture=null,ry=0,rx=0,top=false,unlit=0){
+function bindGeometry(buffer){
+ gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+ for(const [loc,size,offset] of [[attributes.p,3,0],[attributes.n,3,12],[attributes.uv,2,24]]){
+  gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,size,gl.FLOAT,false,32,offset);
+ }
+}
+function drawBox(p,size,color=[1,1,1,1],texture=null,ry=0,rx=0,top=false,unlit=0,oval=false){
  const model=M.model(p,size,ry,rx);
  gl.uniformMatrix4fv(uniforms.Model,false,model);
  gl.uniform4fv(uniforms.Color,color);
@@ -302,7 +349,9 @@ function drawBox(p,size,color=[1,1,1,1],texture=null,ry=0,rx=0,top=false,unlit=0
  if(entry){gl.bindTexture(gl.TEXTURE_2D,entry.t);entry.used=time();}
  gl.uniform1f(uniforms.UseTexture,texture&&textures.has(texture)?1:0);
  gl.uniform1f(uniforms.Unlit,unlit);
- gl.drawArrays(gl.TRIANGLES,0,top?6:36);
+ if(oval)bindGeometry(ovalGeo);
+ gl.drawArrays(gl.TRIANGLES,0,oval?144:top?6:36);
+ if(oval)bindGeometry(geo);
  return model;
 }
 /* v2.1J: screen-space HUD is anchored to the projected board and its objects.
@@ -310,6 +359,7 @@ function drawBox(p,size,color=[1,1,1,1],texture=null,ry=0,rx=0,top=false,unlit=0
 function positionHUD(){
  if(!cw||!ch||!vp)return;
  const point=p=>M.project(p,vp,cw,ch);
+ if(harbor){positionHarborHUD(point);return;}
  const corners=[[-8.9,.05,-6.9],[8.9,.05,-6.9],[8.9,.05,6.9],[-8.9,.05,6.9]].map(point).filter(Boolean);
  if(corners.length!==4)return;
  const left=Math.min(...corners.map(p=>p.x)),right=Math.max(...corners.map(p=>p.x));
@@ -365,6 +415,51 @@ function positionHUD(){
   }
  }
 }
+function positionHarborHUD(point){
+ const clamp=M.clamp;
+ const center=(el,anchor)=>{
+  const p=point(anchor);if(!p||!el)return;
+  el.style.left=clamp(p.x-el.offsetWidth/2,3,Math.max(3,cw-el.offsetWidth-3))+"px";
+  el.style.top=clamp(p.y,58,ch-77)+"px";
+ };
+ const clock=$("mw3dClock"),turn=stage.querySelector(".mw3d-turn");
+ center(clock,H.anchors.clock);center(turn,H.anchors.turn);
+ const deckPanels=[];
+ clock.style.scale="1";turn.style.scale="1";turn.style.right="auto";
+ for(const owner of [0,1]){
+  const own=owner===0,pref=own?"My":"Enemy";
+  const panel=$("mw3d"+pref+"DeckPanel");
+  const d=point(deckAnchor(owner));
+  if(d&&panel){
+   panel.style.left=clamp(d.x-panel.offsetWidth/2,3,cw-panel.offsetWidth-3)+"px";
+   panel.style.top=clamp(d.y+10,62,ch-76)+"px";
+   deckPanels.push(panel);
+  }
+  const group=stage.querySelector(".mw11-stage-hud."+(own?"own":"enemy"));
+  const hero=point(H.anchors.heroes[owner]);
+  if(hero&&group){
+   group.style.left=clamp(hero.x-group.offsetWidth-46,3,cw-group.offsetWidth-3)+"px";
+   group.style.top=clamp(hero.y-group.offsetHeight/2,55,ch-group.offsetHeight-30)+"px";
+  }
+ }
+ const halfTurn=turn.offsetHeight/2;
+ const overlapsDeck=deckPanels.some(panel=>
+  turn.offsetLeft<panel.offsetLeft+panel.offsetWidth &&
+  turn.offsetLeft+turn.offsetWidth>panel.offsetLeft &&
+  turn.offsetTop-halfTurn<panel.offsetTop+panel.offsetHeight+6 &&
+  turn.offsetTop+halfTurn>panel.offsetTop-6);
+ if(overlapsDeck&&deckPanels.length===2){
+  const [upper,lower]=deckPanels.sort((a,b)=>a.offsetTop-b.offsetTop);
+  const gapStart=upper.offsetTop+upper.offsetHeight+6;
+  const gapEnd=lower.offsetTop-6;
+  if(gapEnd-gapStart>=turn.offsetHeight){
+   turn.style.top=clamp(turn.offsetTop,gapStart+halfTurn,gapEnd-halfTurn)+"px";
+  }else{
+   const deckLeft=Math.min(upper.offsetLeft,lower.offsetLeft);
+   turn.style.left=Math.max(3,deckLeft-turn.offsetWidth-8)+"px";
+  }
+ }
+}
 function resize(){
  if(!ready)return;
  const top=stage.getBoundingClientRect().top;
@@ -380,7 +475,7 @@ function resize(){
  // v2.1L: 6-10% larger tabletop, raised framing; 2D/3D game coordinates do not change.
  // On narrower viewports we preserve enough room for the clock and end-turn button.
  const zoom=cw>=1400?(ch>=630?.76:.84):cw>=1050?(ch>=600?.845:.91):1.04;
- vp=M.mul(M.perspective(42*Math.PI/180,aspect,.1,110),M.lookAt([0,15.8*comp*zoom,15.0*comp*zoom],[0,0,1.0]));
+ vp=harbor?H.camera(M,aspect):M.mul(M.perspective(42*Math.PI/180,aspect,.1,110),M.lookAt([0,15.8*comp*zoom,15.0*comp*zoom],[0,0,1.0]));
  inv=M.inverse(vp);
  positionHUD();
 }
@@ -390,7 +485,30 @@ function topPolygon(p,w,d,ry,rx=0,thickness=.09){
   const world=M.transform(m,[...v,1]);return M.project(world.slice(0,3),vp,cw,ch);
  });
 }
-function deckAnchor(owner){return [7.08,.40,owner===0?2.05:-3.80];}
+function deckAnchor(owner){return harbor?H.anchors.decks[owner]:[7.08,.40,owner===0?2.05:-3.80];}
+function drawDecks(){
+ for(const owner of [0,1]){
+  const [x,y,z]=deckAnchor(owner);
+  const count=game?.players?.[owner]?.deck?.length||0;
+  const stack=Math.min(9,Math.ceil(count/4));
+  if(!harbor)drawBox([x,.02,z],[1.42,.13,2.0],[.33,.25,.15,1]);
+  for(let i=0;i<stack;i++){
+   const center=(harbor?y-.16:.14)+i*(harbor?.035:.055);
+   const width=harbor?1.38:1.12,depth=harbor?1.24:1.68;
+   drawBox([x,center,z],[width,.028,depth],[.77,.69,.51,1]);
+   drawBox([x,center+.015,z],[width,.001,depth],[1,1,1,1],harbor?"harbor-back":"back",0,0,true);
+  }
+ }
+}
+function sceneLayout(count,zone,owner){
+ const layout=M.layout(count,zone,owner);
+ if(!harbor)return layout;
+ return layout.map(({p,ry,w,d})=>{
+  if(zone==="board")return {p:[p[0],.63,owner===0?1.49:-2.11],ry,w:w*.91,d:d*.91};
+  if(owner===1)return {p:[p[0]*1.7,2.05,-7.2],ry,w:w*1.55,d:d*1.5};
+  return {p:[p[0],.22,6.15+Math.abs(ry)],ry,w:w*.9,d:d*.86};
+ });
+}
 function table(){
  drawBox([0,-.57,0],[17.5,.76,13.65],[.28,.18,.10,1],"wood");
  drawBox([0,-.15,0],[17.15,.12,13.3],[1,1,1,1],"wood",0,0,true);
@@ -409,17 +527,6 @@ function table(){
  for(const owner of [0,1])for(const loc of M.layout(7,"board",owner)){
   drawBox([loc.p[0],.035,loc.p[2]],[1.50,.008,2.0],[.22,.33,.31,.48],null,0,0,true);
   drawBox([loc.p[0],.043,loc.p[2]],[1.43,.008,1.91],[.07,.16,.16,.8],null,0,0,true);
- }
- // deck stacks: depth is visible, counts are live HTML labels
- for(const owner of [0,1]){
-  const [x,,z]=deckAnchor(owner);
-  const count=game?.players?.[owner]?.deck?.length||0;
-  const stack=Math.min(9,Math.ceil(count/4));
-  drawBox([x,.02,z],[1.42,.13,2.0],[.33,.25,.15,1]);
-  for(let i=0;i<stack;i++){
-   drawBox([x,.14+i*.055,z],[1.12,.04,1.68],[.77,.69,.51,1]);
-   drawBox([x,.167+i*.055,z],[1.12,.003,1.68],[1,1,1,1],"back",0,0,true);
-  }
  }
  // small brass corner studs, real geometry, no invented character artwork
  for(const x of [-8.15,8.15])for(const z of [-6.32,6.32]){
@@ -447,6 +554,7 @@ function updateNodes(s){
   n.lastHealth=hp;
   n.target=[...loc.p];n.w=loc.w;n.d=loc.d;n.targetRy=loc.ry||0;n.item=item||{};n.retiring=false;
   n.definition=item?.cardId?s.cards[item.cardId]:null;
+  if(harbor&&kind==="minion"&&!n.definition)n.definition=global.MW14_BOARD_STATUS?.cardDefinition(s,item,E().TOKEN_DATA)||null;
   if(!old&&!fresh&&d){
    const removedHand=[...nodes.values()].find(x=>x.kind==="hand"&&x.owner===owner&&x.item.cardId===item?.cardId&&!s.players[owner].hand.some(h=>h.uid===x.uid));
    n.p=kind==="minion"&&removedHand?[...removedHand.p]:
@@ -456,13 +564,18 @@ function updateNodes(s){
   if(kind==="hand"&&item.cardId==="__coin__")n.tex="coin";
   else if(kind==="hand"||kind==="minion")requestFace(n,n.definition,kind==="hand"?E().currentCost(s,owner,item):null);
   else if(kind==="hero")requestHeroArtTexture(n,s.players[owner].classId,E().isBright(s.time)?"day":"night");
-   else n.tex="back";
+   else n.tex=harbor?"harbor-back":"back";
   if(kind==="hero"){
    n.label.textContent=(owner===0?"ВЫ":"БОТ")+"  ♥ "+s.players[owner].health+(s.players[owner].armor?"  ◇ "+s.players[owner].armor:"");
    n.label.className="mw3d-object-label hero-label "+(owner===0?"own":"enemy");
   }else if(kind==="minion"){
    const atk=E().effectiveAttack(s,item);
-   n.label.textContent=atk+" ⚔  "+item.health+" ♥";
+   if(harbor){
+    const left=document.createElement("span"),right=document.createElement("span");
+    left.textContent=atk;left.className="mw3d-stat-attack";left.title="Атака";
+    right.textContent=item.health;right.className="mw3d-stat-health";right.title="Здоровье";
+    n.label.replaceChildren(left,right);
+   }else n.label.textContent=atk+" ⚔  "+item.health+" ♥";
    n.label.className="mw3d-object-label stats "+(owner===0?"own":"enemy");
    n.label.title=escapeText(item.name||n.definition?.name);
   }else if(kind==="hand"){
@@ -474,11 +587,13 @@ function updateNodes(s){
  if(fresh){for(const n of nodes.values())n.label.remove();ghosts.forEach(n=>n.label.remove());ghosts=[];}
  for(const owner of [0,1]){
   const pl=s.players[owner];
-  const board=M.layout(pl.board.length,"board",owner);
+  const board=sceneLayout(pl.board.length,"board",owner);
   pl.board.forEach((m,i)=>add("minion",owner,m,board[i]));
-  const hands=M.layout(pl.hand.length,"hand",owner);
+  const hands=sceneLayout(pl.hand.length,"hand",owner);
   pl.hand.forEach((h,i)=>add(owner===0?"hand":"back",owner,owner===0?h:{uid:"hidden-"+i},hands[i]));
-  add("hero",owner,{uid:"",health:pl.health},{p:[0,.22,owner===0?3.55:-3.55],w:2.02,d:1.82,ry:0});
+  const hero=harbor?{p:H.anchors.heroes[owner],w:owner===0?2.26:2.80,d:owner===0?2.22:2.75,ry:0}:
+   {p:[0,.22,owner===0?3.55:-3.55],w:2.02,d:1.82,ry:0};
+  add("hero",owner,{uid:"",health:pl.health},hero);
  }
  if(!fresh)for(const [key,n] of nodes)if(!next.has(key)){
   n.label.remove();
@@ -585,12 +700,11 @@ function tick(stamp){
  brightness+=(game&&E().isBright(game.time)?1-brightness:-brightness)*(d?Math.min(1,dt*5):1);
  gl.clearColor(.026+.025*brightness,.047+.017*brightness,.065+.006*brightness,1);
  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(program);
- gl.bindBuffer(gl.ARRAY_BUFFER,geo);
- for(const [loc,size,offset] of [[attributes.p,3,0],[attributes.n,3,12],[attributes.uv,2,24]]){
-  gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,size,gl.FLOAT,false,32,offset);
- }
+ if(harbor)harbor.draw(vp,brightness,d?stamp/1000:0);
+ gl.useProgram(program);bindGeometry(geo);
  gl.uniformMatrix4fv(uniforms.VP,false,vp);gl.uniform1f(uniforms.Day,brightness);
- table();
+ if(!harbor)table();
+ drawDecks();
  const now=time();
  const ordered=[...nodes.values(),...ghosts].sort((a,b)=>a.p[2]-b.p[2]);
  const ui=B()?.ui()||{};
@@ -622,17 +736,24 @@ function tick(stamp){
   }
   drawBox([pos[0]+.09,.085,pos[2]+.11],[w*1.2+pos[1]*.15,.002,depth*1.2],[1,1,1,n.opacity*.65],"shadow",n.ry,0,true,1);
   const body=n.kind==="hero"?[.58,.44,.22,n.opacity]:n.kind==="minion"?[.54,.43,.27,n.opacity]:[.80,.74,.59,n.opacity];
-  drawBox(pos,[w,n.kind==="hero"?.16:.075,depth],body,null,n.ry);
-  const topPos=[pos[0],pos[1]+(n.kind==="hero"?.085:.041),pos[2]];
-  drawBox(topPos,[w*.988,.001,depth*.988],[1,1,1,n.opacity],textures.has(n.tex)?n.tex:"back",n.ry,0,true,n.kind==="hero"?.1:.4);
-  n.drawPos=pos;n.poly=topPolygon(topPos,w,depth,n.ry);n.screen=M.project(pos,vp,cw,ch);
+  const oval=!!harbor&&(n.kind==="hero"||n.kind==="minion");
+  const rx=harbor?(oval?1.01:.78):0;
+  const tilt=M.rotX(rx);
+  const topPos=[pos[0],pos[1]+(n.kind==="hero"?.085:.041)*tilt[5],pos[2]+(n.kind==="hero"?.085:.041)*tilt[6]];
+  drawBox(pos,[w,n.kind==="hero"?.16:.075,depth],body,null,n.ry,rx,oval,0,oval);
+  drawBox(topPos,[w*.988,.001,depth*.988],[1,1,1,n.opacity],textures.has(n.tex)?n.tex:"back",n.ry,rx,true,harbor?(n.kind==="hero"?.83:.60):(n.kind==="hero"?.10:.40),oval);
+  n.drawPos=pos;n.poly=topPolygon(topPos,w,depth,n.ry,rx);n.screen=M.project(pos,vp,cw,ch);
   if(n.kind==="minion"&&n.poly[0]&&n.poly[1]){
    const projectedWidth=Math.abs(n.poly[1].x-n.poly[0].x);
    n.label.style.fontSize=Math.max(10,Math.min(14,projectedWidth/4.8))+"px";
-   n.label.style.padding="3px 5px";
+   n.label.style.padding=harbor?"0":"3px 5px";
+   if(harbor)n.label.style.width=Math.max(29,projectedWidth*.82)+"px";
+   else n.label.style.removeProperty("width");
   }
   if(n.label.isConnected&&n.screen){
-   const badgePoint=M.project([pos[0],pos[1]+.09,pos[2]+(n.kind==="hand"?-.9:n.kind==="hero"?-.12:depth*.40)],vp,cw,ch);
+   const badgePoint=harbor&&n.poly.every(Boolean)?(n.kind==="hand"?
+    {x:n.poly[0].x+10,y:n.poly[0].y+9}:
+    {x:(n.poly[2].x+n.poly[3].x)/2,y:(n.poly[2].y+n.poly[3].y)/2-5}):M.project([pos[0],pos[1]+.09,pos[2]+(n.kind==="hand"?-.9:n.kind==="hero"?-.12:depth*.40)],vp,cw,ch);
    if(badgePoint){n.label.style.transform=`translate(${badgePoint.x}px,${badgePoint.y}px) translate(-50%,-50%)`;n.label.hidden=n.kind==="back"||n.retiring;}
   }
  }
@@ -785,7 +906,7 @@ function onBridge(){
 global.addEventListener("mw-battle-view-ready",onBridge);
 global.MW_ARENA_3D={
  render,setEnabled,animateAttack,invalidateCards,invalidateHeroes,
- stats:()=>({enabled,ready,webgl:!!gl&&!gl.isContextLost(),renderer:"WebGL 1",nodes:nodes.size,
+ stats:()=>({enabled,ready,webgl:!!gl&&!gl.isContextLost(),renderer:"WebGL 1",harborTriangles:harbor?.triangles||0,harborError,nodes:nodes.size,
   textures:textures.size,artRevision,heroRevision,textureRequests,failedTextures,frames:frameCount,contextLossCount,
   animation:motion,reducedMotion:!!reduced?.matches,quality,errors:[...stateErrors],clock:game?M.clock(game.time):null}),
  pointFor:(kind,owner,uid="")=>{
@@ -794,7 +915,7 @@ global.MW_ARENA_3D={
   const r=canvas.getBoundingClientRect();return {x:r.left+n.screen.x,y:r.top+n.screen.y};
  },
  boardPoint:owner=>{
-  const p=M.project([owner===0?0:0,.2,owner===0?2.4:-2.4],vp,cw,ch),r=canvas.getBoundingClientRect();
+  const p=M.project([0,.2,owner===0?2.4:-2.4],vp,cw,ch),r=canvas.getBoundingClientRect();
   return p?{x:r.left+p.x,y:r.top+p.y}:null;
  },
  debugNodes:()=>[...nodes.values()].map(n=>({key:n.key,kind:n.kind,owner:n.owner,cardId:n.definition?.cardId||null,p:[...n.p],screen:n.screen,bounds:n.poly?.every(Boolean)?{left:Math.min(...n.poly.map(p=>p.x)),right:Math.max(...n.poly.map(p=>p.x)),top:Math.min(...n.poly.map(p=>p.y)),bottom:Math.max(...n.poly.map(p=>p.y))}:null,hasTexture:textures.has(n.tex)})),

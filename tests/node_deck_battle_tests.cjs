@@ -6,9 +6,9 @@ const cat=deck.indexCatalog(window.MW_CANONICAL_CARDS);
 const examples=window.MW_APPROVED_EXAMPLE_DECKS;
 let checked=0;
 function it(name,fn){fn();checked++;console.log("PASS",name);}
-it("Card catalog contains 162 unique cards with stable IDs",()=>{
- assert.equal(cat.size,162);
- assert.equal(new Set([...cat.keys()]).size,162);
+it("Card catalog contains 167 unique cards with stable IDs",()=>{
+ assert.equal(cat.size,167);
+ assert.equal(new Set([...cat.keys()]).size,167);
  assert.equal(cat.get("KNZ-002").attack,1);assert.equal(cat.get("KNZ-002").health,2);
  assert.equal(cat.get("KNZ-002").name,"МАЛАДЫ ДРУЖЫННІК");
 });

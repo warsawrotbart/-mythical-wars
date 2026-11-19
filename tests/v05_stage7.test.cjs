@@ -85,12 +85,12 @@ test('collection shows exactly 92 test arts, 70 missing canonical arts, no autoa
   vm.runInNewContext(file('card-catalog.js').toString('utf8'),context);
   const canonical=context.window.MW_CANONICAL_CARDS;
   const core=require('../collection-core-v2.1M1.js');
-  assert.equal(canonical.length,162);
+  assert.equal(canonical.length,167);
   const rows=core.build(canonical,[],catalogue);
   const stats=core.stats(rows);
-  assert.equal(stats.canonical,162);
+  assert.equal(stats.canonical,167);
   assert.equal(stats.artTest,92);
-  assert.equal(stats.artMissing,70);
+  assert.equal(stats.artMissing,75);
   assert.equal(stats.artApproved,0);
   assert.ok(rows.find(x=>x.id==='NEU-023' && x.art==='test'));
   assert.ok(rows.find(x=>x.id==='NCR-027' && x.art==='missing'));

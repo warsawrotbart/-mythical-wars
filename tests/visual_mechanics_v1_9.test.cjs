@@ -61,9 +61,15 @@ test("NEU-001 night summons three, not in deck; restriction when board nearly fu
  assert.ok(r.ok,r.reason);assert.equal(s.players[0].board.length,4);
  assert.equal(s.players[0].deck.includes("ZAV-001")&&s.players[0].deck.length,ids.length, false);
 });
-test("NEU-028 immediately discards both hands without creating grave records",()=>{
+test("NEU-028 burns each marked card after two personal turns without creating grave records",()=>{
  const s=fresh(),h=hand(s,"NEU-028"),victim=hand(s,"KNZ-002"),enemy=hand(s,"CHR-044",1);
  const r=E.playCard(s,0,h.uid);assert.ok(r.ok,r.reason);
+ assert.equal(enemy.burnTurnsLeft,2);
+ assert.equal(victim.burnTurnsLeft,2);
+ E.endTurn(s,0);E.endTurn(s,1);E.endTurn(s,0);
+ assert.ok(s.players[1].hand.some(x=>x.uid===enemy.uid));
+ assert.ok(s.players[0].hand.some(x=>x.uid===victim.uid));
+ E.endTurn(s,1);E.endTurn(s,0);
  assert.ok(!s.players[1].hand.some(x=>x.uid===enemy.uid));
  assert.ok(!s.players[0].hand.some(x=>x.uid===victim.uid));
  assert.equal(s.players[0].health,25);assert.equal(s.players[1].health,25);

@@ -28,10 +28,10 @@ function playResult(s,o,cardId,target){
  return {h,result:E.playCard(s,o,h.uid,target)};
 }
 function target(s,o,m){return {kind:"minion",owner:o,uid:m.uid};}
-test("162 canonical cards, explicit support",()=>{
- assert.equal(cards.size,162);
+test("167 canonical cards, explicit support",()=>{
+ assert.equal(cards.size,167);
  assert.equal(E.SUPPORTED_SPELLS.size,46);
- assert.equal(E.SUPPORTED_CREATURES.size,70); // v2.1A: KNZ-007 + CHR-031
+ assert.equal(E.SUPPORTED_CREATURES.size,75); // v2.1A: KNZ-007 + CHR-031
  assert.equal(E.SUPPORTED_WEAPONS.size,14);
  assert.equal(E.abilitySupport(cards.get("KNZ-002")),"complete");
  assert.equal(E.abilitySupport(cards.get("NEU-022")),"partial");

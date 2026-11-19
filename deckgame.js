@@ -1044,14 +1044,14 @@ function selectMulligan(){
   }).catch(()=>{/* visible card-name fallback remains */});
  }
 }
-async function startBattle(){
+async function startBattle(q010=null){
  if(battleStarting||!battleStore)return;
  battleStarting=true;$("battleStartBtn").disabled=true;
  try{
  const previous=readBattleSnapshot();
  if(((game&&game.phase!=="ended")||(!game&&previous))&&
     !window.confirm("Начать новую партию? Предыдущее состояние сохранится в резервном слоте. Для надёжности используйте «Бой JSON»."))return;
- const a=decks.get($("battleMyDeck").value),b=decks.get($("battleBotDeck").value);
+ const a=q010?q010.player:decks.get($("battleMyDeck").value),b=q010?q010.opponent:decks.get($("battleBotDeck").value);
  const source=battleCatalog();
  if(!a||!b||!dm.validateDeck(a,source).ok||!dm.validateDeck(b,source).ok){message("Выберите две допустимые колоды.");return;}
  // Finish the latest autosave before rotating its committed value into the reserve slot.
@@ -1059,10 +1059,12 @@ async function startBattle(){
  try{await battleStore.backup();}catch(err){battleSaveError=err.message;updateBattleSessionStatus();message("Резервная партия не записана. Скачайте «Бой JSON» перед новой партией.");return;}
  resetPresentation();
  window.MW_BATTLEFIELD_V02?.resetClock();
- turnTimer=window.MW_TURN_TIMER.create({durationMs:Number($("battleTimerMode").value)});timerExpiredPending=false;
+ turnTimer=window.MW_TURN_TIMER.create({durationMs:q010?q010.timerMs:Number($("battleTimerMode").value)});timerExpiredPending=false;
  try{game=eng.makeGame(clone(a),clone(b),source,{
    timeMode:$("battleTimeMode").value,
-   heroProfiles:[$("battleHeroProfile").value,$("battleBotHeroProfile").value]
+   hour:q010?.hour,
+   heroNames:q010?[undefined,q010.opponent.heroName]:undefined,
+   heroProfiles:q010?[...q010.heroProfiles]:[$("battleHeroProfile").value,$("battleBotHeroProfile").value]
   });
     loadedReplay=null;
     pending=null;pendingChoice=null;choiceDraft={};graveOpenOwner=null;lastBattleVisual=null;closeCardInspect();
@@ -1491,6 +1493,10 @@ function wireBattleDragAndDrop(){
 }
 
 function wire(){
+ $("battleQ010PreviewBtn").onclick=()=>{
+   if(!window.MW_Q010_TRAINING){message("Конфигурация Q010 не загружена.");return;}
+   startBattle(window.MW_Q010_TRAINING);
+ };
  $("battleQuickStart").onclick=()=>{
    $("battleSettingsDrawer").open=false;
    $("battleStartBtn").click();
@@ -1545,7 +1551,7 @@ function wire(){
  $("battleUseLocal").onchange=renderBattleDeckOptions;
  $("battleReduceMotion").checked=window.MW_MOTION_RUNTIME.reduced(document);
  $("battleReduceMotion").onchange=e=>{window.MW_MOTION_RUNTIME.setReduced(e.target.checked);try{localStorage.setItem("mw-reduce-motion",String(e.target.checked));}catch(_){}if(presentationBusy){resetPresentation();renderGame();}};
- $("battleStartBtn").onclick=startBattle;
+ $("battleStartBtn").onclick=()=>startBattle();
  $("battleSaveBtn").onclick=async()=>{if(await persistBattleSession())message("Бой сохранён локально.");else message("Сохранение недоступно: скачайте «Бой JSON».");};
  async function resumeBattle(previous=false){
   await battleStore?.flush();

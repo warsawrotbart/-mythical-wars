@@ -83,8 +83,11 @@
  function rowCard(row,savedMap,index){
    const c=row.card||{}, art=picture(row,savedMap);
    const rarity=c.rarityId||"";
+   const rarityNames={common:"Обычная",standard:"Стандартная",rare:"Редкая",epic:"Эпическая",legendary:"Легендарная"};
    const display=v=>v===null||v===undefined||v===""?"—":String(v);
    const details=[`Стоимость: ${display(c.costValue)} ${c.costType==="corpses"?"трупов":c.costType==="mana"?"маны":""}`];
+   if(c.timeAffinityId)details.push(`Время: ${c.timeAffinityId}`);
+   if(c.cardType==="creature"&&c.creatureTypeId)details.push(`Вид: ${c.creatureTypeId}`);
    if(c.cardType==="creature")details.push(`Атака: ${display(c.attack)} · Здоровье: ${display(c.health)}`);
    if(c.cardType==="weapon")details.push(`Атака: ${display(c.attack)} · Прочность: ${display(c.durability)}`);
    return `<article class="mw-col-card" data-card-id="${esc(row.id)}">
@@ -96,7 +99,7 @@
      <div class="mw-col-card-info">
        <div class="mw-col-card-id">${esc(row.id)}${row.canonical?"":' · Локальная'}</div>
        <strong title="${esc(c.name||row.id)}">${esc(c.name||row.id)}</strong>
-       <div class="mw-col-card-meta">${esc(c.classId||"Нейтральная")}${rarity?" · "+esc(rarity):""}</div>
+       <div class="mw-col-card-meta">${esc(c.classId||"Нейтральная")}${rarity?" · "+esc(rarityNames[rarity]||rarity):""}</div>
        <div class="mw-col-card-values">${details.map(value=>`<span>${esc(value)}</span>`).join("")}</div>
        ${c.ability?`<div class="mw-col-card-ability" title="${esc(c.ability)}">${esc(c.ability)}</div>`:""}
        <div class="mw-col-flags">

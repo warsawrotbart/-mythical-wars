@@ -21,7 +21,6 @@ function cast(s,id,target=null,choices=null){
 const own=m=>({kind:'minion',owner:0,uid:m.uid});
 const enemy=m=>({kind:'minion',owner:1,uid:m.uid});
 function kill(s,m){cast(s,'NCR-018',own(m));}
-function choose(s,id){const h={uid:'choice'+(++s.serial),cardId:id,costAdjustment:0};s.players[0].hand.push(h);s.players[0].mana=10;const spec=E.actionStatus(s,0,h.uid);assert.equal(spec.ok,true,spec.reason);return {h,choices:E.botChoices(spec.choice)};}
 test('all three approved deck compositions validate against the current library',()=>{
  for(const deck of MW_APPROVED_EXAMPLE_DECKS){assert.equal(D.validateDeck(deck,catalog).ok,true);assert.equal(Object.values(deck.counts).reduce((a,b)=>a+b,0),30);for(const id of Object.keys(deck.counts))assert.equal(E.abilitySupport(catalog.get(id)),'complete',id);}
 });
@@ -58,7 +57,7 @@ test('normal death plus explicit deathrattle grants two corpses',()=>{
 });
 test('resurrection for corpses preserves no-base-corpse but permits explicit extra deathrattle',()=>{
  const s=fixture(),p=s.players[0];kill(s,cast(s,'NCR-002'));p.corpses=6;
- const {h,choices}=choose(s,'NCR-027');assert.equal(E.playCard(s,0,h.uid,null,choices).ok,true);const revived=p.board[0];assert.equal(revived.summonedWithCorpses,true);assert.equal(p.corpses,1);assert.equal(p.graveyard.length,0);kill(s,revived);assert.equal(p.corpses,2);
+ const revived=cast(s,'NCR-027');assert.equal(revived.summonedWithCorpses,true);assert.equal(p.corpses,1);assert.equal(p.graveyard.length,0);kill(s,revived);assert.equal(p.corpses,2);
 });
 test('Prarodzitca fills on each own end, not on opponent end, and never overfills',()=>{
  const s=fixture('Чернокнижник'),p=s.players[0],mother=cast(s,'CHR-045');E.endTurn(s,0);assert.equal(p.board.length,7);assert(p.board.filter(m=>m!==mother).every(m=>m.cardId==='TKN-009'&&m.health===2&&!m.ready));p.board.pop();E.endTurn(s,1);assert.equal(p.board.length,6);E.endTurn(s,0);assert.equal(p.board.length,7);

@@ -307,7 +307,8 @@ function useHeroPowerResolved(s,o,target=null){
  return {ok:true,id:check.id};
 }
 const LEGACY_RULES="three-decks-2026-11-18";
-const CURRENT_RULES="militia-2026-11-19";
+const MILITIA_PREVIEW_RULES="militia-2026-11-19";
+const CURRENT_RULES="militia-2026-11-19-r2";
 const legacyRules=s=>s.contentVersion===LEGACY_RULES;
 function makeGame(deckA,deckB,catalog,opts={}){
  const seedHolder={randomState:(Number.isInteger(opts.seed)?opts.seed:Math.floor(Math.random()*4294967296))>>>0};
@@ -725,9 +726,10 @@ function targetsAvailable(s,o,card){
  */
 // Only cards that actually require a player decision should open the selection dialog.
  // "Вазьміце з калоды" is an automatic random draw among eligible deck entries.
-const CHOICE_SPELLS=new Set(["KNZ-015","CHR-014","CHR-021","NEU-017","NCR-021","NCR-027","TKN-007"]);
+const CHOICE_SPELLS=new Set(["KNZ-015","CHR-014","CHR-021","NEU-017","NCR-021","TKN-007"]);
+const needsSpellChoice=(s,id)=>CHOICE_SPELLS.has(id)||(id==="NCR-027"&&s.contentVersion!==CURRENT_RULES);
 function choiceSpec(s,o,c){
- if(!c||!(CHOICE_SPELLS.has(c.cardId)||c.cardId==="NEU-001"))return null;
+ if(!c||!(needsSpellChoice(s,c.cardId)||c.cardId==="NEU-001"))return null;
  const pl=player(s,o),freeSlots=7-pl.board.length;
  // Discover offers remain stable across UI renders and cancel/reopen.
  if(c.cardId==="NEU-001"){
@@ -907,6 +909,10 @@ function resolveChoices(s,o,c,choices){
  log(s,c.name+": выбранные карты обработаны ("+entries.length+").");
 }
 
+function resurrectionPool(s,o){
+ return player(s,o).graveyard.filter(entry=>!entry.token&&s.cards[entry.cardId]?.cardType==="creature");
+}
+
 function actionStatus(s,o,uidValue){
  if(s.phase!=="battle"||s.turn!==o)return {ok:false,reason:"Сейчас не ваш ход."};
  const p=player(s,o),h=p.hand.find(x=>x.uid===uidValue);
@@ -926,6 +932,8 @@ function actionStatus(s,o,uidValue){
   if(abilitySupport(c)!=="complete"&&!(PLAYABLE_PARTIAL_SPELLS.has(c.cardId)&&!c.effectModified))return {ok:false,reason:"Эффект заклинания ещё не реализован или текст изменён относительно библиотеки."};
   if(c.cardId==="NCR-025"&&p.corpses<3)return {ok:false,reason:"Условие ритуала: минимум три трупа."};
   if(["NCR-027","TKN-007"].includes(c.cardId)&&p.board.length>=7)return {ok:false,reason:"Нет места для оживления."};
+  if(c.cardId==="NCR-027"&&!needsSpellChoice(s,c.cardId)&&!resurrectionPool(s,o).length)
+   return {ok:false,reason:"В вашем кладбище нет подходящих существ."};
   if(["NCR-026","NCR-028"].includes(c.cardId)&&
     s.rituals.filter(r=>r.owner===o).length+s.scheduled.filter(r=>r.owner===o&&r.ritual).length>=3)
     return {ok:false,reason:"Уже ожидают три Ритуала."};
@@ -939,7 +947,7 @@ function actionStatus(s,o,uidValue){
 }
 function resolveSpell(s,o,c,t,choices=null){
  const p=player(s,o),enemy=player(s,other(o)),m=t?.kind==="minion"?minion(s,t.owner,t.uid):null;
- if(CHOICE_SPELLS.has(c.cardId)){resolveChoices(s,o,c,choices);return;}
+ if(needsSpellChoice(s,c.cardId)){resolveChoices(s,o,c,choices);return;}
  switch(c.cardId){
   // These spells say "Вазьміце з калоды", not "Выберыце". Drawing is
   // automatic and random among eligible entries; the player never picks.
@@ -1035,6 +1043,12 @@ function resolveSpell(s,o,c,t,choices=null){
   case "NCR-024":destroyMinion(s,t.owner,t.uid);break;
   case "NCR-025":if(!legacyRules(s))adjustCorpses(s,o,-3,"Ритуал Дзяды");draw(s,o);draw(s,o);healHero(s,o,3);break;
   case "NCR-026":s.rituals.push({cardId:c.cardId,owner:o,progress:0});break;
+  case "NCR-027":{
+   const entry=pick(s,resurrectionPool(s,o));
+   if(entry&&summon(s,o,s.cards[entry.cardId],{summonedWithCorpses:true}))
+    takeFromGrave(s,o,entry.uid,"Карта NCR-027");
+   break;
+  }
   case "NCR-028":s.scheduled.push({kind:"second-turn",cardId:c.cardId,ritual:true,owner:o,targetUid:legacyRules(s)?m.uid:undefined,remainingStarts:2});break;
   default:throw new Error("Нет обработчика заклинания "+c.cardId);
  }
@@ -1609,7 +1623,7 @@ function importBattle(payload,opts={}){
    throw new Error("Неизвестный формат или версия сохранения партии.");
  if(JSON.stringify(payload).length>12*1024*1024)throw new Error("Сохранение слишком большое.");
  const raw=payload.game;
- if(![LEGACY_RULES,CURRENT_RULES].includes(raw?.contentVersion))throw new Error("Партия создана по другой версии правил. Старое сохранение не изменено; для новых правил начните новый тестовый бой.");
+ if(![LEGACY_RULES,MILITIA_PREVIEW_RULES,CURRENT_RULES].includes(raw?.contentVersion))throw new Error("Партия создана по другой версии правил. Старое сохранение не изменено; для новых правил начните новый тестовый бой.");
  if(!raw||!Array.isArray(raw.players)||raw.players.length!==2||
     !raw.cards||typeof raw.cards!=="object"||Array.isArray(raw.cards)||
     !["mulligan","battle","ended"].includes(raw.phase)||

@@ -103,13 +103,26 @@ test("NCR-021: only own non-token <=4 mana; remove precisely chosen grave entry"
  assert.ok(!s.players[0].graveyard.find(g=>g.uid==="g2"));
  assert.equal(s.players[0].hand[0].cardId,"KNZ-002");
 });
-test("NCR-027: grave selection, consume entry, summon base stats",()=>{
+test("NCR-027: random resurrection spends five corpses and removes only the selected entry",()=>{
  const s=setup("NCR-027");
- putInGrave(s,"KNZ-002","g1");putInGrave(s,"KNZ-002","gt",true);
- assert.equal(engine.playCard(s,0,"h1",null,{grave:["grave:g1"]}).ok,true);
- assert.equal(s.players[0].graveyard.length,1);
- assert.equal(s.players[0].board[0].cardId,"KNZ-002");
- assert.equal(s.players[0].board[0].health,byId["KNZ-002"].health);
+ s.rng=()=>0.99;
+ putInGrave(s,"KNZ-002","g1");putInGrave(s,"NCR-006","g2");
+ putInGrave(s,"KNZ-002","gt",true);putInGrave(s,"NCR-027","invalid");
+ assert.equal(engine.actionStatus(s,0,"h1").choice,null);
+ assert.equal(engine.playCard(s,0,"h1").ok,true);
+ assert.deepEqual(s.players[0].graveyard.map(g=>g.uid),["g1","gt","invalid"]);
+ assert.equal(s.players[0].corpses,5);
+ assert.equal(s.players[0].board[0].cardId,"NCR-006");
+ assert.equal(s.players[0].board[0].health,byId["NCR-006"].health);
+});
+test("NCR-027: a saved preview battle still accepts the original grave selection",()=>{
+ const s=setup("NCR-027");
+ s.contentVersion="militia-2026-11-19";
+ putInGrave(s,"KNZ-002","g1");
+ const restored=engine.importBattle(engine.exportBattle(s));
+ assert.equal(engine.playCard(restored,0,"h1").requiresChoice,true);
+ assert.equal(engine.playCard(restored,0,"h1",null,{grave:["grave:g1"]}).ok,true);
+ assert.equal(restored.players[0].board[0].cardId,"KNZ-002");
 });
 test("CHR-021: grave choice different Spirits; cannot choose duplicates",()=>{
  const s=setup("CHR-021");
@@ -134,9 +147,11 @@ test("NEU-017: two distinct fallen Peasants, Spirit & Night, non-token only",()=
  assert.ok(s.players[0].board.every(x=>x.creatureType==="Дух"&&x.affinity==="Ноч"));
 });
 test("NCR-027: no living grave choices blocks before cost",()=>{
- const s=setup("NCR-027");assert.equal(engine.actionStatus(s,0,"h1").ok,false);
+ const s=setup("NCR-027");putInGrave(s,"KNZ-002","gt",true);
+ assert.equal(engine.actionStatus(s,0,"h1").ok,false);
  assert.equal(engine.playCard(s,0,"h1").ok,false);
- assert.equal(ms(s),10);
+ assert.equal(s.players[0].corpses,10);
+ assert.equal(s.players[0].hand[0].uid,"h1");
 });
 test("bot draws from deck automatically without choices",()=>{
  const s=setup("KNZ-008");

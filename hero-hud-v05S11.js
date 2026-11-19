@@ -170,7 +170,7 @@
       if(summary){summary.title=titleFor(game,owner)+" — "+nameFor(game,owner);const heading=summary.querySelector("b");if(heading)heading.textContent=nameFor(game,owner).toLocaleUpperCase("ru");}
       const info=engine().heroPowerStatus(game,owner);
       const power=byId("mw3d"+(own?"Power":"EnemyPower"));
-      const icon=global.MW_HERO_ART?.abilityFor(nameFor(game,owner))||"";
+      const icon=global.MW_HERO_ART?.abilityFor(nameFor(game,owner))||global.MW_HERO_ART?.abilityFor(player.classId)||"";
       if(power){power.classList.toggle("mw3d-hero-ability-art",!!icon);if(icon)power.style.setProperty("--mw-ability-image",`url("${icon}")`);else power.style.removeProperty("--mw-ability-image");}
       updatePower(power,info,owner,!!(own&&global.MW_BATTLE_VIEW_BRIDGE?.ui?.()?.pending?.kind==="hero-power"));
       if(own&&power)power.disabled=!info.ok||!!global.MW_BATTLE_VIEW_BRIDGE?.ui?.()?.busy;

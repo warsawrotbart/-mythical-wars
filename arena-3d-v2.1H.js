@@ -432,13 +432,13 @@ function positionHarborHUD(point){
   const d=point(deckAnchor(owner));
   if(d&&panel){
    panel.style.left=clamp(d.x-panel.offsetWidth/2,3,cw-panel.offsetWidth-3)+"px";
-   panel.style.top=clamp(d.y+10,62,ch-76)+"px";
+   panel.style.top=clamp(d.y+10,62,ch-panel.offsetHeight-8)+"px";
    deckPanels.push(panel);
   }
   const group=stage.querySelector(".mw11-stage-hud."+(own?"own":"enemy"));
   const hero=point(H.anchors.heroes[owner]);
   if(hero&&group){
-   group.style.left=clamp(hero.x-group.offsetWidth-46,3,cw-group.offsetWidth-3)+"px";
+   group.style.left=clamp(hero.x-group.offsetWidth/2,3,cw-group.offsetWidth-3)+"px";
    group.style.top=clamp(hero.y-group.offsetHeight/2,55,ch-group.offsetHeight-30)+"px";
   }
  }
@@ -506,7 +506,7 @@ function sceneLayout(count,zone,owner){
  return layout.map(({p,ry,w,d})=>{
   if(zone==="board")return {p:[p[0],.63,owner===0?1.49:-2.11],ry,w:w*.91,d:d*.91};
   if(owner===1)return {p:[p[0]*1.7,2.05,-7.2],ry,w:w*1.55,d:d*1.5};
-  return {p:[p[0],.22,6.15+Math.abs(ry)],ry,w:w*.9,d:d*.86};
+  return {p:[p[0],.90,7.05+Math.abs(ry)],ry,w:w*.86,d:d*.76};
  });
 }
 function table(){
@@ -567,6 +567,11 @@ function updateNodes(s){
    else n.tex=harbor?"harbor-back":"back";
   if(kind==="hero"){
    n.label.textContent=(owner===0?"ВЫ":"БОТ")+"  ♥ "+s.players[owner].health+(s.players[owner].armor?"  ◇ "+s.players[owner].armor:"");
+   if(harbor){
+    const player=s.players[owner];
+    n.label.textContent+="  ·  "+player.mana+"/"+player.maxMana;
+    n.label.title="Здоровье: "+player.health+" · Броня: "+player.armor+" · Мана: "+player.mana+"/"+player.maxMana;
+   }
    n.label.className="mw3d-object-label hero-label "+(owner===0?"own":"enemy");
   }else if(kind==="minion"){
    const atk=E().effectiveAttack(s,item);
@@ -628,7 +633,9 @@ function updateHUD(){
   const info=E().heroPowerStatus(s,owner);
   $("mw3d"+pref+"Name").textContent=(owner===0?"ИГРОК":"БОТ")+" · "+p.classId;
   $("mw3d"+pref+"Resources").textContent=p.health+" ♥"+(p.armor?" · ◇ "+p.armor:"");
-  $("mw3d"+pref+"DeckCount").textContent="Колода · "+p.deck.length+" карт";
+  const deckCount=$("mw3d"+pref+"DeckCount");
+  deckCount.title="Колода · "+p.deck.length+" карт";
+  deckCount.textContent=harbor?String(p.deck.length):deckCount.title;
   $("mw3d"+pref+"Mana").textContent="Мана · "+p.mana+"/"+p.maxMana;
   const corpseNode=$("mw3d"+pref+"Corpses"),graveNode=$("mw3d"+pref+"Grave");
   const corpseCount=Number(p.corpses)||0,graveCount=p.graveyard?.length||0;
@@ -675,8 +682,27 @@ function render(s){
   updateHUD();resize();wake();
  }catch(err){fail(err);}
 }
+const panelToggle=$("battlePanelToggle");
+let panelCollapsed=false;
+function updateBattlePanel(){
+ if(!panelToggle)return;
+ panelToggle.hidden=!enabled;
+ const collapsed=enabled&&panelCollapsed;
+ panelToggle.setAttribute("aria-expanded",String(!collapsed));
+ panelToggle.textContent=collapsed?"Развернуть панель боя":"Свернуть панель боя";
+ for(const id of ["battleTopPanel","battleInfoDrawer"]){
+  const panel=$(id);
+  if(panel)panel.hidden=collapsed;
+ }
+}
+if(panelToggle)panelToggle.onclick=()=>{
+ panelCollapsed=!panelCollapsed;
+ updateBattlePanel();
+ resize();
+};
 function setEnabled(value){
  enabled=!!value;stage.hidden=!enabled;workspace.classList.toggle("mw3d-active",enabled);
+ updateBattlePanel();
  toggle.textContent=enabled?"◇ 3D: включено":"◇ 3D-прототип";toggle.setAttribute("aria-pressed",String(enabled));
  hover=null;focusKey=null;drag=null;pointer=null;attack=null;lockUntil=0;$("mw3dPreview").hidden=true;
  if(!enabled){cancelAnimationFrame(raf);raf=0;return false;}
@@ -753,7 +779,7 @@ function tick(stamp){
   if(n.label.isConnected&&n.screen){
    const badgePoint=harbor&&n.poly.every(Boolean)?(n.kind==="hand"?
     {x:n.poly[0].x+10,y:n.poly[0].y+9}:
-    {x:(n.poly[2].x+n.poly[3].x)/2,y:(n.poly[2].y+n.poly[3].y)/2-5}):M.project([pos[0],pos[1]+.09,pos[2]+(n.kind==="hand"?-.9:n.kind==="hero"?-.12:depth*.40)],vp,cw,ch);
+    {x:(n.poly[2].x+n.poly[3].x)/2,y:(n.poly[2].y+n.poly[3].y)/2-(n.kind==="hero"&&n.owner===0?31:5)}):M.project([pos[0],pos[1]+.09,pos[2]+(n.kind==="hand"?-.9:n.kind==="hero"?-.12:depth*.40)],vp,cw,ch);
    if(badgePoint){n.label.style.transform=`translate(${badgePoint.x}px,${badgePoint.y}px) translate(-50%,-50%)`;n.label.hidden=n.kind==="back"||n.retiring;}
   }
  }

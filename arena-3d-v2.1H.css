@@ -116,25 +116,37 @@
  position:relative;width:100%;height:auto;aspect-ratio:1;margin:0;filter:drop-shadow(0 5px 6px #0008);
 }
 #mw3dStage.mw3d-harbor .mw3d-clock .mw3d-art-clock .mw-art-clock-disc {
- inset:0;width:auto;height:auto;background:transparent url("arena-art/harbor-clock.svg") center/contain no-repeat;
+ inset:20.2% 20.5% 20.5% 20.2%;
+ background:url("battlefield-v02/clock_assets/ART-16_clock_day_dial_v2.png") center/contain no-repeat;
  box-shadow:none;border:0;filter:none;
 }
 #mw3dStage.mw3d-harbor[data-phase="night"] .mw3d-clock .mw3d-art-clock .mw-art-clock-disc {
- background-image:url("arena-art/harbor-clock.svg");filter:brightness(.87) saturate(.9);
+ background-image:url("battlefield-v02/clock_assets/ART-16_clock_night_dial_v2.png");
 }
-#mw3dStage.mw3d-harbor .mw3d-art-clock .mw-art-clock-frame,
+#mw3dStage.mw3d-harbor .mw3d-art-clock .mw-art-clock-frame {
+ inset:0;background:none;
+}
+#mw3dStage.mw3d-harbor .mw-art-clock-frame::before,
+#mw3dStage.mw3d-harbor .mw-art-clock-frame::after {
+ content:"";position:absolute;inset:0;
+ background:url("battlefield-v02/clock_assets/ART-15_clock_frame_v2.png") center/contain no-repeat;
+ clip-path:inset(0 50% 0 0);
+}
+#mw3dStage.mw3d-harbor .mw-art-clock-frame::after {transform:scaleX(-1)}
+#mw3dStage.mw3d-harbor[data-phase="night"] .mw-art-clock-frame::before,
+#mw3dStage.mw3d-harbor[data-phase="night"] .mw-art-clock-frame::after {clip-path:inset(0 0 0 50%)}
 #mw3dStage.mw3d-harbor #mw3dMarks {display:none}
 #mw3dStage.mw3d-harbor #mw3dHand {
- left:44%;top:auto;bottom:45.5%;width:12%;height:47%;border-radius:0;box-shadow:none;
- background:transparent url("arena-art/harbor-clock-hand.svg") center/100% 100% no-repeat;
- transform-origin:50% 89%;transform:rotate(var(--mw-hour-angle,0deg));
+ left:44.24%;top:10.2%;width:11.43%;height:42.86%;border-radius:0;box-shadow:none;
+ background:transparent url("battlefield-v02/clock_assets/ART-17_clock_pointer.png") center/contain no-repeat;
+ transform-origin:49.1% 93.25%;transform:rotate(var(--mw-hour-angle,0deg));
 }
 #mw3dStage.mw3d-harbor .mw3d-clock-caption {
- position:absolute;top:98%;left:50%;transform:translateX(-50%);width:auto;
- min-width:78px;margin:4px 0 0;padding:4px 8px;flex-direction:row;align-items:baseline;gap:7px;
+ position:absolute;top:67%;left:50%;transform:translateX(-50%);width:34%;margin:0;
+ padding:1px 3px;z-index:4;background:#122230f4;border:1px solid #b38d50;border-radius:4px;
 }
-#mw3dStage.mw3d-harbor #mw3dTime {font-size:15px}
-#mw3dStage.mw3d-harbor #mw3dPhase {font-size:11px}
+#mw3dStage.mw3d-harbor #mw3dTime {font-size:clamp(9px,1.1vw,17px)}
+#mw3dStage.mw3d-harbor #mw3dPhase {display:none}
 #mw3dStage.mw3d-harbor .mw3d-turn {width:clamp(75px,13%,156px);gap:4px}
 #mw3dStage.mw3d-harbor .mw3d-turn #mw3dEnd {
  width:100%;height:auto;min-height:43px;aspect-ratio:1.8;
@@ -144,30 +156,50 @@
 }
 #mw3dStage.mw3d-harbor .mw3d-turn #mw3dEnd:disabled {filter:saturate(.45);opacity:.66}
 #mw3dStage.mw3d-harbor #mw3dTurnLabel {padding:3px 5px;font-size:10px;white-space:nowrap}
+#battlePanelToggle{white-space:nowrap}
+body:not(:has(#battleWorkspace.mw3d-active:not([hidden]))) #battlePanelToggle{display:none}
 #mw3dStage.mw3d-harbor .mw3d-deck-panel {
- width:clamp(65px,12%,147px);min-width:0;padding:4px 7px;gap:2px;border-color:#a88150;
- background:#211914ea;font-size:10px;
+ width:fit-content;min-width:0;padding:0;gap:2px;align-items:center;
+ border:0;background:none;box-shadow:none;
 }
-#mw3dStage.mw3d-harbor .mw3d-deck-panel strong {font-size:10px}
+#mw3dStage.mw3d-harbor .mw3d-deck-panel strong {
+ align-self:flex-end;padding:2px 6px;border:1px solid #a88150;border-radius:5px;
+ color:#fff4d1;background:#23190fea;font-size:12px;
+}
+#mw3dStage.mw3d-harbor :is(#mw3dMyMana,#mw3dEnemyMana){display:none}
+#mw3dStage.mw3d-harbor .mw3d-deck-footer {gap:3px;margin:0}
+#mw3dStage.mw3d-harbor .mw3d-deck-footer :is(button,span) {min-width:30px;padding:2px 4px}
 #mw3dStage.mw3d-harbor .mw11-stage-hud {
- width:clamp(142px,24%,305px);height:68px;gap:5px;padding:4px 6px;
- border-radius:10px;background:#221914d9;
+ width:clamp(140px,20%,236px);height:auto;justify-content:space-between;gap:0;padding:0;
+ border:0;border-radius:0;background:none;box-shadow:none;pointer-events:none;
 }
 #mw3dStage.mw3d-harbor .mw11-stage-hud .mw11-weapon-slot {
- flex:0 0 38px;width:38px;height:43px;border-radius:50%;
+ flex:0 0 clamp(32px,3.7vw,56px);width:clamp(32px,3.7vw,56px);height:auto;aspect-ratio:1;
+ border-radius:50%;pointer-events:auto;
 }
+#mw3dStage.mw3d-harbor .mw11-stage-hud .mw11-weapon-slot[data-equipped="false"]{visibility:hidden}
 #mw3dStage.mw3d-harbor .mw11-stage-hud .mw11-weapon-caption {display:none}
 #mw3dStage.mw3d-harbor .mw11-stage-hud .mw11-weapon-picture {inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);border-radius:50%}
-#mw3dStage.mw3d-harbor .mw11-3d-core,
-#mw3dStage.mw3d-harbor .mw11-3d-avatar {display:none}
-#mw3dStage.mw3d-harbor .mw11-3d-ability {flex:1;min-width:0}
+#mw3dStage.mw3d-harbor :is(.mw11-3d-core,.mw11-3d-avatar,.mw11-3d-status,.mw11-ability-title) {display:none}
+#mw3dStage.mw3d-harbor .mw11-3d-ability {flex:0 0 auto;min-width:0;pointer-events:auto}
 #mw3dStage.mw3d-harbor .mw11-ability-detail:empty {display:none}
 #mw3dStage.mw3d-harbor .mw11-stage-hud .mw3d-hero-power {
- width:100%!important;min-height:43px!important;padding-left:30px!important;
+ width:clamp(32px,3.7vw,56px)!important;min-height:0!important;aspect-ratio:1;
+ padding:0!important;border-radius:50%!important;
 }
-#mw3dStage.mw3d-harbor .mw11-stage-hud .mw3d-hero-power.mw3d-hero-ability-art::before {
- width:21px!important;height:21px!important;
+#mw3dStage.mw3d-harbor .mw11-stage-hud .mw3d-hero-power::before {
+ content:"✦";position:absolute;inset:0;display:grid;place-items:center;
+ color:#f9dfa7;font-size:19px;pointer-events:none;
 }
+#mw3dStage.mw3d-harbor .mw11-stage-hud .mw3d-hero-power.mw3d-hero-ability-art {
+ background:#162d38 var(--mw-ability-image) center/cover no-repeat!important;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud .mw3d-hero-power.mw3d-hero-ability-art::before {display:none}
+#mw3dStage.mw3d-harbor .mw11-stage-hud .mw11-ability-cost {
+ top:auto;right:-4px;bottom:-4px;transform:none;width:17px;height:17px;font-size:11px;
+}
+#mw3dStage.mw3d-harbor .mw3d-brand {display:none}
+#mw3dStage.mw3d-harbor .mw3d-top {justify-content:flex-end}
 #mw3dStage.mw3d-harbor .mw3d-object-label.stats {
  display:flex;justify-content:space-between;align-items:center;background:none;border:0;box-shadow:none;
 }

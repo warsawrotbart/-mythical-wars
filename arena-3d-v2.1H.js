@@ -424,6 +424,7 @@ function positionHarborHUD(point){
  };
  const clock=$("mw3dClock"),turn=stage.querySelector(".mw3d-turn");
  center(clock,H.anchors.clock);center(turn,H.anchors.turn);
+ const deckPanels=[];
  clock.style.scale="1";turn.style.scale="1";turn.style.right="auto";
  for(const owner of [0,1]){
   const own=owner===0,pref=own?"My":"Enemy";
@@ -432,12 +433,30 @@ function positionHarborHUD(point){
   if(d&&panel){
    panel.style.left=clamp(d.x-panel.offsetWidth/2,3,cw-panel.offsetWidth-3)+"px";
    panel.style.top=clamp(d.y+10,62,ch-76)+"px";
+   deckPanels.push(panel);
   }
   const group=stage.querySelector(".mw11-stage-hud."+(own?"own":"enemy"));
   const hero=point(H.anchors.heroes[owner]);
   if(hero&&group){
    group.style.left=clamp(hero.x-group.offsetWidth-46,3,cw-group.offsetWidth-3)+"px";
    group.style.top=clamp(hero.y-group.offsetHeight/2,55,ch-group.offsetHeight-30)+"px";
+  }
+ }
+ const halfTurn=turn.offsetHeight/2;
+ const overlapsDeck=deckPanels.some(panel=>
+  turn.offsetLeft<panel.offsetLeft+panel.offsetWidth &&
+  turn.offsetLeft+turn.offsetWidth>panel.offsetLeft &&
+  turn.offsetTop-halfTurn<panel.offsetTop+panel.offsetHeight+6 &&
+  turn.offsetTop+halfTurn>panel.offsetTop-6);
+ if(overlapsDeck&&deckPanels.length===2){
+  const [upper,lower]=deckPanels.sort((a,b)=>a.offsetTop-b.offsetTop);
+  const gapStart=upper.offsetTop+upper.offsetHeight+6;
+  const gapEnd=lower.offsetTop-6;
+  if(gapEnd-gapStart>=turn.offsetHeight){
+   turn.style.top=clamp(turn.offsetTop,gapStart+halfTurn,gapEnd-halfTurn)+"px";
+  }else{
+   const deckLeft=Math.min(upper.offsetLeft,lower.offsetLeft);
+   turn.style.left=Math.max(3,deckLeft-turn.offsetWidth-8)+"px";
   }
  }
 }

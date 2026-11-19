@@ -61,16 +61,17 @@ let manaHome=null;
 function placeSharedControls(){
  if(enabled){
   turnControl.append(endTurnButton);
-  const mana=workspace.querySelector('.mw02-mana[data-owner="0"]');
-  if(harbor&&mana&&!manaHome){
-   manaHome=mana.parentElement;
-   stage.append(mana);
+  if(harbor&&!manaHome){
+   const panels=[...workspace.querySelectorAll(".battle-main .mw02-mana")];
+   if(panels.length){
+    manaHome=panels[0].parentElement;
+    stage.append(...panels);
+   }
   }
  }else{
   endTurnHome.append(endTurnButton);
   if(manaHome){
-   const mana=stage.querySelector('.mw02-mana[data-owner="0"]');
-   if(mana){
+   for(const mana of stage.querySelectorAll(".mw02-mana")){
     mana.style.removeProperty("left");mana.style.removeProperty("top");
     manaHome.append(mana);
    }
@@ -472,17 +473,30 @@ function positionHarborHUD(point){
   if(hero&&group){
    group.style.left=clamp(hero.x-group.offsetWidth/2,3,cw-group.offsetWidth-3)+"px";
    group.style.top=clamp(hero.y-group.offsetHeight/2-(own?8:0),55,ch-group.offsetHeight-30)+"px";
-   const mana=own&&stage.querySelector('.mw02-mana[data-owner="0"]');
+   const mana=stage.querySelector('.mw02-mana[data-owner="'+owner+'"]');
    if(mana){
     mana.style.left=clamp(group.offsetLeft+group.offsetWidth+6,4,cw-mana.offsetWidth-4)+"px";
     mana.style.top=group.offsetTop+(group.offsetHeight-mana.offsetHeight)/2+"px";
+    const footer=!own&&panel?.querySelector(".mw3d-deck-footer");
+    if(footer){
+     const manaRight=mana.offsetLeft+mana.offsetWidth;
+     const footerLeft=panel.offsetLeft+footer.offsetLeft;
+     if(footerLeft<manaRight&&footerLeft+footer.offsetWidth>mana.offsetLeft){
+      if(manaRight+footer.offsetWidth+12<=cw){
+       footer.style.left=manaRight+8-panel.offsetLeft+"px";
+      }else{
+       const aboveMana=mana.offsetTop-footer.offsetHeight-6;
+       footer.style.top=Math.max(4,aboveMana)-panel.offsetTop+"px";
+      }
+     }
+    }
    }
   }
  }
  if(deckPanels.length===2){
-  const deckX=Math.min(...deckPanels.map(panel=>panel.offsetLeft+panel.offsetWidth/2));
-  turn.style.left=clamp(deckX-turn.offsetWidth/2,3,cw-turn.offsetWidth-3)+"px";
-  turn.style.top=Math.round((deckPanels[0].offsetTop+deckPanels[1].offsetTop)/2)+"px";
+  const deckX=Math.max(...deckPanels.map(panel=>panel.offsetLeft+panel.offsetWidth/2));
+  turn.style.left=clamp(deckX-turn.offsetWidth*.32,3,cw-turn.offsetWidth-3)+"px";
+  turn.style.top=Math.round((deckPanels[0].offsetTop+deckPanels[1].offsetTop)/2-10)+"px";
  }
  const halfTurn=turn.offsetHeight/2;
  const overlapsDeck=deckPanels.some(panel=>
@@ -498,7 +512,9 @@ function positionHarborHUD(point){
    turn.style.top=clamp(turn.offsetTop,gapStart+halfTurn,gapEnd-halfTurn)+"px";
   }else{
    const deckLeft=Math.min(upper.offsetLeft,lower.offsetLeft);
-   turn.style.left=Math.max(3,deckLeft-turn.offsetWidth-8)+"px";
+   const deckRight=Math.max(...deckPanels.map(panel=>panel.offsetLeft+panel.offsetWidth));
+   turn.style.left=(deckRight+turn.offsetWidth+8<=cw
+    ?deckRight+5:Math.max(3,deckLeft-turn.offsetWidth-8))+"px";
   }
  }
 }
@@ -804,7 +820,7 @@ function tick(stamp){
   const rx=harbor?(oval?1.01:.78):0;
   const tilt=M.rotX(rx);
   const topPos=[pos[0],pos[1]+(n.kind==="hero"?.085:.041)*tilt[5],pos[2]+(n.kind==="hero"?.085:.041)*tilt[6]];
-  if(!(harbor&&n.kind==="hero"&&n.owner===0)){
+  if(!(harbor&&n.kind==="hero")){
    drawBox(pos,[w,n.kind==="hero"?.16:.075,depth],body,null,n.ry,rx,oval,0,oval);
    drawBox(topPos,[w*.988,.001,depth*.988],[1,1,1,n.opacity],textures.has(n.tex)?n.tex:"back",n.ry,rx,true,harbor?(n.kind==="hero"?.83:.60):(n.kind==="hero"?.10:.40),oval);
   }

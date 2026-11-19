@@ -103,7 +103,7 @@ const TARGETS={
  "CHR-001":"any-minion","CHR-008":"own-minion","CHR-025":"own-minion",
  "NEU-013":"own-peasant","NEU-015":"enemy-minion","NEU-023":"any",
  "NCR-018":"own-minion","NCR-019":"enemy-minion","NCR-020":"any-minion",
- "NCR-023":"own-minion","NCR-024":"enemy-weak","NCR-028":"own-minion",
+ "NCR-023":"own-minion","NCR-024":"enemy-weak",
  "KNZ-017":"own-minion","CHR-024":"enemy-minion","CHR-036":"enemy-minion","NCR-010":"enemy-minion",
  "CHR-015":"own-minion","KNZ-037":"own-minion","ZAV-005":"enemy-minion","CHR-031":"enemy-minion",
  "NEU-048":"any"
@@ -1021,9 +1021,9 @@ function resolveSpell(s,o,c,t,choices=null){
      kind:"remove-hp",owner:o,targetUid:m.uid,amount:2,remainingStarts:1});
    break;
   case "NCR-024":destroyMinion(s,t.owner,t.uid);break;
-  case "NCR-025":draw(s,o);draw(s,o);healHero(s,o,3);break;
+  case "NCR-025":adjustCorpses(s,o,-3,"Ритуал Дзяды");draw(s,o);draw(s,o);healHero(s,o,3);break;
   case "NCR-026":s.rituals.push({cardId:c.cardId,owner:o,progress:0});break;
-  case "NCR-028":s.scheduled.push({kind:"second-turn",cardId:c.cardId,ritual:true,owner:o,targetUid:m.uid,remainingStarts:2});break;
+  case "NCR-028":s.scheduled.push({kind:"second-turn",cardId:c.cardId,ritual:true,owner:o,remainingStarts:2});break;
   default:throw new Error("Нет обработчика заклинания "+c.cardId);
  }
 }
@@ -1179,9 +1179,7 @@ function onCardPlayed(s,o,card){
  }
  if(card.cardType==="spell"){
   const w=p.weapon;
-  if(w?.cardId==="NCR-030"&&card.spellForm==="Ритуал"){
-   draw(s,o);const before=clean(w);w.durability--;if(w.durability<=0)p.weapon=null;weaponEvent(s,o,before,"ritual");
-  }
+  // NCR-030 now triggers at the start of its owner turn; not on ritual play.
  }
 }
 function onEndTurn(s,o){
@@ -1220,6 +1218,13 @@ function onEndTurn(s,o){
  }
 }
 function onStartTurn(s,o){
+ const staff=player(s,o).weapon;
+ if(staff?.cardId==="NCR-030"){
+  drawRandomWhere(s,o,c=>c?.cardType==="spell"&&c.spellForm==="Ритуал");
+  const before=clean(staff);staff.durability--;
+  if(staff.durability<=0)player(s,o).weapon=null;
+  weaponEvent(s,o,before,"start-turn-ritual-search");
+ }
  // ЛІХАМАНКА: в начале собственного хода заражённого существа 1 урон.
  // Повторное заражение не создаёт неутверждённых дополнительных стеков.
  for(const m of [...player(s,o).board].filter(x=>x.infected===true))
@@ -1229,10 +1234,10 @@ function onStartTurn(s,o){
   task.remainingStarts--;
   if(task.remainingStarts>0)continue;
   const m=minion(s,o,task.targetUid);
-  if(m){
-   if(task.kind==="second-turn"){
-    addTimed(m,"night",0,o,1);addTimed(m,"attack",12,o,1);
-   }else if(task.kind==="remove-hp"){
+  if(task.kind==="second-turn"){
+   for(const unit of [...player(s,o).board])buff(s,unit,2,2);
+  }else if(m){
+   if(task.kind==="remove-hp"){
     buff(s,m,0,-task.amount);
     m.timed=m.timed.filter(t=>t.source!=="NCR-023");
     removeDead(s);

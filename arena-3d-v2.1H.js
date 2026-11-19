@@ -471,7 +471,7 @@ function positionHarborHUD(point){
   const hero=point(H.anchors.heroes[owner]);
   if(hero&&group){
    group.style.left=clamp(hero.x-group.offsetWidth/2,3,cw-group.offsetWidth-3)+"px";
-   group.style.top=clamp(hero.y-group.offsetHeight/2,55,ch-group.offsetHeight-30)+"px";
+   group.style.top=clamp(hero.y-group.offsetHeight/2-(own?8:0),55,ch-group.offsetHeight-30)+"px";
    const mana=own&&stage.querySelector('.mw02-mana[data-owner="0"]');
    if(mana){
     mana.style.left=clamp(group.offsetLeft+group.offsetWidth+6,4,cw-mana.offsetWidth-4)+"px";

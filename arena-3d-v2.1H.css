@@ -168,7 +168,7 @@
 }
 #mw3dStage.mw3d-harbor #mw3dTime {font-size:clamp(9px,1.1vw,17px)}
 #mw3dStage.mw3d-harbor #mw3dPhase {display:none}
-#mw3dStage.mw3d-harbor .mw3d-turn {width:clamp(76px,11.5%,154px);gap:0}
+#mw3dStage.mw3d-harbor .mw3d-turn {width:clamp(72px,10.5%,144px);gap:0}
 #mw3dStage.mw3d-harbor #mw3dTurnLabel {display:none}
 #battlePanelToggle{white-space:nowrap}
 body:not(:has(#battleWorkspace.mw3d-active:not([hidden]))) #battlePanelToggle{display:none}
@@ -282,6 +282,7 @@ body:not(:has(#battleWorkspace.mw3d-active:not([hidden]))) #battlePanelToggle{di
  visibility:visible;flex:0 0 var(--slot-size);width:var(--slot-size);
  border:0;background:url("battlefield-v02/hero/layers/weapon_frame.png") center/contain no-repeat;
 }
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-slot-icon {display:none}
 #mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-weapon-picture {inset:12%;width:76%;height:76%}
 #mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw3d-hero-power {
  width:var(--slot-size)!important;

@@ -18,6 +18,7 @@
 <script src="mw-test-art-catalog.js?v=0517" defer></script>
 <script src="mw-ready-art-v05S23.js?v=0523" defer></script>
 <script src="mw-necromancer-art.js?v=20261118" defer></script>
+<script src="mw-militia-art.js?v=20261119" defer></script>
 <script src="v05-card-finish.js" defer></script>
 <script src="v05-dynamic.js?v=0527" defer></script>
 <script src="v05-library-ui.js" defer></script>
@@ -26,7 +27,7 @@
 <body>
 <header class="bar">
   <div class="wordmark"><div class="mark">✦</div><div><strong>МИФИЧЕСКИЕ ВОЙНЫ</strong><span>Редактор карт · утверждённый стандарт v05</span></div></div>
-  <nav aria-label="Навигация"><span class="stage">v05.15 · редактор карт</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 162 + 7</a><details class="editor-help"><summary>Справка</summary><div class="editor-help-content">
+  <nav aria-label="Навигация"><span class="stage">v05.15 · редактор карт</span><a href="#libraryWorkbench">Импорт XLSX / CSV</a><a href="#syncWorkbench">Google Sheets</a><a href="#libraryWorkbench">Библиотека 167 + 12</a><details class="editor-help"><summary>Справка</summary><div class="editor-help-content">
 <strong>Работа с картой</strong>
 <p>Выбери карту слева и выдели слой на карте или в списке. Редактируй положение и свойства справа.</p>
 <p><kbd>Ctrl+Z</kbd> — отмена, <kbd>Ctrl+Shift+Z</kbd> — повторить; стрелки двигают слой.</p>
@@ -43,7 +44,7 @@
     <input id="jsonUpload" type="file" accept=".json,application/json">
     
     <div class="line"></div>
-    <label class="field-label" for="libSearch">Открыть карту из локальной библиотеки (162 + 7)</label>
+    <label class="field-label" for="libSearch">Открыть карту из локальной библиотеки (167 + 12)</label>
     <input id="libSearch" type="search" placeholder="ID или название">
     <label class="lib-art-filter"><input id="libOnlyWithArt" type="checkbox"> Только карты со встроенным артом</label>
     <select id="libSelect" size="6" aria-label="Карты и токены локальной библиотеки"></select>
@@ -147,7 +148,7 @@
 <section class="library-workbench" id="libraryWorkbench" aria-labelledby="libTitle">
   <div class="library-head">
     <div><span class="eyebrow">ПОДЭТАП 3 · БЕЗ ИЗМЕНЕНИЯ БОЕВОЙ БИБЛИОТЕКИ</span><h2 id="libTitle">Импорт библиотеки и сравнение изменений</h2>
-    <p class="muted">XLSX: читаются только листы «Карты» и «Токены»; CSV: можно загрузить оба файла вместе. Строгие 162 + 7 ID, 21 поле. Никакой загрузки на сервер.</p></div>
+    <p class="muted">XLSX: читаются только листы «Карты» и «Токены»; CSV: можно загрузить оба файла вместе. Строгие 167 + 12 ID, 21 поле. Никакой загрузки на сервер.</p></div>
     <div class="library-chip">v05 · только локально</div>
   </div>
   <div class="library-grid">

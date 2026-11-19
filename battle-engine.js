@@ -306,6 +306,9 @@ function useHeroPowerResolved(s,o,target=null){
  log(s,(o===0?"Игрок":"Бот")+" использует силу героя «"+check.name+"» ("+check.cost+" маны).",{kind:"hero-power",owner:o});
  return {ok:true,id:check.id};
 }
+const LEGACY_RULES="three-decks-2026-11-18";
+const CURRENT_RULES="militia-2026-11-19";
+const legacyRules=s=>s.contentVersion===LEGACY_RULES;
 function makeGame(deckA,deckB,catalog,opts={}){
  const seedHolder={randomState:(Number.isInteger(opts.seed)?opts.seed:Math.floor(Math.random()*4294967296))>>>0};
  const rng=opts.rng||(()=>seededRandom(seedHolder));
@@ -320,7 +323,7 @@ function makeGame(deckA,deckB,catalog,opts={}){
  for(const [id,card]of Object.entries(TOKENS))cards[id]=clean(card);
  const players=[deckA,deckB].map((d,owner)=>({
    classId:d.classId,deckName:d.name,health:30,
-   heroName:["approved-three-decks","demo-unlocked",APPROVED.heroes[d.classId]?.id].includes(opts.heroProfiles?.[owner])?APPROVED.heroes[d.classId]?.name||d.classId:d.classId,
+   heroName:opts.heroNames?.[owner]??(["approved-three-decks","demo-unlocked",APPROVED.heroes[d.classId]?.id].includes(opts.heroProfiles?.[owner])?APPROVED.heroes[d.classId]?.name||d.classId:d.classId),
    armor:d.classId==="Воин"&&["ragvalod","approved-three-decks"].includes(opts.heroProfiles?.[owner])?10:0,
    deck:shuffle(Object.entries(d.counts).flatMap(([id,q])=>Array(num(q)).fill(id)),rng),
    hand:[],board:[],discarded:[],graveyard:[],graveyardHistory:[],corpseLedger:[],
@@ -331,7 +334,7 @@ function makeGame(deckA,deckB,catalog,opts={}){
    nextSpiritDiscount:0,spiritDiscountThisTurn:0,nextSpellDiscount:0,enemySpellTax:0
  }));
  const s={serial:0,graveSerial:0,eventSerial:0,players,cards,turn:first,firstPlayer:first,
-    contentVersion:"three-decks-2026-11-18",time:opts.hour??Math.floor(rng()*24),timeMode:opts.timeMode||"off",
+    contentVersion:CURRENT_RULES,time:opts.hour??Math.floor(rng()*24),timeMode:opts.timeMode||"off",
     phase:"mulligan",winner:null,logs:[],events:[],turns:0,rng:opts.rng||null,randomState:seedHolder.randomState,
     rituals:[],scheduled:[],effectDepth:0,discoveryOffers:{},debugged:false,debugMode:false};
  log(s,"Подготовка партии. "+(first===0?"Первым ходит игрок.":"Первым ходит бот."));
@@ -446,7 +449,7 @@ function auraAttack(s,m,owner){
  const p=player(s,owner);let atk=s.turn===owner?-num(p.turnAttackReduction):0;
  for(const source of p.board){
   if(source.silenced)continue;
-  if(source.cardId==="KNZ-005"&&source!==m&&isDruzhina(m))atk++;
+  if(source.cardId==="KNZ-005"&&(legacyRules(s)||source!==m)&&isDruzhina(m))atk++;
   if(source.cardId==="NEU-007"&&source!==m&&isPeasant(m))atk++;
   if(source.cardId==="NEU-004"&&source===m&&p.board.some(isPeasant))atk++;
   if(source.cardId==="NCR-014"&&source!==m&&isUndead(m))atk++;
@@ -636,7 +639,8 @@ function friendlyDeath(s,o,m){
  s.rituals=s.rituals.filter(r=>!r.done);
 }
 function removeDead(s){
- s.scheduled=s.scheduled.filter(t=>!t.ritual||!!minion(s,t.owner,t.targetUid));
+ const hasRitualTarget=task=>!task.ritual||task.targetUid==null||!!minion(s,task.owner,task.targetUid);
+ s.scheduled=s.scheduled.filter(hasRitualTarget);
  const active=deathResolvers.get(s);
  if(active){collectDeaths(s,active);return;}
  const context={queue:[],waves:0};deathResolvers.set(s,context);
@@ -649,7 +653,7 @@ function removeDead(s){
   }
   if(context.waves>=35)log(s,"Защитное ограничение цепочки смертей.");
  }finally{deathResolvers.delete(s);}
- s.scheduled=s.scheduled.filter(t=>!t.ritual||!!minion(s,t.owner,t.targetUid));
+ s.scheduled=s.scheduled.filter(hasRitualTarget);
  checkEnd(s);
 }
 function collectDeaths(s,context){
@@ -677,6 +681,10 @@ function collectDeaths(s,context){
  }
 }
 function targetMode(s,o,card){
+ if(legacyRules(s)){
+  if(card.cardId==="KNZ-004")return "own-human";
+  if(card.cardId==="NCR-028")return "own-minion";
+ }
  if(card.cardId==="CHR-007"&&!isBright(s.time))return "enemy-minion";
  return TARGETS[card.cardId]||null;
 }
@@ -973,20 +981,24 @@ function resolveSpell(s,o,c,t,choices=null){
     break;
   }
   case "CHR-044":summonTokens(s,o,"TKN-008",3);break;
-  case "KNZ-004":buff(s,m,0,2);m.taunt=true;break;
+  case "KNZ-004":buff(s,m,0,2);if(!legacyRules(s)||isDay(s))m.taunt=true;break;
   case "KNZ-011":healMinion(s,t.owner,t.uid,4);if(isSpirit(m))buff(s,m,1,0);break;
   case "KNZ-014":damageMinion(s,t.owner,t.uid,p.weapon?5:3);break;
   case "KNZ-026":summonTokens(s,o,"TKN-001",3,isDay(s)?1:0);break;
   case "KNZ-031":
    for(const x of p.board.filter(isHuman)){buff(s,x,2,2);addTimed(x,"day",0,o,1);}break;
-  case "KNZ-036":summonTokens(s,o,"TKN-001",7,2,{taunt:true});break;
+  case "KNZ-036":{
+   const troops=summonTokens(s,o,"TKN-001",7,2,{taunt:true});
+   if(legacyRules(s))for(const troop of troops)addTimed(troop,"day",0,o,2);
+   break;
+  }
   case "KNZ-038":addTimed(m,"frozen",0,t.owner,1);if(!isDay(s))damageMinion(s,t.owner,t.uid,2);break;
   case "CHR-001":{const actual=m?.health||0;damageMinion(s,t.owner,t.uid,1);
     if(actual>0&&!minion(s,t.owner,t.uid))draw(s,o);break;}
   case "CHR-003":damageHero(s,o,2);p.spiritDiscountThisTurn=1;break;
   case "CHR-005":summonTokens(s,o,"TKN-002",2);break;
   case "CHR-008":destroyMinion(s,t.owner,t.uid);draw(s,o);draw(s,o);break;
-  case "CHR-010":areaDamage(s,s.players.flatMap((pl,i)=>pl.board.filter(x=>!isSpirit(x)).map(x=>[i,x])),isDay(s)?2:5);break;
+  case "CHR-010":areaDamage(s,s.players.flatMap((pl,i)=>pl.board.filter(x=>!isSpirit(x)).map(x=>[i,x])),isDay(s)?2:legacyRules(s)?3:5);break;
   case "CHR-018":
    for(const x of summonTokens(s,o,"TKN-003",3))addTimed(x,"night",0,o,2);
    for(const x of p.board.filter(isSpirit))if(!x.timed.some(y=>y.kind==="night"))addTimed(x,"night",0,o,2);
@@ -1021,9 +1033,9 @@ function resolveSpell(s,o,c,t,choices=null){
      kind:"remove-hp",owner:o,targetUid:m.uid,amount:2,remainingStarts:1});
    break;
   case "NCR-024":destroyMinion(s,t.owner,t.uid);break;
-  case "NCR-025":adjustCorpses(s,o,-3,"Ритуал Дзяды");draw(s,o);draw(s,o);healHero(s,o,3);break;
+  case "NCR-025":if(!legacyRules(s))adjustCorpses(s,o,-3,"Ритуал Дзяды");draw(s,o);draw(s,o);healHero(s,o,3);break;
   case "NCR-026":s.rituals.push({cardId:c.cardId,owner:o,progress:0});break;
-  case "NCR-028":s.scheduled.push({kind:"second-turn",cardId:c.cardId,ritual:true,owner:o,remainingStarts:2});break;
+  case "NCR-028":s.scheduled.push({kind:"second-turn",cardId:c.cardId,ritual:true,owner:o,targetUid:legacyRules(s)?m.uid:undefined,remainingStarts:2});break;
   default:throw new Error("Нет обработчика заклинания "+c.cardId);
  }
 }
@@ -1051,7 +1063,13 @@ function onMinionPlayed(s,o,m,target,choices=null){
      damageHero(s,0,5);damageHero(s,1,5);
     });
     removeDead(s);
-    igniteHands(s);removeDead(s);
+    if(legacyRules(s)){
+     for(const [owner,side] of s.players.entries()){
+      for(const h of side.hand)discardCard(s,owner,h.cardId,"burn","NEU-028");
+      side.hand=[];
+     }
+    }else igniteHands(s);
+    removeDead(s);
     break;
   }
   case "NEU-048":{
@@ -1060,7 +1078,7 @@ function onMinionPlayed(s,o,m,target,choices=null){
     break;
   }
   case "NEU-049":{
-    for(const [owner,side] of s.players.entries())for(const unit of [...side.board])if(isHuman(unit))buff(s,unit,1,1);
+    for(const side of s.players)for(const unit of side.board)if(isHuman(unit))buff(s,unit,1,1);
     break;
   }
   case "NEU-033":player(s,other(o)).nextTurnAttackReduction=num(player(s,other(o)).nextTurnAttackReduction)+2;break;
@@ -1096,9 +1114,16 @@ function onMinionPlayed(s,o,m,target,choices=null){
     const spirits=p.graveyard.filter(g=>!g.token&&s.cards[g.cardId]?.creatureTypeId==="Дух");
     const g=pick(s,spirits);if(g)addHandCard(s,o,{uid:uid(s),cardId:g.cardId,costAdjustment:-1},"graveyard");break;}
   case "KNZ-034":summonTokens(s,o,"TKN-001",2,0,{charge:true});break;
-  case "KNZ-035":for(const x of p.board.filter(x=>x.uid!==m.uid&&isHuman(x)))buff(s,x,4,4);break;
+  case "KNZ-035":{
+   const old=legacyRules(s),bonus=old?2:4;
+   for(const x of p.board.filter(isHuman)){
+    if(x!==m)buff(s,x,bonus,bonus);
+    if(old)addTimed(x,"day",0,o,2);
+   }
+   break;
+  }
   case "CHR-004":if(p.lastDamageTurn===s.turns)buff(s,m,1,1);break;
-  case "CHR-007":if(!isDay(s))damageMinion(s,other(o),target.uid,5);break;
+  case "CHR-007":if(!isDay(s))damageMinion(s,other(o),target.uid,legacyRules(s)?2:5);break;
   case "CHR-020":
    summonTokens(s,o,"TKN-002",7);
    for(const x of [...p.board].filter(x=>x!==m&&isSpirit(x)))buff(s,x,1,1);
@@ -1177,9 +1202,11 @@ function onCardPlayed(s,o,card){
    if(targets.length){w.lastTriggerTurn=s.turns;damageMinion(s,other(o),targets[0].uid,1);}
   }
  }
- if(card.cardType==="spell"){
-  const w=p.weapon;
-  // NCR-030 now triggers at the start of its owner turn; not on ritual play.
+ const staff=p.weapon;
+ if(legacyRules(s)&&staff?.cardId==="NCR-030"&&card.cardType==="spell"&&card.spellForm==="Ритуал"){
+  draw(s,o);const before=clean(staff);staff.durability--;
+  if(staff.durability<=0)p.weapon=null;
+  weaponEvent(s,o,before,"ritual");
  }
 }
 function onEndTurn(s,o){
@@ -1202,7 +1229,11 @@ function onEndTurn(s,o){
      if(!own.length)break;
      const lowest=Math.min(...own.map(x=>effectiveAttack(s,x)));
      const minima=own.filter(x=>effectiveAttack(s,x)===lowest);
-     const chosen=pick(s,minima);
+     if(legacyRules(s)&&minima.length>1){
+      log(s,"ЖЫЦЕНЬ: равная минимальная атака; выбор требует утверждения.",{kind:"rules-pending",owner:o});
+      break;
+     }
+     const chosen=minima.length===1?minima[0]:pick(s,minima);
      if(chosen){buff(s,chosen,1,1);
        log(s,"ЖЫЦЕНЬ усиливает "+chosen.name+" на +1/+1.",
          {kind:"buff",owner:o,cardId:chosen.cardId});}
@@ -1219,7 +1250,7 @@ function onEndTurn(s,o){
 }
 function onStartTurn(s,o){
  const staff=player(s,o).weapon;
- if(staff?.cardId==="NCR-030"){
+ if(!legacyRules(s)&&staff?.cardId==="NCR-030"){
   drawRandomWhere(s,o,c=>c?.cardType==="spell"&&c.spellForm==="Ритуал");
   const before=clean(staff);staff.durability--;
   if(staff.durability<=0)player(s,o).weapon=null;
@@ -1235,7 +1266,11 @@ function onStartTurn(s,o){
   if(task.remainingStarts>0)continue;
   const m=minion(s,o,task.targetUid);
   if(task.kind==="second-turn"){
-   for(const unit of [...player(s,o).board])buff(s,unit,2,2);
+   if(task.targetUid==null){
+    for(const unit of player(s,o).board)buff(s,unit,2,2);
+   }else if(m){
+    addTimed(m,"night",0,o,1);addTimed(m,"attack",12,o,1);
+   }
   }else if(m){
    if(task.kind==="remove-hp"){
     buff(s,m,0,-task.amount);
@@ -1574,7 +1609,7 @@ function importBattle(payload,opts={}){
    throw new Error("Неизвестный формат или версия сохранения партии.");
  if(JSON.stringify(payload).length>12*1024*1024)throw new Error("Сохранение слишком большое.");
  const raw=payload.game;
- if(raw?.contentVersion!=="three-decks-2026-11-18")throw new Error("Партия создана по другой версии правил. Старое сохранение не изменено; для новых правил начните новый тестовый бой.");
+ if(![LEGACY_RULES,CURRENT_RULES].includes(raw?.contentVersion))throw new Error("Партия создана по другой версии правил. Старое сохранение не изменено; для новых правил начните новый тестовый бой.");
  if(!raw||!Array.isArray(raw.players)||raw.players.length!==2||
     !raw.cards||typeof raw.cards!=="object"||Array.isArray(raw.cards)||
     !["mulligan","battle","ended"].includes(raw.phase)||

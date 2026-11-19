@@ -77,16 +77,15 @@ test("NEU-040 unique minimum gets +1/+1 at end of own turn",()=>{
  E.endTurn(s,0);
  assert.equal(m.attack,before+1);
 });
-test("NEU-040 ties do not invent selection ordering",()=>{
+test("NEU-040 buffs exactly one randomly chosen minimum when tied",()=>{
  const s=game("NEU-040");
  E.setDeveloperMode(s,true);
  E.debugAction(s,{type:"summon",owner:0,cardId:"NEU-040",definition:catalog.get("NEU-040")});
  E.debugAction(s,{type:"summon",owner:0,cardId:"KNZ-002",definition:catalog.get("KNZ-002")});
  E.debugAction(s,{type:"summon",owner:0,cardId:"KNZ-002",definition:catalog.get("KNZ-002")});
- const min=s.players[0].board.filter(m=>m.cardId==="KNZ-002").map(m=>m.attack);
+ const min=s.players[0].board.filter(m=>m.cardId==="KNZ-002").map(m=>m.attack).sort();
  E.endTurn(s,0);
- assert.deepEqual(s.players[0].board.filter(m=>m.cardId==="KNZ-002").map(m=>m.attack),min);
- assert.ok(s.events.some(e=>e.kind==="rules-pending"));
+ assert.deepEqual(s.players[0].board.filter(m=>m.cardId==="KNZ-002").map(m=>m.attack).sort(),[min[0],min[1]+1]);
 });
 test("replay of real bot-vs-bot actions recovers exactly identical state",()=>{
  const s=E.makeGame(decks[0],decks[2],catalog,{seed:914,firstPlayer:0,hour:14});

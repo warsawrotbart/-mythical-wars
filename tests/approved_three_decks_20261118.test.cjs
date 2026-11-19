@@ -4,10 +4,13 @@ require('../card-catalog.js');
 const E=require('../battle-engine.js'),D=require('../deck-model.js');
 const snapshot=require('./fixtures/approved_three_decks_2026-11-18.json');
 const catalog=new Map(MW_CANONICAL_CARDS.map(c=>[c.cardId,c]));
-function fixture(classId='Некромант',hour=21){
+const legacyCatalog=new Map(catalog);
+for(const card of snapshot.cards)legacyCatalog.set(card.cardId,{...catalog.get(card.cardId),...card});
+function fixture(classId='Некромант',hour=21,legacy=false){
  const deck={classId,name:'functional fixture',counts:{'KNZ-002':30}};
  const s=E.makeGame(deck,deck,catalog,{seed:18,firstPlayer:0,hour,timeMode:'floor',heroProfiles:['approved-three-decks','approved-three-decks']});
- E.confirmMulligan(s,[]);s.cards={...Object.fromEntries(catalog),...E.TOKEN_DATA};
+ if(legacy)s.contentVersion='three-decks-2026-11-18';
+ E.confirmMulligan(s,[]);s.cards={...Object.fromEntries(legacy?legacyCatalog:catalog),...E.TOKEN_DATA};
  for(const p of s.players){p.hand=[];p.deck=Array(50).fill('KNZ-002');p.mana=p.maxMana=10;}
  return s;
 }
@@ -19,9 +22,7 @@ const own=m=>({kind:'minion',owner:0,uid:m.uid});
 const enemy=m=>({kind:'minion',owner:1,uid:m.uid});
 function kill(s,m){cast(s,'NCR-018',own(m));}
 function choose(s,id){const h={uid:'choice'+(++s.serial),cardId:id,costAdjustment:0};s.players[0].hand.push(h);s.players[0].mana=10;const spec=E.actionStatus(s,0,h.uid);assert.equal(spec.ok,true,spec.reason);return {h,choices:E.botChoices(spec.choice)};}
-test('all 62 selected card definitions match the approved source snapshot',()=>{
- assert.equal(snapshot.cards.length,62);
- for(const card of snapshot.cards)for(const field of Object.keys(card))assert.deepEqual(catalog.get(card.cardId)[field],card[field],card.cardId+' '+field);
+test('all three approved deck compositions validate against the current library',()=>{
  for(const deck of MW_APPROVED_EXAMPLE_DECKS){assert.equal(D.validateDeck(deck,catalog).ok,true);assert.equal(Object.values(deck.counts).reduce((a,b)=>a+b,0),30);for(const id of Object.keys(deck.counts))assert.equal(E.abilitySupport(catalog.get(id)),'complete',id);}
 });
 test('test profile assigns the approved heroes without granting campaign powers',()=>{
@@ -57,7 +58,7 @@ test('normal death plus explicit deathrattle grants two corpses',()=>{
 });
 test('resurrection for corpses preserves no-base-corpse but permits explicit extra deathrattle',()=>{
  const s=fixture(),p=s.players[0];kill(s,cast(s,'NCR-002'));p.corpses=6;
- const {h,choices}=choose(s,'NCR-027');assert.equal(E.playCard(s,0,h.uid,null,choices).ok,true);const revived=p.board[0];assert.equal(revived.summonedWithCorpses,true);assert.equal(p.corpses,0);assert.equal(p.graveyard.length,0);kill(s,revived);assert.equal(p.corpses,1);
+ const {h,choices}=choose(s,'NCR-027');assert.equal(E.playCard(s,0,h.uid,null,choices).ok,true);const revived=p.board[0];assert.equal(revived.summonedWithCorpses,true);assert.equal(p.corpses,1);assert.equal(p.graveyard.length,0);kill(s,revived);assert.equal(p.corpses,2);
 });
 test('Prarodzitca fills on each own end, not on opponent end, and never overfills',()=>{
  const s=fixture('Чернокнижник'),p=s.players[0],mother=cast(s,'CHR-045');E.endTurn(s,0);assert.equal(p.board.length,7);assert(p.board.filter(m=>m!==mother).every(m=>m.cardId==='TKN-009'&&m.health===2&&!m.ready));p.board.pop();E.endTurn(s,1);assert.equal(p.board.length,6);E.endTurn(s,0);assert.equal(p.board.length,7);
@@ -75,16 +76,16 @@ test('Kashchei produces needle; needle revives base Kashchei without another dea
  const s=fixture(),p=s.players[0];kill(s,cast(s,'NCR-015'));assert(p.hand.some(h=>h.cardId==='TKN-007'));const needle=p.hand.find(h=>h.cardId==='TKN-007');const spec=E.actionStatus(s,0,needle.uid);assert.equal(spec.ok,true);assert.equal(E.playCard(s,0,needle.uid,null,E.botChoices(spec.choice)).ok,true);const revived=p.board[0];assert.equal(revived.noDeathrattle,true);assert.equal(revived.health,8);kill(s,revived);assert.equal(p.hand.some(h=>h.cardId==='TKN-007'),false);
 });
 test('three waiting rituals block a fourth without payment, immediate rituals remain legal',()=>{
- const s=fixture(),p=s.players[0];for(let i=0;i<3;i++)cast(s,'NCR-026');const h={uid:'fourth',cardId:'NCR-026',costAdjustment:0};p.hand.push(h);const before=p.mana;assert.equal(E.playCard(s,0,h.uid).ok,false);assert.equal(p.mana,before);assert(p.hand.includes(h));p.corpses=3;cast(s,'NCR-025');assert.equal(p.corpses,3);
+ const s=fixture(),p=s.players[0];for(let i=0;i<3;i++)cast(s,'NCR-026');const h={uid:'fourth',cardId:'NCR-026',costAdjustment:0};p.hand.push(h);const before=p.mana;assert.equal(E.playCard(s,0,h.uid).ok,false);assert.equal(p.mana,before);assert(p.hand.includes(h));p.corpses=3;cast(s,'NCR-025');assert.equal(p.corpses,0);
 });
-test('Great Vigil tracks exact instance and cancels on return, not a later new summon',()=>{
- const s=fixture(),p=s.players[0],m=cast(s,'NCR-005');p.corpses=10;cast(s,'NCR-028',own(m));assert.equal(s.scheduled.filter(x=>x.ritual).length,1);E.returnToHand(s,0,m.uid);assert.equal(s.scheduled.filter(x=>x.ritual).length,0);const next=cast(s,'NCR-005');E.endTurn(s,0);E.endTurn(s,1);E.endTurn(s,0);E.endTurn(s,1);assert.equal(next.attack,2);
+test('Legacy Great Vigil tracks exact instance and cancels on return, not a later new summon',()=>{
+ const s=fixture('Некромант',21,true),p=s.players[0],m=cast(s,'NCR-005');p.corpses=10;cast(s,'NCR-028',own(m));assert.equal(s.scheduled.filter(x=>x.ritual).length,1);E.returnToHand(s,0,m.uid);assert.equal(s.scheduled.filter(x=>x.ritual).length,0);const next=cast(s,'NCR-005');E.endTurn(s,0);E.endTurn(s,1);E.endTurn(s,0);E.endTurn(s,1);assert.equal(next.attack,2);
 });
-test('Great Vigil resolves at second next own start and survives save/restore',()=>{
- let s=fixture(),p=s.players[0],m=cast(s,'NCR-005');p.corpses=10;cast(s,'NCR-028',own(m));s=E.importBattle(E.exportBattle(s));p=s.players[0];m=p.board[0];E.endTurn(s,0);E.endTurn(s,1);assert.equal(E.effectiveAttack(s,m),2);E.endTurn(s,0);E.endTurn(s,1);assert.equal(E.effectiveAttack(s,m),14);E.endTurn(s,0);assert.equal(E.effectiveAttack(s,m),2);
+test('Legacy Great Vigil resolves at second next own start and survives save/restore',()=>{
+ let s=fixture('Некромант',21,true),p=s.players[0],m=cast(s,'NCR-005');p.corpses=10;cast(s,'NCR-028',own(m));s=E.importBattle(E.exportBattle(s));p=s.players[0];m=p.board[0];E.endTurn(s,0);E.endTurn(s,1);assert.equal(E.effectiveAttack(s,m),2);E.endTurn(s,0);E.endTurn(s,1);assert.equal(E.effectiveAttack(s,m),14);E.endTurn(s,0);assert.equal(E.effectiveAttack(s,m),2);
 });
-test('dragon excludes itself, hits both heroes and immediately discards both hands',()=>{
- const s=fixture('Воин',12),p=s.players[0];p.hand.push({uid:'victim',cardId:'KNZ-002',costAdjustment:0});s.players[1].hand.push({uid:'enemy',cardId:'KNZ-002',costAdjustment:0});const m=cast(s,'NEU-028');assert.equal(m.health,10);assert.equal(p.armor,5);assert.equal(s.players[1].armor,5);assert.equal(p.hand.length,0);assert.equal(s.players[1].hand.length,0);assert.equal(p.discarded.length,1);
+test('dragon excludes itself, hits both heroes and sets both hands on fire',()=>{
+ const s=fixture('Воин',12),p=s.players[0];p.hand.push({uid:'victim',cardId:'KNZ-002',costAdjustment:0});s.players[1].hand.push({uid:'enemy',cardId:'KNZ-002',costAdjustment:0});const m=cast(s,'NEU-028');assert.equal(m.health,10);assert.equal(p.armor,5);assert.equal(s.players[1].armor,5);assert.equal(p.hand[0].burnTurnsLeft,2);assert.equal(s.players[1].hand[0].burnTurnsLeft,2);assert.equal(p.discarded.length,0);
 });
 test('spell damage doubles against an unfavourable creature before armor',()=>{
  const s=fixture('Чернокнижник',12),m=cast(s,'CHR-041');m.armor=1;cast(s,'NEU-023',own(m));assert.equal(m.armor,0);assert.equal(m.health,4);
@@ -107,8 +108,24 @@ test('Hungry Kasna heals actual combat damage and gains Swarm stats after killin
 test('Enraged Kasna gains attack only on first survived damage per turn with Swarm',()=>{
  const s=fixture('Чернокнижник'),m=cast(s,'CHR-041');cast(s,'CHR-039');cast(s,'NEU-023',own(m));assert.equal(m.attack,4);cast(s,'NEU-023',own(m));assert.equal(m.attack,4);E.endTurn(s,0);s.turn=0;cast(s,'NEU-023',own(m));assert.equal(m.attack,5);
 });
-test('staff draws at ritual play, not again on completion; Tрызна tracks subsequent deaths',()=>{
- const s=fixture(),p=s.players[0];cast(s,'NCR-030');const before=p.hand.length;cast(s,'NCR-026');assert.equal(p.hand.length,before+1);assert.equal(p.weapon.durability,2);kill(s,cast(s,'NCR-005'));kill(s,cast(s,'NCR-005'));assert.equal(s.rituals.length,0);assert.equal(p.corpses,5);assert.equal(p.weapon.durability,2);
+test('staff draws a ritual and loses durability at the start of its owner’s turn',()=>{
+ const s=fixture(),p=s.players[0];
+ cast(s,'NCR-030');p.deck.splice(1,0,'NCR-026');
+ cast(s,'NCR-026');assert.equal(p.hand.length,0);assert.equal(p.weapon.durability,3);
+ kill(s,cast(s,'NCR-005'));kill(s,cast(s,'NCR-005'));
+ assert.equal(s.rituals.length,0);assert.equal(p.corpses,5);assert.equal(p.weapon.durability,3);
+ E.endTurn(s,0);E.endTurn(s,1);
+ assert.equal(p.weapon.durability,2);assert(p.hand.some(h=>h.cardId==='NCR-026'));
+});
+test('Great Vigil survives save and buffs the current friendly board on the second own start',()=>{
+ let s=fixture(),p=s.players[0],initial=cast(s,'NCR-005');
+ p.corpses=10;cast(s,'NCR-028');assert.equal(s.scheduled.length,1);
+ E.returnToHand(s,0,initial.uid);
+ cast(s,'NCR-005');cast(s,'NCR-005');
+ s=E.importBattle(E.exportBattle(s));p=s.players[0];
+ E.endTurn(s,0);E.endTurn(s,1);assert.deepEqual(p.board.map(m=>m.attack),[2,2]);
+ E.endTurn(s,0);E.endTurn(s,1);assert.deepEqual(p.board.map(m=>m.attack),[4,4]);
+ assert.equal(s.scheduled.length,0);
 });
 test('simultaneous creature deaths credit only each controlling side',()=>{
  const s=fixture();cast(s,'NCR-005');s.turn=1;cast(s,'NCR-005');s.turn=0;cast(s,'NCR-022');assert.equal(s.players[0].corpses,1);assert.equal(s.players[1].corpses,1);assert.equal(s.players[0].graveyard.length,1);assert.equal(s.players[1].graveyard.length,1);

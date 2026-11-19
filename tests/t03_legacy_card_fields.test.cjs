@@ -32,7 +32,8 @@ const str=v=>blank(v)?"":String(v);
 const number=v=>blank(v)?null:Number(v);
 function expected(r){
  const res=str(r[17]);
- if(!["Мана","Трупы"].includes(res))throw Error(r[0]+": неизвестный ресурс "+res);
+ if(res&&!["Мана","Трупы"].includes(res))throw Error(r[0]+": неизвестный ресурс "+res);
+ if(!res)assert.equal(number(r[16]),null,r[0]+": blank source cost resource must have blank cost");
  return {
   cardId:String(r[0]),name:String(r[1]),cardType:cardType[r[4]],classId:str(r[13]),
   rarityId:rarityId(r[3]),costType:res==="Трупы"?"corpses":"mana",
@@ -73,8 +74,12 @@ test("T03: original mana/corpse price and printed mana column are consistent",()
   const c=byId.get(r[0]);
   assert.equal(c.costValue,number(r[16]),r[0]+" effective cost");
   assert.equal(c.costType,r[17]==="Трупы"?"corpses":"mana",r[0]+" effective resource");
-  if(c.costType==="mana")
+  if(c.costType==="mana"&&!blank(r[17]))
    assert.equal(c.costValue,number(r[2]),r[0]+" printed mana differs from source price");
+  if(blank(r[17])){
+   assert.equal(c.costValue,null,r[0]+" special unpriced card");
+   assert.equal(c.maxCopies,0,r[0]+" not allowed in constructed deck");
+  }
  }
 });
 

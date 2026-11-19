@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="battle-card-hybrid-v2.1C.css">
 <link rel="stylesheet" href="battle-arena-art-v2.1D.css">
 <link rel="stylesheet" href="card-workflow-v2.1G.css">
-<link rel="stylesheet" href="arena-3d-v2.1H.css?v=harbor01">
+<link rel="stylesheet" href="arena-3d-v2.1H.css?v=harbor02">
 <link rel="stylesheet" href="ui-refactor-v2.1J.css">
 <link rel="stylesheet" href="hero-hud-v2.1K.css">
 <link rel="stylesheet" href="arena-layout-v2.1L.css">
@@ -58,6 +58,7 @@
   <a href="v05-dynamic.html" class="mw-v05-std-link" title="Единственный редактор карт: библиотека, арт, экспорт PNG">✦ Редактор карт</a>
   <button data-app-mode="decks" class="active">▤ Конструктор колод</button>
   <button data-app-mode="battle">⚔ Тестовый бой</button>
+  <button type="button" id="battlePanelToggle" aria-controls="battleTopPanel battleInfoDrawer" aria-expanded="true" hidden>Свернуть панель боя</button>
   <span class="mode-caption">Автономный режим · данные из библиотеки карт</span>
 </nav>
 <section id="mwCollectionWorkspace" hidden aria-label="Коллекция карт"><div id="mwCollectionApp"></div></section>
@@ -392,7 +393,7 @@
 </section>
 
 <section id="battleWorkspace" class="battle-workspace" hidden>
-  <div class="battle-topbar">
+  <div class="battle-topbar" id="battleTopPanel">
     <div><span class="section-eyebrow">ОФЛАЙН · ТЕСТОВЫЙ РЕЖИМ</span><h2>Проверка колод в бою</h2></div>
     <details class="battle-settings-drawer" id="battleSettingsDrawer">
       <summary title="Параметры тестовой партии">⚙ Параметры боя <span aria-hidden="true">▾</span></summary>
@@ -852,7 +853,7 @@
 <script src="arena-art-v2.1D.js"></script>
 <script src="arena-3d-math-v2.1H.js"></script>
 <script src="arena-3d-harbor.js?v=harbor01"></script>
-<script src="arena-3d-v2.1H.js?v=0516&amp;harbor=01"></script>
+<script src="arena-3d-v2.1H.js?v=0516&amp;harbor=02"></script>
 <script src="hero-hud-v05S11.js?v=0511"></script>
 <script src="battle-storage.js?v=20261118"></script>
 <script src="mw-q010-data.js?v=20261119"></script>

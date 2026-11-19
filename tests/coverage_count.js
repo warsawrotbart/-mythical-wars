@@ -1,4 +1,4 @@
-// Registry census for 167 canonical cards; no external packages.
+// Registry census for 162 canonical cards; no external packages.
 global.window=global;
 const path=require("node:path");
 const root=path.resolve(__dirname,"..");
@@ -10,8 +10,8 @@ for(const c of global.MW_CANONICAL_CARDS){
  counts[status]=(counts[status]||0)+1;
 }
 console.log("Effect coverage:",counts);
-if(global.MW_CANONICAL_CARDS.length!==167||
-   counts.complete!==146||counts.partial!==21||(counts.unavailable||0)!==0){
+if(global.MW_CANONICAL_CARDS.length!==162||
+   counts.complete!==141||counts.partial!==21||(counts.unavailable||0)!==0){
  console.error("Unexpected coverage — audit this release.");
  process.exitCode=1;
 }

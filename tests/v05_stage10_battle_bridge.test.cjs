@@ -22,8 +22,8 @@ function fromRecord(id){
   rarityId:{Common:'common',Green:'standard',Blue:'rare',Purple:'epic',Gold:'legendary'}[d.rarity_key]||'common',
   costValue:d.cost,attack:d.attack,health:d.health,durability:d.durability,ability:d.description};
 }
-test('all 179 cards have a normalized v05 representation',()=>{
- assert.equal(cards.cards.length+cards.tokens.length,179);
+test('all 174 cards have a normalized v05 representation',()=>{
+ assert.equal(cards.cards.length+cards.tokens.length,174);
  for(const row of [...cards.cards,...cards.tokens]){
   const mapped=bridge.toV05(fromRecord(row.id));
   assert.equal(mapped.id,row.id);

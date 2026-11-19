@@ -22,9 +22,9 @@ function game(id,ownerClass="Воин"){
  R.capture(s);
  return s;
 }
-test("canonical catalog has no structural errors; 167 cards indexed",()=>{
- const c=A.auditCatalog(cards);assert.equal(c.count,167);assert.equal(c.errors.length,0);
- assert.equal(c.stats.creature+c.stats.spell+c.stats.weapon,167);
+test("canonical catalog has no structural errors; 162 cards indexed",()=>{
+ const c=A.auditCatalog(cards);assert.equal(c.count,162);assert.equal(c.errors.length,0);
+ assert.equal(c.stats.creature+c.stats.spell+c.stats.weapon,162);
 });
 test("all three source decks pass strict 30-card validation",()=>{
  const a=A.auditDecks(decks,catalog);assert.equal(a.count,3);assert.equal(a.invalid,0);

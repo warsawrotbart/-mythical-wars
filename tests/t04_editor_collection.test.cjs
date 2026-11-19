@@ -34,6 +34,7 @@ test("T04 legacy 162-card v05 snapshot migrates additively without changing save
  customized.name="МОЯ ПРЕЖНЯЯ КАРТА";
  customized.attack=5;
  customized.notes="Рабочая локальная заметка";
+ customized.flavor_text=null;
  const before=JSON.stringify(old);
  const upgraded=lib.validateSnapshot(old,baseline);
  assert.equal(JSON.stringify(old),before,"validation must not mutate persisted snapshot");
@@ -44,6 +45,7 @@ test("T04 legacy 162-card v05 snapshot migrates additively without changing save
  assert.equal(recovered.name,customized.name);
  assert.equal(recovered.attack,5);
  assert.equal(recovered.notes,customized.notes);
+ assert.equal(recovered.flavor_text,"Шчыт яшчэ новы. Прысяга ўжо дадзена.");
  for(const id of legacyIds){
   assert.deepEqual(upgraded.cards.find(c=>c.id===id),baseline.cards.find(c=>c.id===id));
  }

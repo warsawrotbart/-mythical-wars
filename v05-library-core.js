@@ -135,6 +135,9 @@ function normalizeSeed(seed,manifest){
  const cards=normalizeSheet({rows:seed.cards},"cards",manifest),tokens=normalizeSheet({rows:seed.tokens},"tokens",manifest);
  const errors=[...cards.issues,...tokens.issues].filter(x=>x.severity==="error");
  if(errors.length)throw Error("Ошибка встроенной библиотеки: "+errors[0].message);
+ for(const record of [...cards.records,...tokens.records]){
+  record.flavor_text=clean(seed.flavorById?.[record.id]);
+ }
  return {version:1,cards:cards.records,tokens:tokens.records};
 }
 const LEGACY_CARD_COUNT=162;
@@ -150,14 +153,25 @@ function validateSnapshot(snapshot,baseline){
    throw Error("Локальная библиотека содержит чужие или повторные ID: "+kind);
  }
  if(snapshot.tokens.length!==REQUIRED.tokens)throw Error("Локальная библиотека неполная: tokens");
- if(snapshot.cards.length===REQUIRED.cards)return snapshot;
+ const withFlavor=(kind,records)=>{
+  const defaults=new Map(baseline[kind].map(record=>[record.id,record.flavor_text]));
+  return records.map(record=>record.flavor_text==null&&defaults.get(record.id)
+   ?{...record,flavor_text:defaults.get(record.id)}
+   :record);
+ };
+ const tokens=withFlavor("tokens",snapshot.tokens);
+ if(snapshot.cards.length===REQUIRED.cards){
+  const cards=withFlavor("cards",snapshot.cards);
+  if(cards.every((record,i)=>record===snapshot.cards[i])&&tokens.every((record,i)=>record===snapshot.tokens[i]))return snapshot;
+  return {...snapshot,cards,tokens};
+ }
  if(snapshot.cards.length!==LEGACY_CARD_COUNT)throw Error("Локальная библиотека неполная: cards");
  // Only the known 162 -> 167 upgrade is permitted: never discard or rewrite a saved card.
  const existing=new Map(snapshot.cards.map(card=>[card.id,card]));
  const missing=baseline.cards.filter(card=>!existing.has(card.id)).map(card=>card.id);
  if(missing.length!==MILITIA_IDS.length||missing.some(id=>!MILITIA_IDS.includes(id)))
    throw Error("Локальная библиотека неполная или содержит неожиданные пропуски: cards");
- return {...snapshot,cards:baseline.cards.map(card=>existing.get(card.id)||card)};
+ return {...snapshot,cards:withFlavor("cards",baseline.cards.map(card=>existing.get(card.id)||card)),tokens};
 }
 function diffRecords(before,after,kind){
  const old=new Map(before.map(x=>[x.id,x]));
@@ -184,6 +198,8 @@ function prepare(current,sheets,manifest){
   for(const item of parsed.records)if(!existingIds.has(item.id))issues.push(issue("error","unknown-id",`Неизвестный ID ${item.id}: новые карты требуют отдельного согласования`,item.id,null));
   const incoming=new Set(parsed.records.map(x=>x.id));
   for(const id of existingIds)if(!incoming.has(id))issues.push(issue("error","missing-id",`В файле отсутствует исходный ID: ${id}`,id,null));
+  const flavorById=new Map(current[sheet.kind].map(record=>[record.id,record.flavor_text]));
+  for(const record of parsed.records)record.flavor_text=flavorById.get(record.id)??null;
   next[sheet.kind]=parsed.records;
   included.push(sheet.kind);
   diff.push(...diffRecords(current[sheet.kind],parsed.records,sheet.kind));

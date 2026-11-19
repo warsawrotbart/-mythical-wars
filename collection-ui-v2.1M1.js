@@ -6,7 +6,7 @@
  if(!core)throw new Error("MW_COLLECTION_CORE must be loaded first");
  const esc=s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;")
    .replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
- const safeImg=s=>typeof s==="string" && (/^(data:image\/(?:png|webp|jpeg|gif);base64,|blob:)/i.test(s)||/^test-art\/[A-Z]{3}-\d{3}\.(?:webp|png)$/.test(s)||/^v05\/[A-Z]{3}-\d{3}\/[A-Z]{3}-\d{3}_art_source\.png$/.test(s))?s:"";
+ const safeImg=s=>typeof s==="string" && (/^(data:image\/(?:png|webp|jpeg|gif);base64,|blob:)/i.test(s)||/^assets\/[A-Z]{3}-\d{3}_art_v\d{2}\.png$/.test(s)||/^test-art\/[A-Z]{3}-\d{3}\.(?:webp|png)$/.test(s)||/^v05\/[A-Z]{3}-\d{3}\/[A-Z]{3}-\d{3}_art_source\.png$/.test(s))?s:"";
  const filters={query:"",classId:"all",type:"all",art:"all",frame:"all",scope:"all"};
  let isOpen=false;
  let rows=[];

@@ -51,9 +51,30 @@
 #mw3dPhase{font:14px Arial,sans-serif;color:#dcc798}
 #mw3dStage .mw3d-turn{position:absolute;right:20px;top:43%;transform:translateY(-50%);display:flex;align-items:center;flex-direction:column;gap:9px}
 #mw3dTurnLabel{font:12px Arial,sans-serif;letter-spacing:.03em;background:#101f29c9;border-radius:8px;padding:5px 8px}
-#mw3dStage #mw3dEnd{width:106px;height:106px;border:4px double #ccb078;border-radius:50%;font:bold 17px/1.3 Georgia,serif;
- color:#fff2c8;background:radial-gradient(circle at 45% 35%,#226151,#0c302c 75%);box-shadow:0 6px 15px #0008}
-#mw3dStage #mw3dEnd:disabled{background:radial-gradient(#35423f,#1d282a);opacity:.55}
+#mw3dStage .mw3d-turn #battleEndTurn {
+ width:100%;height:auto;min-width:0;min-height:0;aspect-ratio:1;
+ position:relative;isolation:isolate;border:0;border-radius:50%;padding:18%;box-shadow:none;
+ background:url("battlefield-v02/board_assets/ART-18_end_turn_idle.png") center/contain no-repeat;
+ color:#fff6d8;font:800 clamp(10px,1.13vw,18px)/1.15 Georgia,serif;
+ white-space:normal;text-shadow:0 2px 4px #000;
+}
+#mw3dStage .mw3d-turn #battleEndTurn::before {
+ content:"";position:absolute;inset:16%;border-radius:50%;z-index:-1;
+ background:radial-gradient(circle at 35% 25%,#526069,#20282e 65%,#10191e);
+ box-shadow:inset 0 0 14px #050c10;pointer-events:none;
+}
+#mw3dStage .mw3d-turn #battleEndTurn[data-mw02-turn="ready"]::before {
+ background:radial-gradient(circle at 35% 25%,#f5d965,#b28113 65%,#5f4109);
+}
+#mw3dStage .mw3d-turn #battleEndTurn[data-mw02-turn="complete"]::before {
+ background:radial-gradient(circle at 35% 25%,#50b95e,#12602b 65%,#063b1d);
+}
+#mw3dStage .mw3d-turn #battleEndTurn:hover:not(:disabled) {
+ background-image:url("battlefield-v02/board_assets/ART-18_end_turn_hover.png");
+}
+#mw3dStage .mw3d-turn #battleEndTurn:disabled {
+ background-image:url("battlefield-v02/board_assets/ART-18_end_turn_disabled.png");opacity:.85;
+}
 #mw3dStage .mw3d-hero-summary{position:absolute;left:20px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;
  max-width:230px;padding:10px 12px;border-left:2px solid #b09a6c;background:linear-gradient(90deg,#0a1722ed,#0a172255);pointer-events:auto}
 #mw3dStage .mw3d-hero-summary.enemy{top:80px}
@@ -147,15 +168,8 @@
 }
 #mw3dStage.mw3d-harbor #mw3dTime {font-size:clamp(9px,1.1vw,17px)}
 #mw3dStage.mw3d-harbor #mw3dPhase {display:none}
-#mw3dStage.mw3d-harbor .mw3d-turn {width:clamp(75px,13%,156px);gap:4px}
-#mw3dStage.mw3d-harbor .mw3d-turn #mw3dEnd {
- width:100%;height:auto;min-height:43px;aspect-ratio:1.8;
- border:4px double #dcb875;border-radius:40% / 62%;
- font:bold clamp(10px,1.05vw,18px)/1.1 Georgia,serif;color:#fff3cd;text-shadow:0 1px 3px #000;
- background:linear-gradient(#8fbe57,#347523 30%,#133b16 58%,#4b852b 83%,#9bad50);
-}
-#mw3dStage.mw3d-harbor .mw3d-turn #mw3dEnd:disabled {filter:saturate(.45);opacity:.66}
-#mw3dStage.mw3d-harbor #mw3dTurnLabel {padding:3px 5px;font-size:10px;white-space:nowrap}
+#mw3dStage.mw3d-harbor .mw3d-turn {width:clamp(72px,10.5%,144px);gap:0}
+#mw3dStage.mw3d-harbor #mw3dTurnLabel {display:none}
 #battlePanelToggle{white-space:nowrap}
 body:not(:has(#battleWorkspace.mw3d-active:not([hidden]))) #battlePanelToggle{display:none}
 #mw3dStage.mw3d-harbor .mw3d-deck-panel {
@@ -167,8 +181,22 @@ body:not(:has(#battleWorkspace.mw3d-active:not([hidden]))) #battlePanelToggle{di
  color:#fff4d1;background:#23190fea;font-size:12px;
 }
 #mw3dStage.mw3d-harbor :is(#mw3dMyMana,#mw3dEnemyMana){display:none}
-#mw3dStage.mw3d-harbor .mw3d-deck-footer {gap:3px;margin:0}
-#mw3dStage.mw3d-harbor .mw3d-deck-footer :is(button,span) {min-width:30px;padding:2px 4px}
+#mw3dStage .mw3d-deck-footer {display:grid;grid-template-columns:auto auto auto auto;align-items:center}
+#mw3dStage.mw3d-harbor .mw3d-deck-footer {
+ position:absolute;display:grid;grid-template-columns:auto auto;gap:3px 5px;margin:0;padding:0;align-items:center;
+}
+#mw3dStage .mw3d-deck-footer :is(.mw3d-grave-icon,.mw3d-corpse-icon) {
+ width:clamp(22px,2.1vw,34px);height:clamp(24px,2.3vw,36px);
+ min-width:0;min-height:0;padding:0!important;background-position:center;background-size:contain;
+}
+#mw3dStage.mw3d-harbor .mw3d-deck-footer :is(.mw3d-grave-icon,.mw3d-corpse-icon) {
+ min-width:0;min-height:0;padding:0!important;background-position:center;background-size:contain;
+ border:0;background-color:transparent;
+}
+#mw3dStage .mw3d-resource-count {
+ min-width:19px;padding:2px 4px;text-align:center;border:1px solid #a88150;border-radius:5px;
+ background:#23190fea;color:#fff4d1;font:800 12px/1 Georgia,serif;
+}
 #mw3dStage.mw3d-harbor .mw11-stage-hud {
  width:clamp(140px,20%,236px);height:auto;justify-content:space-between;gap:0;padding:0;
  border:0;border-radius:0;background:none;box-shadow:none;pointer-events:none;
@@ -211,3 +239,82 @@ body:not(:has(#battleWorkspace.mw3d-active:not([hidden]))) #battlePanelToggle{di
 #mw3dStage.mw3d-harbor .mw3d-stat-attack {background:#81481b}
 #mw3dStage.mw3d-harbor .mw3d-stat-health {background:#702521}
 #mw3dStage.mw3d-harbor .mw3d-object-label.hero-label {background:#23190fea;color:#fbefcf;font-size:12px}
+
+
+/* Framed hero, equipment and mana use the same artwork as the 2D battlefield. */
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own {
+ --hero-size:clamp(68px,10vw,144px);
+ --slot-size:clamp(34px,5.9vw,80px);
+ width:calc(var(--hero-size) + 2 * var(--slot-size) + 10px);
+ gap:5px;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-3d-core {
+ display:flex;flex:0 0 var(--hero-size);
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-3d-avatar {
+ position:relative;display:block;flex:0 0 var(--hero-size);width:var(--hero-size);height:var(--hero-size);
+ overflow:visible;border:0;border-radius:0;box-shadow:none;background:none;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-3d-avatar::after {
+ content:"";position:absolute;inset:0;
+ background:url("battlefield-v02/hero/layers/hero_frame.png") center/contain no-repeat;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-3d-portrait {
+ position:absolute;inset:12%;width:76%;height:76%;border-radius:50%;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own[data-warrior="true"] .mw11-3d-avatar {
+ background:url("battlefield-v02/hero/layers/hero_portrait_masked.png") center/contain no-repeat;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own[data-warrior="true"] .mw11-3d-portrait {opacity:0}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own :is(.mw3d-hero-summary,.mw11-3d-stats){display:none!important}
+#mw3dStage .mw3d-hero-health,#mw3dStage .mw3d-hero-armor {
+ position:absolute;bottom:0;z-index:1;width:27%;height:27%;display:grid;place-items:center;
+ color:#fff8e9;font:800 clamp(11px,1.3vw,20px)/1 Georgia,serif;text-shadow:0 1px 3px #000;
+}
+#mw3dStage .mw3d-hero-health {
+ left:7%;background:url("battlefield-v02/hero/layers/hero_hp.png") center/contain no-repeat;
+}
+#mw3dStage .mw3d-hero-armor {
+ right:7%;background:url("battlefield-v02/hero/layers/hero_armor.png") center/contain no-repeat;
+}
+#mw3dStage:not(.mw3d-harbor) :is(.mw3d-hero-health,.mw3d-hero-armor){display:none}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-weapon-slot {
+ visibility:visible;flex:0 0 var(--slot-size);width:var(--slot-size);
+ border:0;background:url("battlefield-v02/hero/layers/weapon_frame.png") center/contain no-repeat;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-slot-icon {display:none}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-weapon-picture {inset:12%;width:76%;height:76%}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw3d-hero-power {
+ width:var(--slot-size)!important;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud[data-warrior="true"][data-phase="day"] .mw3d-hero-power {
+ background:url("battlefield-v02/hero/layers/power_frame_day.png") center/contain no-repeat,
+            url("battlefield-v02/hero/layers/power_art_day.png") center/74% 74% no-repeat!important;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud[data-warrior="true"][data-phase="night"] .mw3d-hero-power {
+ background:url("battlefield-v02/hero/layers/power_frame_night.png") center/contain no-repeat,
+            url("battlefield-v02/hero/layers/power_art_night.png") center/74% 74% no-repeat!important;
+}
+#mw3dStage.mw3d-harbor .mw11-stage-hud[data-warrior="true"] .mw3d-hero-power::before{display:none}
+#mw3dStage.mw3d-harbor .mw11-stage-hud.own .mw11-ability-cost {
+ top:-8%;right:34%;bottom:auto;width:32%;height:30%;border:0;
+ background:url("battlefield-v02/hero/layers/power_cost.png") center/contain no-repeat;
+}
+#mw3dStage.mw3d-harbor .mw02-mana {
+ position:absolute;z-index:8;width:clamp(83px,19%,282px);height:clamp(20px,3vw,43px);
+ display:flex;align-items:center;padding:0 clamp(6px,1.2vw,16px) 0 clamp(26px,4vw,62px);pointer-events:none;
+ background:url("battlefield-v02/board_assets/ART-12_resource_panel.png") center/100% 100% no-repeat;
+}
+#mw3dStage.mw3d-harbor .mw02-mana-value {
+ position:absolute;left:5%;color:#eff5ff;font:800 clamp(10px,1.5vw,20px)/1 Georgia,serif;
+}
+#mw3dStage.mw3d-harbor .mw02-mana-gems {display:flex;margin-left:0!important;gap:1px!important;width:100%}
+#mw3dStage.mw3d-harbor .mw02-mana-gem {
+ flex:0 1 18px;min-width:0;aspect-ratio:1;background:url("battlefield-v02/board_assets/ART-13_mana_empty.png") center/contain no-repeat;
+}
+#mw3dStage.mw3d-harbor .mw02-mana-gem.filled {
+ background-image:url("battlefield-v02/board_assets/ART-13_mana_full.png");
+}
+@media(max-width:680px){
+ #mw3dStage.mw3d-harbor .mw02-mana {padding:0 10px 0 26px;height:24px}
+}

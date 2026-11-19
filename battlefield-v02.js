@@ -218,7 +218,6 @@
   }
   function renderTurnControl(game,{busy=false}={}){
     const button=byId('battleEndTurn');if(!button||!workspace)return;
-    if(workspace.classList.contains('mw3d-active')){button.textContent='Завершить ход';return;}
     // Keep the displayed owner/color until the current animation has finished.
     // Disable immediately, including on the first frame of an end-turn command.
     if(busy&&button.dataset.mw02Turn){button.disabled=true;return;}

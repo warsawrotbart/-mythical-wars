@@ -57,6 +57,7 @@
       const core=node("div","mw11-3d-core");
       const avatar=node("div","mw11-3d-avatar");
       const portrait=node("img","mw11-3d-portrait");portrait.alt="Портрет героя";portrait.draggable=false;avatar.append(portrait);
+      if(own)avatar.append(node("span","mw3d-hero-health"),node("span","mw3d-hero-armor"));
       const health=node("div","mw11-3d-stats");
       const status=node("span","mw11-3d-status");
       core.append(avatar,summary,health);
@@ -164,6 +165,12 @@
       if(art&&portrait?.getAttribute("src")!==art){portrait.src=art;portrait.hidden=false;}
       else if(!art&&portrait){portrait.removeAttribute("src");portrait.hidden=true;}
       if(portrait)portrait.alt="Портрет героя "+nameFor(game,owner);
+      strip.dataset.phase=phase;
+      const frameHealth=strip.querySelector(".mw3d-hero-health");
+      const frameArmor=strip.querySelector(".mw3d-hero-armor");
+      if(frameHealth)frameHealth.textContent=String(player.health);
+      if(frameArmor)frameArmor.textContent=String(player.armor||0);
+      strip.dataset.warrior=String(player.classId==="Воин");
       const summary=strip.querySelector(".mw3d-hero-summary");
       const health=strip.querySelector(".mw11-3d-stats");
       if(health)health.textContent="♥ "+player.health+(player.armor?"  ◈ "+player.armor:"");

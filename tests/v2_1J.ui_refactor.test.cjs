@@ -22,7 +22,8 @@ test('3D uses board-anchored hero/deck information and compact turn button',()=>
  assert.match(src,/id="mw3dEnemyCorpses"/);
  assert.match(src,/id="mw3dMyGrave"/);
  assert.match(src,/id="mw3dPower"/);
- assert.match(src,/Завершить<br>ход/);
+ assert.match(src,/turnControl\.append\(endTurnButton\)/);
+ assert.doesNotMatch(src,/id="mw3dEnd"/);
  assert.doesNotMatch(src,/Завершить ход\s*→/);
 });
 test('inspector only holds complete rendered card, not enlarged standalone illustration',()=>{

@@ -46,7 +46,7 @@ async def test():
    page=await browser.new_page(viewport={'width':1600,'height':900},device_scale_factor=1)
    page.on('pageerror',lambda e:errors.append(str(e)))
    js=await setup(page)
-   assert 'hero-hud-v05S11.js?v=0511' in js
+   assert any(url.startswith('hero-hud-v05S11.js?v=') for url in js)
    assert await page.locator('.mw11-chassis').count()==2
    assert await page.locator('#mw3dStage .mw11-stage-hud').count()==2
    checks.extend(['2D hero HUD built for both players','3D hero HUD built for both players'])

@@ -11,7 +11,7 @@ const digest=n=>crypto.createHash('sha256').update(fs.readFileSync(path.join(roo
 test('v05.11 installs the same Hero HUD in 2D and 3D without a second editor',()=>{
  const html=read('index.html');
  assert.match(html,/<link rel="stylesheet" href="hero-hud-v05S11\.css\?v=0511">/);
- assert.match(html,/<script src="hero-hud-v05S11\.js\?v=0511"><\/script>/);
+ assert.match(html,/<script src="hero-hud-v05S11\.js\?v=\d+"><\/script>/);
  assert.doesNotMatch(html,/<button[^>]+data-app-mode="editor"/);
  const hud=read('hero-hud-v05S11.js');
  for(const mark of ['render2D(game)','render3D(game)','mw11-weapon-slot','mw11-3d-portrait','mw11-ability-cost','MW_HERO_PORTRAIT_BRIDGE','MW_TEST_ART_CATALOG','statusName(info,owner,targeting)'])

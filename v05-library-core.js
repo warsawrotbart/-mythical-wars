@@ -40,7 +40,7 @@ const TYPE_MAP={"существо":"Creature","оружие":"Weapon","закл�
 const TIME_MAP={"дзень":"Day","ноч":"Night","day":"Day","night":"Night"};
 const RACE_MAP={"чалавек":"Human","нежыць":"Undead","дух":"Spirit","дракон":"Dragon","нечысць":"Demon","абаротні":"Shapeshifter","звер":"Beast","human":"Human","undead":"Undead","spirit":"Spirit","dragon":"Dragon","demon":"Demon","shapeshifter":"Shapeshifter","beast":"Beast"};
 const KIND_LABEL={cards:"Карты",tokens:"Токены"};
-const REQUIRED={cards:162,tokens:12};
+const REQUIRED={cards:167,tokens:12};
 function key(v){return String(v??"").trim().toLocaleLowerCase("ru").replace(/ё/g,"е").replace(/[\s\p{P}\p{S}_]+/gu,"")}
 function clean(v){if(v===null||v===undefined)return null;const s=String(v).replace(/\r\n?/g,"\n").trim();return EMPTY.has(s)?null:s}
 function own(obj,k){return Object.prototype.hasOwnProperty.call(obj||{},k)}

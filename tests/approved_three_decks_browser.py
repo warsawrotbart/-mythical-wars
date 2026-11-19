@@ -11,6 +11,8 @@ async def main():
         await page.goto('http://127.0.0.1:8765/index.html',wait_until='domcontentloaded')
         await page.wait_for_function('window.MW_DECK_TEST && window.MW_BATTLE_VIEW_BRIDGE',timeout=30000)
         await page.locator('[data-app-mode="battle"]').click()
+        await page.locator('#mw02ToolsMenu > summary').click()
+        await page.locator('#battleSettingsDrawer > summary').click()
         results=[]
         for cls,deck,name in [('Воин','sample-warrior','Рагвалод'),('Чернокнижник','sample-warlock','Велімір'),('Некромант','sample-necro','Чернобог')]:
             await page.select_option('#battleMyDeck',deck)

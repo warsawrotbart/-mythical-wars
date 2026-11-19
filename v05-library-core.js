@@ -137,15 +137,27 @@ function normalizeSeed(seed,manifest){
  if(errors.length)throw Error("Ошибка встроенной библиотеки: "+errors[0].message);
  return {version:1,cards:cards.records,tokens:tokens.records};
 }
+const LEGACY_CARD_COUNT=162;
+const MILITIA_IDS=Object.freeze(["NEU-045","NEU-046","NEU-047","NEU-048","NEU-049"]);
 function validateSnapshot(snapshot,baseline){
  if(!snapshot||snapshot.version!==1||!Array.isArray(snapshot.cards)||!Array.isArray(snapshot.tokens))throw Error("Неизвестный формат локальной библиотеки");
+ if(!baseline||!Array.isArray(baseline.cards)||!Array.isArray(baseline.tokens))throw Error("Отсутствует эталон библиотеки");
+ // Validate every ID before attempting a backwards-compatible migration.
  for(const kind of ["cards","tokens"]){
-  const ids=new Set(baseline[kind].map(x=>x.id));
-  if(snapshot[kind].length!==REQUIRED[kind])throw Error("Локальная библиотека неполная: "+kind);
-  const currentIds=snapshot[kind].map(x=>x.id);
-  if(new Set(currentIds).size!==REQUIRED[kind]||currentIds.some(id=>!ids.has(id)))throw Error("Локальная библиотека содержит чужие или повторные ID: "+kind);
+  const allowed=new Set(baseline[kind].map(x=>x.id));
+  const currentIds=snapshot[kind].map(x=>x?.id);
+  if(new Set(currentIds).size!==currentIds.length||currentIds.some(id=>!allowed.has(id)))
+   throw Error("Локальная библиотека содержит чужие или повторные ID: "+kind);
  }
- return snapshot;
+ if(snapshot.tokens.length!==REQUIRED.tokens)throw Error("Локальная библиотека неполная: tokens");
+ if(snapshot.cards.length===REQUIRED.cards)return snapshot;
+ if(snapshot.cards.length!==LEGACY_CARD_COUNT)throw Error("Локальная библиотека неполная: cards");
+ // Only the known 162 -> 167 upgrade is permitted: never discard or rewrite a saved card.
+ const existing=new Map(snapshot.cards.map(card=>[card.id,card]));
+ const missing=baseline.cards.filter(card=>!existing.has(card.id)).map(card=>card.id);
+ if(missing.length!==MILITIA_IDS.length||missing.some(id=>!MILITIA_IDS.includes(id)))
+   throw Error("Локальная библиотека неполная или содержит неожиданные пропуски: cards");
+ return {...snapshot,cards:baseline.cards.map(card=>existing.get(card.id)||card)};
 }
 function diffRecords(before,after,kind){
  const old=new Map(before.map(x=>[x.id,x]));

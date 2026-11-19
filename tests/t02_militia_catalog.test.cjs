@@ -90,3 +90,13 @@ test("T02: all five are playable neutral creature definitions with two-copy limi
   for(const heroClass of model.CLASSES)assert.equal(model.allowedForClass(c,heroClass),true,id+" in "+heroClass);
  }
 });
+
+test("T02: v05 editor normalizes 167 canonical cards and 12 separate tokens",()=>{
+ const lib=require("../v05-library-core.js");
+ const manifest=require("../v05/production/editor_manifest.json");
+ const normalized=lib.normalizeSeed(global.MW_V05_LIBRARY_SEED,manifest);
+ assert.equal(lib.REQUIRED.cards,167);
+ assert.equal(normalized.cards.length,167);
+ assert.equal(normalized.tokens.length,12);
+ assert.deepEqual(normalized.cards.map(x=>x.id).sort(),[...fromSource.keys()].sort());
+});

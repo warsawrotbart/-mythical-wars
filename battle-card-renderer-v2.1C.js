@@ -15,7 +15,7 @@ const clone=x=>JSON.parse(JSON.stringify(x));
 const sane=v=>String(v??"");
 const cleanImg=s=>typeof s==="string"&&(/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/i.test(s)||
  /^assets\/[A-Za-z0-9_.-]+\.(?:png|jpeg|webp)$/i.test(s)||
- /^test-art\/[A-Z]{3}-\d{3}\.webp$/.test(s)||
+ /^test-art\/[A-Z]{3}-\d{3}\.(?:webp|png)$/.test(s)||
  /^v05\/[A-Z]{3}-\d{3}\/[A-Z]{3}-\d{3}_art_source\.png$/.test(s))?s:"";
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const num=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;

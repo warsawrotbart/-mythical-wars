@@ -21,7 +21,7 @@ const clamp=(v,l,h)=>Math.max(l,Math.min(h,v));
 const read=x=>String(x??"");
 const maybe=x=>x===undefined||x===null||x===""?null:x;
 const validArt=s=>typeof s==="string"&&(
- /^test-art\/[A-Z]{3}-\d{3}\.webp$/.test(s)||
+ /^test-art\/[A-Z]{3}-\d{3}\.(?:webp|png)$/.test(s)||
  /^v05\/[A-Z]{3}-\d{3}\/[A-Z]{3}-\d{3}_art_source\.png$/.test(s)||
  /^data:image\/(?:png|jpeg|webp);base64,[\w+/=]+$/i.test(s)||
  /^blob:https?:\/\//i.test(s)||

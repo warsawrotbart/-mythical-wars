@@ -224,7 +224,7 @@ try{
   const f=localStorage.getItem("mw-art-fit-v1.9");
   if(["contain","cover"].includes(f))artFit=f;
 }catch(_){}
-const safeDataImage=s=>typeof s==="string"&&(/^data:image\/(?:png|jpeg|webp);base64,[\w+/=]+$/i.test(s)||/^assets\/[\w.-]+\.(?:png|jpeg|webp)$/i.test(s)||/^test-art\/[A-Z]{3}-\d{3}\.webp$/.test(s)||/^v05\/[A-Z]{3}-\d{3}\/[A-Z]{3}-\d{3}_art_source\.png$/.test(s))?s:"";
+const safeDataImage=s=>typeof s==="string"&&(/^data:image\/(?:png|jpeg|webp);base64,[\w+/=]+$/i.test(s)||/^assets\/[\w.-]+\.(?:png|jpeg|webp)$/i.test(s)||/^test-art\/[A-Z]{3}-\d{3}\.(?:webp|png)$/.test(s)||/^v05\/[A-Z]{3}-\d{3}\/[A-Z]{3}-\d{3}_art_source\.png$/.test(s))?s:"";
 function applyBattleVisualSettings(){
   const field=$("battleWorkspace");
   if(field){field.style.setProperty("--battle-scale",String(visualScale));field.dataset.artFit=artFit;}

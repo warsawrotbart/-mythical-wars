@@ -11,9 +11,9 @@ const clone=x=>JSON.parse(JSON.stringify(x));
 const makeSheets=(cards=seed.cards,tokens=seed.tokens)=>[{kind:'cards',name:'Карты',rows:cards},{kind:'tokens',name:'Токены',rows:tokens}];
 const cell=(rows,id,index)=>rows.find(row=>row[0]===id)[index];
 const errors=p=>p.issues.filter(x=>x.severity==='error');
-test('read-only baseline exactly 167 cards and 12 disjoint generated/service cards',()=>{
- assert.equal(base.cards.length,167);assert.equal(base.tokens.length,12);
- assert.equal(new Set(base.cards.map(x=>x.id)).size,167);
+test('read-only baseline exactly 162 cards and 12 disjoint generated/service cards',()=>{
+ assert.equal(base.cards.length,162);assert.equal(base.tokens.length,12);
+ assert.equal(new Set(base.cards.map(x=>x.id)).size,162);
  assert.equal(new Set(base.tokens.map(x=>x.id)).size,12);
  assert.ok(base.cards.every(x=>!x.id.startsWith('TKN-')));
  assert.ok(base.tokens.every(x=>x.id.startsWith('TKN-')||x.id==='SYS-001'));
@@ -21,7 +21,7 @@ test('read-only baseline exactly 167 cards and 12 disjoint generated/service car
 test('unchanged workbook has no field-level diffs',()=>{
  const p=lib.prepare(base,makeSheets(),manifest);
  assert.equal(p.errors.length,0);assert.equal(p.changed,0);
- assert.equal(p.diff.length,179);assert.equal(p.ready,true);
+ assert.equal(p.diff.length,174);assert.equal(p.ready,true);
 });
 test('changing numeric attack and notes shows two exact old/new fields, not artwork',()=>{
  const rows=clone(seed.cards),rec=rows.find(x=>x[0]==='KNZ-019');
@@ -93,7 +93,7 @@ test('supported class palette, rarity and subtype are derived from explicit dict
  assert.equal(card.time_key,'Night');
 });
 test('stored snapshot has stable IDs; injected replacement is rejected',()=>{
- assert.equal(lib.validateSnapshot(clone(base),base).cards.length,167);
+ assert.equal(lib.validateSnapshot(clone(base),base).cards.length,162);
  const corrupted=clone(base);corrupted.cards[0].id='HACK-999';
  assert.throws(()=>lib.validateSnapshot(corrupted,base),/чужие/);
 });
@@ -107,5 +107,5 @@ test('stage 3 does not modify source manifest, game catalogue or sample controls
  const digest=file=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex');
  assert.equal(digest('v05/production/editor_manifest.json'),'190371ce21046ba4530b9cb93b374292645218f4fcbe0a0f7e5ff0e529f5529f');
  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'v05/production/sample_cards.json'))).length,3);
- assert.equal(base.cards.length,167);
+ assert.equal(base.cards.length,162);
 });

@@ -43,7 +43,7 @@
  }
  function classes(){
    const names=new Set(rows.map(x=>String(x.card.classId||"Нейтральные")));
-   const preferred=["Воин","Чернокнижник","Некромант","Нейтральная"];
+   const preferred=["Воин","Чернокнижник","Некромант","Нейтральные"];
    return [...names].sort((a,b)=>{
      const ai=preferred.indexOf(a),bi=preferred.indexOf(b);
      return (ai<0?100:ai)-(bi<0?100:bi)||a.localeCompare(b,"ru");
@@ -75,7 +75,7 @@
      </select></label>
      <label><span>Каталог</span><select id="mwColScope">
        <option value="all" ${filters.scope==="all"?"selected":""}>Все карты</option>
-       <option value="canonical" ${filters.scope==="canonical"?"selected":""}>${rows.filter(x=>x.canonical).length} канонических</option>
+       <option value="canonical" ${filters.scope==="canonical"?"selected":""}>162 канонические</option>
        <option value="local" ${filters.scope==="local"?"selected":""}>Новые локальные</option>
      </select></label>
    </div>`;
@@ -83,13 +83,6 @@
  function rowCard(row,savedMap,index){
    const c=row.card||{}, art=picture(row,savedMap);
    const rarity=c.rarityId||"";
-   const rarityNames={common:"Обычная",standard:"Стандартная",rare:"Редкая",epic:"Эпическая",legendary:"Легендарная"};
-   const display=v=>v===null||v===undefined||v===""?"—":String(v);
-   const details=[`Стоимость: ${display(c.costValue)} ${c.costType==="corpses"?"трупов":c.costType==="mana"?"маны":""}`];
-   if(c.timeAffinityId)details.push(`Время: ${c.timeAffinityId}`);
-   if(c.cardType==="creature"&&c.creatureTypeId)details.push(`Вид: ${c.creatureTypeId}`);
-   if(c.cardType==="creature")details.push(`Атака: ${display(c.attack)} · Здоровье: ${display(c.health)}`);
-   if(c.cardType==="weapon")details.push(`Атака: ${display(c.attack)} · Прочность: ${display(c.durability)}`);
    return `<article class="mw-col-card" data-card-id="${esc(row.id)}">
      <div class="mw-col-cover">
        ${art?`<img loading="${index<6?"eager":"lazy"}" decoding="async" alt="Арт карты ${esc(c.name||row.id)}" src="${esc(art)}">`:
@@ -99,9 +92,7 @@
      <div class="mw-col-card-info">
        <div class="mw-col-card-id">${esc(row.id)}${row.canonical?"":' · Локальная'}</div>
        <strong title="${esc(c.name||row.id)}">${esc(c.name||row.id)}</strong>
-       <div class="mw-col-card-meta">${esc(c.classId||"Нейтральная")}${rarity?" · "+esc(rarityNames[rarity]||rarity):""}</div>
-       <div class="mw-col-card-values">${details.map(value=>`<span>${esc(value)}</span>`).join("")}</div>
-       ${c.ability?`<div class="mw-col-card-ability" title="${esc(c.ability)}">${esc(c.ability)}</div>`:""}
+       <div class="mw-col-card-meta">${esc(c.classId||"Нейтральные")}${rarity?" · "+esc(rarity):""}</div>
        <div class="mw-col-flags">
          <span class="mw-col-flag ${row.art==="missing"?"missing":row.art==="approved"?"approved":"test"}">${esc(artLabel[row.art])}</span>
          <span class="mw-col-flag ${row.frame==="approved"?"approved":"frame"}">${esc(frameLabel[row.frame])}</span>

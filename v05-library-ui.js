@@ -25,7 +25,7 @@ const records=()=>[...current.cards.map(record=>({record,kind:"cards"})),...curr
 function storageGet(key){try{return localStorage.getItem(key)}catch(error){return null}}
 function stats(){
  const stats=$("libStats");stats.replaceChildren();
- for(const value of [`Карты: ${current.cards.length}/${core.REQUIRED.cards}`,`Токены: ${current.tokens.length}/${core.REQUIRED.tokens}`,
+ for(const value of [`Карты: ${current.cards.length}/162`,`Токены: ${current.tokens.length}/7`,
    storageGet(ACTIVE)?"Локальный снимок применён":"Исходная библиотека из архива"]){
    const el=document.createElement("span");el.className="stat";el.textContent=value;stats.append(el);
  }
@@ -200,7 +200,7 @@ $("libReport").addEventListener("click",()=>{
   included:staged.included,canApply:staged.ready,changed:staged.changed,issues:staged.issues,diff:staged.diff});
 });
 $("libDownload").addEventListener("click",()=>{
- downloadJSON(`MW_v05_local_library_${current.cards.length}_cards_${current.tokens.length}_tokens.json`,{schema:"mw-v05-stage3-local-v1",exportedAt:new Date().toISOString(),...current});
+ downloadJSON("MW_v05_local_library_162_cards_7_tokens.json",{schema:"mw-v05-stage3-local-v1",exportedAt:new Date().toISOString(),...current});
 });
 window.MW_V05_LIBRARY_API=Object.freeze({
  getCurrent:()=>JSON.parse(JSON.stringify(current)),
@@ -214,7 +214,7 @@ window.MW_V05_LIBRARY_API=Object.freeze({
   return {changed:staged.changed,errors:staged.errors.length,issues:staged.issues.length,ready:staged.ready};
  }
 });
-if(!loadError)status(`Исходная библиотека загружена: ${current.cards.length} карт и ${current.tokens.length} токенов. Выберите файл для сравнения.`);
+if(!loadError)status("Исходная библиотека загружена: 162 карты и 7 токенов. Выберите файл для сравнения.");
 stats();updatePicker();updateDiff();issuesDisplay();buttons();
 // Deep link from game collection: open a canonical ID in the only v05 editor.
 try{

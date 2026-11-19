@@ -84,6 +84,7 @@ const CREATURE_IDS=[
  "CHR-002","CHR-004","CHR-007","CHR-012","CHR-013","CHR-016","CHR-020","CHR-023","CHR-024","CHR-030","CHR-032","CHR-033","CHR-034","CHR-035","CHR-036",
  "NEU-003","NEU-004","NEU-005","NEU-006","NEU-007","NEU-009","NEU-010","NEU-019",
  "NEU-001","NEU-024","NEU-025","NEU-026","NEU-027","NEU-029",
+ "NEU-045","NEU-046","NEU-047","NEU-048","NEU-049",
  "ZAV-001","ZAV-002","ZAV-003","ZAV-004","ZAV-005","NEU-031","NEU-034","NEU-035","NEU-036","NEU-037","NEU-038","NEU-039","NEU-041","NEU-042","NEU-043","NEU-044",
  "NCR-001","NCR-002","NCR-003","NCR-004","NCR-007","NCR-008","NCR-009","NCR-010","NCR-011","NCR-013","NCR-014","KNZ-010","KNZ-022","KNZ-007","CHR-031",
  "CHR-029","CHR-039","CHR-040","CHR-041","CHR-045","NCR-015","NEU-033","NEU-028"
@@ -98,13 +99,14 @@ const SUPPORTED_CREATURES=new Set(CREATURE_IDS);
 const SUPPORTED_WEAPONS=new Set(WEAPON_IDS);
 const PURE_ABILITIES=new Set(["","Правакацыя.","Правакацыя","Рывок.","Рывок","Маскіроўка.","Маскіроўка"]);
 const TARGETS={
- "KNZ-001":"own-human","KNZ-004":"own-human","KNZ-011":"own-minion","KNZ-014":"enemy-minion","KNZ-038":"enemy-minion",
+ "KNZ-001":"own-human","KNZ-004":"any-human","KNZ-011":"own-minion","KNZ-014":"enemy-minion","KNZ-038":"enemy-minion",
  "CHR-001":"any-minion","CHR-008":"own-minion","CHR-025":"own-minion",
  "NEU-013":"own-peasant","NEU-015":"enemy-minion","NEU-023":"any",
  "NCR-018":"own-minion","NCR-019":"enemy-minion","NCR-020":"any-minion",
  "NCR-023":"own-minion","NCR-024":"enemy-weak","NCR-028":"own-minion",
  "KNZ-017":"own-minion","CHR-024":"enemy-minion","CHR-036":"enemy-minion","NCR-010":"enemy-minion",
- "CHR-015":"own-minion","KNZ-037":"own-minion","ZAV-005":"enemy-minion","CHR-031":"enemy-minion"
+ "CHR-015":"own-minion","KNZ-037":"own-minion","ZAV-005":"enemy-minion","CHR-031":"enemy-minion",
+ "NEU-048":"any"
 };
 const TOKENS={
  "TKN-001":{cardId:"TKN-001",name:"ДРУЖЫННІК",cardType:"creature",attack:1,health:1,timeAffinityId:"Дзень",creatureTypeId:"Чалавек",subtype:"Дружыннік",ability:"",origin:"token"},
@@ -444,7 +446,7 @@ function auraAttack(s,m,owner){
  const p=player(s,owner);let atk=s.turn===owner?-num(p.turnAttackReduction):0;
  for(const source of p.board){
   if(source.silenced)continue;
-  if(source.cardId==="KNZ-005"&&isDruzhina(m))atk++;
+  if(source.cardId==="KNZ-005"&&source!==m&&isDruzhina(m))atk++;
   if(source.cardId==="NEU-007"&&source!==m&&isPeasant(m))atk++;
   if(source.cardId==="NEU-004"&&source===m&&p.board.some(isPeasant))atk++;
   if(source.cardId==="NCR-014"&&source!==m&&isUndead(m))atk++;
@@ -694,6 +696,7 @@ function targetValid(s,o,cardId,target){
   case "any":case "any-minion":return true;
   case "own-minion":return target.owner===o;
   case "own-human":return target.owner===o&&isHuman(m);
+  case "any-human":return isHuman(m);
   case "own-peasant":return target.owner===o&&isPeasant(m);
   case "enemy-minion":return target.owner!==o;
   case "enemy-weak":return target.owner!==o&&effectiveAttack(s,m)<=5;
@@ -970,22 +973,20 @@ function resolveSpell(s,o,c,t,choices=null){
     break;
   }
   case "CHR-044":summonTokens(s,o,"TKN-008",3);break;
-  case "KNZ-004":buff(s,m,0,2);if(isDay(s))m.taunt=true;break;
+  case "KNZ-004":buff(s,m,0,2);m.taunt=true;break;
   case "KNZ-011":healMinion(s,t.owner,t.uid,4);if(isSpirit(m))buff(s,m,1,0);break;
   case "KNZ-014":damageMinion(s,t.owner,t.uid,p.weapon?5:3);break;
   case "KNZ-026":summonTokens(s,o,"TKN-001",3,isDay(s)?1:0);break;
   case "KNZ-031":
    for(const x of p.board.filter(isHuman)){buff(s,x,2,2);addTimed(x,"day",0,o,1);}break;
-  case "KNZ-036":
-   for(const x of summonTokens(s,o,"TKN-001",7,2,{taunt:true}))addTimed(x,"day",0,o,2);
-   break;
+  case "KNZ-036":summonTokens(s,o,"TKN-001",7,2,{taunt:true});break;
   case "KNZ-038":addTimed(m,"frozen",0,t.owner,1);if(!isDay(s))damageMinion(s,t.owner,t.uid,2);break;
   case "CHR-001":{const actual=m?.health||0;damageMinion(s,t.owner,t.uid,1);
     if(actual>0&&!minion(s,t.owner,t.uid))draw(s,o);break;}
   case "CHR-003":damageHero(s,o,2);p.spiritDiscountThisTurn=1;break;
   case "CHR-005":summonTokens(s,o,"TKN-002",2);break;
   case "CHR-008":destroyMinion(s,t.owner,t.uid);draw(s,o);draw(s,o);break;
-  case "CHR-010":areaDamage(s,s.players.flatMap((pl,i)=>pl.board.filter(x=>!isSpirit(x)).map(x=>[i,x])),isDay(s)?2:3);break;
+  case "CHR-010":areaDamage(s,s.players.flatMap((pl,i)=>pl.board.filter(x=>!isSpirit(x)).map(x=>[i,x])),isDay(s)?2:5);break;
   case "CHR-018":
    for(const x of summonTokens(s,o,"TKN-003",3))addTimed(x,"night",0,o,2);
    for(const x of p.board.filter(isSpirit))if(!x.timed.some(y=>y.kind==="night"))addTimed(x,"night",0,o,2);
@@ -1050,8 +1051,16 @@ function onMinionPlayed(s,o,m,target,choices=null){
      damageHero(s,0,5);damageHero(s,1,5);
     });
     removeDead(s);
-    for(const [owner,pl]of s.players.entries())for(const h of [...pl.hand])discardCard(s,owner,h.cardId,"burn","NEU-028");
-    s.players.forEach(pl=>pl.hand=[]);removeDead(s);
+    igniteHands(s);removeDead(s);
+    break;
+  }
+  case "NEU-048":{
+    if(target?.kind==="hero")healHero(s,target.owner,6);
+    else if(target?.kind==="minion")healMinion(s,target.owner,target.uid,6);
+    break;
+  }
+  case "NEU-049":{
+    for(const [owner,side] of s.players.entries())for(const unit of [...side.board])if(isHuman(unit))buff(s,unit,1,1);
     break;
   }
   case "NEU-033":player(s,other(o)).nextTurnAttackReduction=num(player(s,other(o)).nextTurnAttackReduction)+2;break;
@@ -1087,12 +1096,9 @@ function onMinionPlayed(s,o,m,target,choices=null){
     const spirits=p.graveyard.filter(g=>!g.token&&s.cards[g.cardId]?.creatureTypeId==="Дух");
     const g=pick(s,spirits);if(g)addHandCard(s,o,{uid:uid(s),cardId:g.cardId,costAdjustment:-1},"graveyard");break;}
   case "KNZ-034":summonTokens(s,o,"TKN-001",2,0,{charge:true});break;
-  case "KNZ-035":
-   for(const x of p.board.filter(x=>x.uid!==m.uid&&isHuman(x)))buff(s,x,2,2);
-   for(const x of p.board.filter(isHuman))addTimed(x,"day",0,o,2);
-   break;
+  case "KNZ-035":for(const x of p.board.filter(x=>x.uid!==m.uid&&isHuman(x)))buff(s,x,4,4);break;
   case "CHR-004":if(p.lastDamageTurn===s.turns)buff(s,m,1,1);break;
-  case "CHR-007":if(!isDay(s))damageMinion(s,other(o),target.uid,2);break;
+  case "CHR-007":if(!isDay(s))damageMinion(s,other(o),target.uid,5);break;
   case "CHR-020":
    summonTokens(s,o,"TKN-002",7);
    for(const x of [...p.board].filter(x=>x!==m&&isSpirit(x)))buff(s,x,1,1);
@@ -1198,13 +1204,10 @@ function onEndTurn(s,o){
      if(!own.length)break;
      const lowest=Math.min(...own.map(x=>effectiveAttack(s,x)));
      const minima=own.filter(x=>effectiveAttack(s,x)===lowest);
-     // При равенстве минимальной атаки способ выбора не утверждён.
-     if(minima.length===1){
-       buff(s,minima[0],1,1);
-       log(s,"ЖЫЦЕНЬ усиливает "+minima[0].name+" на +1/+1.",
-         {kind:"buff",owner:o,cardId:minima[0].cardId});
-     }else log(s,"ЖЫЦЕНЬ: равная минимальная атака; выбор требует утверждения.",
-       {kind:"rules-pending",owner:o});
+     const chosen=pick(s,minima);
+     if(chosen){buff(s,chosen,1,1);
+       log(s,"ЖЫЦЕНЬ усиливает "+chosen.name+" на +1/+1.",
+         {kind:"buff",owner:o,cardId:chosen.cardId});}
      break;
    }
    case "NEU-041":{const x=randomMinion(s,other(o),()=>true);
@@ -1303,6 +1306,7 @@ function playCardResolved(s,o,uidValue,target=null,choices=null,position=null){
  const p=player(s,o),idx=p.hand.findIndex(x=>x.uid===uidValue),h=p.hand[idx];
  if(h.cardId==="__coin__"){p.hand.splice(idx,1);p.mana++;log(s,"Монетка: +1 временная мана.");return {ok:true};}
  const c=s.cards[h.cardId];
+ if(c.cardId==="NEU-048"&&!target)return {ok:false,reason:"Выберите существо или героя для лечения.",requiresTarget:true};
  if((check.targetType||(target&&TARGETS[c.cardId]))&&(target||c.cardType==="spell")&&!targetValid(s,o,c.cardId,target))return {ok:false,reason:"Нужна подходящая цель.",requiresTarget:true};
  const verified=validateChoices(s,o,c,choices);
  if(!verified.ok)return verified; // Не оплачивать карту до проверки полного выбора.

@@ -1724,6 +1724,20 @@ async function init(){
   }
   try{if(deckDB)await dbMeta("samples-seeded",true);else localStorage.setItem("mw-decks-seeded","1");}catch(e){}
  }
+ const q010Decks=window.MW_Q010_TRAINING;
+ if(q010Decks){
+  let q010Seeded=false;
+  try{q010Seeded=deckDB?await dbMeta("q010-samples-seeded")===true:localStorage.getItem("mw-q010-decks-seeded")==="1";}catch(e){}
+  if(!q010Seeded){
+   for(const {deckId,name,classId,counts,source} of [q010Decks.player,q010Decks.opponent]){
+    if(!decks.has(deckId))await persist({deckId,name,classId,counts,source});
+   }
+   try{
+    if(storageMode==="indexedDB")await dbMeta("q010-samples-seeded",true);
+    else if(storageMode==="localStorage")localStorage.setItem("mw-q010-decks-seeded","1");
+   }catch(e){}
+  }
+ }
  activeId=decks.has("sample-warrior")?"sample-warrior":sortedDecks()[0]?.deckId||null;
  $("deckPersistenceNote").textContent=storageMode==="indexedDB"?
    "Колоды сохраняются в IndexedDB. Для переноса на другой компьютер экспортируйте резервную копию.":

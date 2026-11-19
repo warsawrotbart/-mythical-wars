@@ -85,7 +85,9 @@
    const rarity=c.rarityId||"";
    const rarityNames={common:"Обычная",standard:"Стандартная",rare:"Редкая",epic:"Эпическая",legendary:"Легендарная"};
    const display=v=>v===null||v===undefined||v===""?"—":String(v);
+   const flavor=window.MW_V05_LIBRARY_SEED?.flavorById?.[row.id];
    const details=[`Стоимость: ${display(c.costValue)} ${c.costType==="corpses"?"трупов":c.costType==="mana"?"маны":""}`];
+   if(c.schoolId)details.push(`Школа: ${c.schoolId}`);
    if(c.timeAffinityId)details.push(`Время: ${c.timeAffinityId}`);
    if(c.cardType==="creature"&&c.creatureTypeId)details.push(`Вид: ${c.creatureTypeId}`);
    if(c.cardType==="creature")details.push(`Атака: ${display(c.attack)} · Здоровье: ${display(c.health)}`);
@@ -102,6 +104,7 @@
        <div class="mw-col-card-meta">${esc(c.classId||"Нейтральная")}${rarity?" · "+esc(rarityNames[rarity]||rarity):""}</div>
        <div class="mw-col-card-values">${details.map(value=>`<span>${esc(value)}</span>`).join("")}</div>
        ${c.ability?`<div class="mw-col-card-ability" title="${esc(c.ability)}">${esc(c.ability)}</div>`:""}
+       ${flavor?`<div class="mw-col-card-ability" title="${esc(flavor)}"><em>${esc(flavor)}</em></div>`:""}
        <div class="mw-col-flags">
          <span class="mw-col-flag ${row.art==="missing"?"missing":row.art==="approved"?"approved":"test"}">${esc(artLabel[row.art])}</span>
          <span class="mw-col-flag ${row.frame==="approved"?"approved":"frame"}">${esc(frameLabel[row.frame])}</span>

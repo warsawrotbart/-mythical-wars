@@ -48,6 +48,10 @@ body[data-mode="collection"] .top-actions{visibility:hidden}
 .mw-col-card-info strong{font-size:13px;color:#f3eee4;line-height:1.2;min-height:31px;
  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .mw-col-card-meta{font-size:11px;color:#a6b9c5;min-height:16px}
+.mw-col-card-values{display:flex;flex-direction:column;gap:3px;padding:7px 8px;
+ border:1px solid #324354;border-radius:6px;background:#132231;color:#f0d5a2;font-size:10px;line-height:1.35}
+.mw-col-card-ability{font-size:10px;line-height:1.45;color:#c5d3dc;
+ display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;overflow-wrap:anywhere}
 .mw-col-flags{display:flex;flex-direction:column;align-items:stretch;gap:5px;margin:4px 0 1px}
 .mw-col-flag{display:block;font-size:10px;line-height:1.3;padding:6px 8px;
  border-radius:5px;border:1px solid #506173;background:#22344a;color:#dce6ee}

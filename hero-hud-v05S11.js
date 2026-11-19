@@ -57,7 +57,7 @@
       const core=node("div","mw11-3d-core");
       const avatar=node("div","mw11-3d-avatar");
       const portrait=node("img","mw11-3d-portrait");portrait.alt="Портрет героя";portrait.draggable=false;avatar.append(portrait);
-      if(own)avatar.append(node("span","mw3d-hero-health"),node("span","mw3d-hero-armor"));
+      avatar.append(node("span","mw3d-hero-health"),node("span","mw3d-hero-armor"));
       const health=node("div","mw11-3d-stats");
       const status=node("span","mw11-3d-status");
       core.append(avatar,summary,health);
